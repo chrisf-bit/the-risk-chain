@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Risk Chain, Adult Social Care Simulation</title>
+<meta name="description" content="A team-based operational simulation on preventing choking incidents in adult supported living. Fictional proof of concept.">
+<style>
+/* ============================================================
+   THE RISK CHAIN, design tokens
+   Operational control centre for adult social care.
+   Sans UI (Segoe/system) for the console; a serif carries the
+   human voice (residents, families) to hold the tension between
+   operational control and the person behind the record.
+   ============================================================ */
+:root{
+  --ground:#e9edf0; --surface:#fdfefe; --surface-2:#f2f6f7; --surface-3:#e7eef0;
+  --ink:#15212e; --ink-2:#3f5061; --ink-3:#6c7c8a; --ink-4:#95a3ae;
+  --line:#d6dee3; --line-2:#e6ecef;
+  --navy:#14324a; --navy-2:#1c4462; --navy-ink:#e8eef2;
+  --teal:#2c7f8c; --teal-strong:#22656f; --teal-tint:#e3f0f1;
+  --good:#3c8f63; --good-tint:#e6f2ea; --good-line:#bcdcc8;
+  --warn:#bb8420; --warn-tint:#f8efd9; --warn-line:#e8d3a1;
+  --bad:#b3453b; --bad-tint:#f7e6e3; --bad-line:#e6c0ba;
+  --info:#3a6ea5; --info-tint:#e6eef7;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 8px 24px rgba(20,40,60,.07);
+  --shadow-lg:0 4px 12px rgba(20,40,60,.10),0 24px 48px rgba(20,40,60,.12);
+  --r:10px; --r-sm:7px; --r-lg:16px;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --maxw:1180px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#0c141c; --surface:#141f2a; --surface-2:#1a2836; --surface-3:#213141;
+    --ink:#e9f0f4; --ink-2:#b3c2cd; --ink-3:#8494a1; --ink-4:#5f6f7c;
+    --line:#28394a; --line-2:#20303f;
+    --navy:#0a1822; --navy-2:#123049; --navy-ink:#e8eef2;
+    --teal:#4db4c2; --teal-strong:#3d9aa7; --teal-tint:#123138;
+    --good:#5cb185; --good-tint:#12291f; --good-line:#25503a;
+    --warn:#d6a544; --warn-tint:#2c2410; --warn-line:#524316;
+    --bad:#d5695d; --bad-tint:#2c1613; --bad-line:#552b25;
+    --info:#6ea0d6; --info-tint:#122031;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.36);
+    --shadow-lg:0 6px 18px rgba(0,0,0,.4),0 28px 56px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="light"]{
+  --ground:#e9edf0; --surface:#fdfefe; --surface-2:#f2f6f7; --surface-3:#e7eef0;
+  --ink:#15212e; --ink-2:#3f5061; --ink-3:#6c7c8a; --ink-4:#95a3ae;
+  --line:#d6dee3; --line-2:#e6ecef;
+  --navy:#14324a; --navy-2:#1c4462; --navy-ink:#e8eef2;
+  --teal:#2c7f8c; --teal-strong:#22656f; --teal-tint:#e3f0f1;
+  --good:#3c8f63; --good-tint:#e6f2ea; --good-line:#bcdcc8;
+  --warn:#bb8420; --warn-tint:#f8efd9; --warn-line:#e8d3a1;
+  --bad:#b3453b; --bad-tint:#f7e6e3; --bad-line:#e6c0ba;
+  --info:#3a6ea5; --info-tint:#e6eef7;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 8px 24px rgba(20,40,60,.07);
+  --shadow-lg:0 4px 12px rgba(20,40,60,.10),0 24px 48px rgba(20,40,60,.12);
+}
+:root[data-theme="dark"]{
+  --ground:#0c141c; --surface:#141f2a; --surface-2:#1a2836; --surface-3:#213141;
+  --ink:#e9f0f4; --ink-2:#b3c2cd; --ink-3:#8494a1; --ink-4:#5f6f7c;
+  --line:#28394a; --line-2:#20303f;
+  --navy:#0a1822; --navy-2:#123049; --navy-ink:#e8eef2;
+  --teal:#4db4c2; --teal-strong:#3d9aa7; --teal-tint:#123138;
+  --good:#5cb185; --good-tint:#12291f; --good-line:#25503a;
+  --warn:#d6a544; --warn-tint:#2c2410; --warn-line:#524316;
+  --bad:#d5695d; --bad-tint:#2c1613; --bad-line:#552b25;
+  --info:#6ea0d6; --info-tint:#122031;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.36);
+  --shadow-lg:0 6px 18px rgba(0,0,0,.4),0 28px 56px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+/* Safe default size for inline icon SVGs (those without an explicit width attribute).
+   Placed early so specific component rules below win on equal-specificity ties. */
+svg:not([width]){width:1.1em;height:1.1em;flex:none}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.2;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--teal);outline-offset:2px;border-radius:4px}
+::selection{background:var(--teal);color:#fff}
+.tnum{font-variant-numeric:tabular-nums}
+.serif{font-family:var(--serif)}
+
+/* ---------- App shell ---------- */
+#app{min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+/* Top console bar */
+.topbar{
+  position:sticky;top:0;z-index:40;background:var(--navy);color:var(--navy-ink);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.topbar-in{max-width:var(--maxw);margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:-.01em}
+.brand .mark{width:30px;height:30px;flex:none}
+.brand small{display:block;font-weight:400;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(232,238,242,.6);margin-top:1px}
+.topbar-spacer{flex:1}
+.ghost-btn{
+  background:rgba(255,255,255,.07);color:var(--navy-ink);border:1px solid rgba(255,255,255,.14);
+  padding:7px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px;
+  transition:background .15s;
+}
+.ghost-btn:hover{background:rgba(255,255,255,.15)}
+.ghost-btn svg{width:15px;height:15px}
+
+/* Round stepper */
+.stepper{display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:12px 0}
+.step{display:flex;align-items:center;gap:9px;padding:5px 4px}
+.step .dot{
+  width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;
+  font-size:12px;font-weight:600;background:var(--surface-3);color:var(--ink-3);border:1.5px solid var(--line);
+}
+.step .lbl{font-size:12.5px;color:var(--ink-3);font-weight:500;max-width:118px;line-height:1.25}
+.step.done .dot{background:var(--good);color:#fff;border-color:var(--good)}
+.step.active .dot{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 0 0 4px var(--teal-tint)}
+.step.active .lbl{color:var(--ink);font-weight:600}
+.step.locked .dot{background:transparent}
+.step-link{flex:1;height:1.5px;background:var(--line);min-width:14px;max-width:44px}
+.step-link.done{background:var(--good)}
+@media(max-width:820px){.step .lbl{display:none}.step-link{min-width:8px}}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-pad{padding:20px 22px}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong)}
+.muted{color:var(--ink-3)}
+.divider{height:1px;background:var(--line);border:0;margin:0}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--teal);color:#fff;border:1px solid var(--teal);
+  padding:12px 22px;border-radius:var(--r-sm);font-size:15px;font-weight:600;
+  box-shadow:0 1px 2px rgba(20,40,60,.12);transition:transform .12s,background .15s,box-shadow .15s;
+}
+.btn:hover{background:var(--teal-strong);border-color:var(--teal-strong);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:translateY(0)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn svg{width:18px;height:18px}
+.btn-lg{padding:15px 30px;font-size:16px}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn-secondary:hover{background:var(--surface-2);border-color:var(--ink-3)}
+.btn-navy{background:var(--navy-2);border-color:var(--navy-2)}
+.btn-navy:hover{background:var(--navy);border-color:var(--navy)}
+
+/* Chips / tags */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:100px;border:1px solid transparent;letter-spacing:.01em}
+.chip svg{width:13px;height:13px}
+.chip-reliable{background:var(--good-tint);color:var(--good);border-color:var(--good-line)}
+.chip-incomplete{background:var(--warn-tint);color:var(--warn);border-color:var(--warn-line)}
+.chip-outdated{background:var(--surface-3);color:var(--ink-3);border-color:var(--line)}
+.chip-ambiguous{background:var(--info-tint);color:var(--info);border-color:transparent}
+.chip-contradictory{background:var(--bad-tint);color:var(--bad);border-color:var(--bad-line)}
+.chip-teal{background:var(--teal-tint);color:var(--teal-strong)}
+.chip-cost{background:var(--navy);color:var(--navy-ink);font-variant-numeric:tabular-nums}
+.chip-free{background:var(--good-tint);color:var(--good);border-color:var(--good-line)}
+
+/* ---------- Layout: dashboard ---------- */
+.dash-grid{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
+@media(max-width:940px){.dash-grid{grid-template-columns:1fr}}
+.col-main{display:flex;flex-direction:column;gap:18px;min-width:0}
+.col-side{display:flex;flex-direction:column;gap:18px;position:sticky;top:74px}
+@media(max-width:940px){.col-side{position:static}}
+
+/* ---------- Console: full-height, tabbed, minimal-scroll dashboard ---------- */
+#app.is-console{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.is-console .topbar{position:static;flex:none}
+.is-console .foot{display:none}
+.console-main{flex:1;min-height:0;width:100%;max-width:var(--maxw);margin:0 auto;padding:12px 22px 16px;display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:stretch}
+.console-col{display:flex;flex-direction:column;min-height:0}
+.console-rail{display:flex;flex-direction:column;min-height:0}
+.rail-scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-right:3px}
+.rail-submit{flex:none;padding-top:13px;display:flex;flex-direction:column;gap:11px}
+.clock-strip{flex:none;margin-bottom:13px}
+.tabbar{display:flex;gap:2px;flex:none;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tab{background:none;border:0;padding:11px 17px;font-size:14.5px;font-weight:600;color:var(--ink-3);border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:color .15s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--teal-strong);border-bottom-color:var(--teal)}
+.tab svg{width:19px;height:19px}
+.tab .tcount{font-size:11px;font-weight:700;background:var(--surface-3);color:var(--ink-2);border-radius:100px;padding:1px 8px;min-width:21px;text-align:center;font-variant-numeric:tabular-nums}
+.tab.active .tcount{background:var(--teal-tint);color:var(--teal-strong)}
+.tabpanel{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:8px;display:flex;flex-direction:column;gap:13px}
+.tabpanel::-webkit-scrollbar{width:10px}
+.tabpanel::-webkit-scrollbar-thumb,.rail-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:100px}
+.tabpanel::-webkit-scrollbar-track,.rail-scroll::-webkit-scrollbar-track{background:transparent}
+.rail-scroll::-webkit-scrollbar{width:8px}
+@media(max-width:940px){
+  #app.is-console{height:auto;overflow:visible}
+  .is-console .topbar{position:sticky}
+  .is-console .foot{display:block}
+  .console-main{grid-template-columns:1fr;height:auto}
+  .rail-scroll,.tabpanel{overflow:visible;min-height:auto}
+}
+
+/* Section head */
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
+.sec-head h3{font-size:16px}
+.sec-title-ico{display:flex;align-items:center;gap:9px}
+.sec-title-ico svg{width:21px;height:21px;color:var(--teal-strong)}
+
+/* KPI strip */
+.kpi-panel{padding:16px 18px}
+.kpi-panel h3{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);margin-bottom:14px;font-weight:700}
+.kpi-row{display:flex;flex-direction:column;gap:13px}
+.kpi{display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:baseline}
+.kpi .k-name{font-size:13px;color:var(--ink-2);font-weight:500;display:flex;align-items:center;gap:6px}
+.kpi .k-name .warn-ico{color:var(--warn)}
+.kpi .k-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .k-bar{grid-column:1/-1;height:7px;border-radius:100px;background:var(--surface-3);overflow:hidden;position:relative}
+.kpi .k-fill{height:100%;border-radius:100px;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.kpi .k-delta{font-size:11.5px;font-weight:700;grid-column:2;justify-self:end;font-variant-numeric:tabular-nums}
+.k-good{color:var(--good)} .k-warn{color:var(--warn)} .k-bad{color:var(--bad)} .k-flat{color:var(--ink-4)}
+.f-good{background:var(--good)} .f-warn{background:var(--warn)} .f-bad{background:var(--bad)} .f-teal{background:var(--teal)}
+
+/* Prevention capability */
+.prev-cap{display:flex;align-items:center;gap:16px;padding:16px 18px;background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border-radius:var(--r);border:1px solid rgba(255,255,255,.06)}
+.prev-ring{position:relative;width:74px;height:74px;flex:none}
+.prev-ring svg{transform:rotate(-90deg)}
+.prev-ring .pv{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.prev-cap .pc-txt small{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.62);font-weight:700}
+.prev-cap .pc-txt h4{font-size:16px;margin-top:2px}
+.prev-cap .pc-txt p{font-size:12px;color:rgba(232,238,242,.7);margin-top:3px}
+
+/* Attention meter */
+.attn{padding:16px 18px}
+.attn .a-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.attn .a-top h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:7px}
+.attn .a-top h3 svg{width:15px;height:15px;color:var(--teal-strong)}
+.attn .a-count{font-size:14px;font-weight:700}
+.pips{display:flex;gap:6px}
+.pip{flex:1;height:11px;border-radius:3px;background:var(--surface-3);border:1px solid var(--line);transition:background .2s}
+.pip.used{background:var(--teal);border-color:var(--teal)}
+.pip.over{background:var(--bad);border-color:var(--bad)}
+.attn .a-note{font-size:12px;color:var(--ink-3);margin-top:10px}
+
+/* Status banner */
+.status-banner{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
+.status-banner .s-ava{width:56px;height:56px;border-radius:50%;flex:none;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;font-weight:700;font-size:19px;border:1px solid var(--line);overflow:hidden}
+.status-banner .s-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.status-banner .s-ava.s-ava-lg{width:112px;height:112px;font-size:34px;box-shadow:0 6px 20px rgba(8,16,24,.28);border:3px solid var(--surface)}
+.status-banner .s-body h4{font-size:15px}
+.status-banner .s-body .s-meta{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+.status-banner .s-body p{font-size:13.5px;color:var(--ink-2);margin-top:7px}
+.status-flag{margin-left:auto;align-self:center}
+
+/* Alerts */
+.alert{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-sm);border:1px solid;font-size:13.5px}
+.alert svg{width:21px;height:21px;flex:none;margin-top:1px}
+.alert-amber{background:var(--warn-tint);border-color:var(--warn-line);color:var(--ink)}
+.alert-amber svg{color:var(--warn)}
+.alert-red{background:var(--bad-tint);border-color:var(--bad-line);color:var(--ink)}
+.alert-red svg{color:var(--bad)}
+.alert-info{background:var(--info-tint);border-color:transparent;color:var(--ink)}
+.alert-info svg{color:var(--info)}
+.alert b{font-weight:650}
+
+/* Info source cards */
+.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.src-grid{grid-template-columns:1fr}}
+.src{
+  text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:15px 16px;display:flex;flex-direction:column;gap:9px;transition:border-color .15s,box-shadow .15s,transform .12s;width:100%;color:inherit;position:relative;
+}
+.src:hover{border-color:var(--teal);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.src.opened{border-color:var(--good-line);background:var(--surface)}
+.src .s-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.src .s-ico{width:52px;height:52px;border-radius:13px;background:linear-gradient(150deg,var(--teal-tint),var(--surface-2));display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 1px var(--line)}
+.src .s-ico svg{width:27px;height:27px;color:var(--teal-strong)}
+.src.opened .s-ico{background:linear-gradient(150deg,var(--good-tint),var(--surface-2))}
+.src.opened .s-ico svg{color:var(--good)}
+.src h4{font-size:15.5px;line-height:1.22;font-weight:650;letter-spacing:-.01em}
+.src .s-src{font-size:11.5px;color:var(--ink-4);margin-top:2px}
+.src .s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.src .s-teaser{font-size:12.5px;color:var(--ink-3);line-height:1.45}
+.src .opened-mark{display:none;align-items:center;gap:5px;font-size:11.5px;font-weight:650;color:var(--good)}
+.src .opened-mark svg{width:14px;height:14px}
+.src.opened .opened-mark{display:inline-flex}
+.src.opened .s-open-cost{display:none}
+
+/* Action cards */
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:9px;align-content:start}
+.act{
+  display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;color:inherit;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:11px 13px;transition:border-color .15s,background .15s,box-shadow .15s;position:relative;
+}
+.act:hover{border-color:var(--ink-3);box-shadow:var(--shadow)}
+.act.sel{border-color:var(--teal);background:var(--teal-tint);box-shadow:0 0 0 1px var(--teal) inset}
+.act.disabled{opacity:.5;cursor:not-allowed}
+/* Prominent, colour-coded category icon */
+.act .a-ico{width:42px;height:42px;border-radius:11px;flex:none;display:grid;place-items:center;position:relative}
+.act .a-ico svg{width:23px;height:23px}
+.act .a-checkdot{position:absolute;right:-6px;bottom:-6px;width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;border:2.5px solid var(--surface)}
+.act.sel .a-checkdot{border-color:var(--teal-tint)}
+.act .a-checkdot svg{width:12px;height:12px}
+.cat-decision{background:var(--surface-3);color:var(--ink-2)}
+.cat-control{background:var(--teal-tint);color:var(--teal-strong)}
+.cat-escalation{background:var(--warn-tint);color:var(--warn)}
+.cat-communication{background:var(--info-tint);color:var(--info)}
+.cat-practical{background:var(--good-tint);color:var(--good)}
+.cat-risk{background:var(--info-tint);color:var(--info)}
+.act .a-main{flex:1;min-width:0;padding-top:1px}
+.act .a-title{font-size:14px;font-weight:650;display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.25;letter-spacing:-.005em}
+.act .a-blurb{font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-height:920px){.act .a-blurb{-webkit-line-clamp:1;line-clamp:1}}
+.act .a-cat{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* Modal */
+.modal-scrim{position:fixed;inset:0;background:rgba(12,24,36,.55);backdrop-filter:blur(3px);z-index:60;display:grid;place-items:center;padding:22px;animation:fade .2s}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);max-width:640px;width:100%;max-height:88vh;overflow:auto;box-shadow:var(--shadow-lg);animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+.modal-head{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:17px 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;z-index:2}
+.modal-head .mh-src{font-size:12px;color:var(--ink-3);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.modal-body{padding:20px 22px}
+.record{font-size:14px;line-height:1.62}
+.record p{margin-bottom:11px}
+.record .field{display:grid;grid-template-columns:150px 1fr;gap:4px 14px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.record .field .fl{font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;font-weight:600;padding-top:1px}
+.record .field .fv{font-size:14px}
+.record .quote{font-family:var(--serif);font-size:15.5px;line-height:1.6;font-style:italic;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin:6px 0}
+.record .msg{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;font-family:var(--serif);font-size:15px;line-height:1.6}
+.record .msg .from{font-family:var(--sans);font-size:12px;color:var(--ink-3);margin-bottom:8px;font-style:normal;display:flex;align-items:center;justify-content:space-between}
+.insight{margin-top:16px;background:var(--teal-tint);border:1px solid var(--teal-tint);border-radius:var(--r);padding:13px 15px;font-size:13.5px;display:flex;gap:10px}
+.insight svg{width:17px;height:17px;color:var(--teal-strong);flex:none;margin-top:1px}
+.icon-x{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;flex:none}
+.icon-x svg{width:17px;height:17px}
+.icon-x:hover{background:var(--surface-3)}
+
+/* Narrative / prose blocks */
+.prose{max-width:66ch}
+.prose p{margin-bottom:14px;color:var(--ink-2);font-size:15.5px}
+.lead{font-size:18px;color:var(--ink);line-height:1.5}
+.hero{padding:54px 0 40px}
+.hero .kick{margin-bottom:18px}
+.display{font-size:clamp(34px,6vw,60px);font-weight:700;letter-spacing:-.025em;line-height:1.02}
+.display .l2{color:var(--teal-strong);display:block}
+.subline{font-family:var(--serif);font-size:clamp(17px,2.4vw,21px);color:var(--ink-2);margin-top:18px;font-style:italic}
+.hero-cta{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* Consequence reveal */
+.reveal-head{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border-radius:var(--r-lg);padding:26px 26px;border:1px solid rgba(255,255,255,.06)}
+.reveal-head .eyebrow{color:var(--teal)}
+.reveal-head h2{font-size:23px;margin-top:8px}
+.reveal-head p{color:rgba(232,238,242,.82);margin-top:10px;font-size:15px;max-width:64ch}
+.feed{display:flex;flex-direction:column;gap:11px}
+.feed-item{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
+.feed-item .fi-ico{width:38px;height:38px;border-radius:9px;flex:none;display:grid;place-items:center}
+.feed-item .fi-ico svg{width:21px;height:21px}
+.fi-good .fi-ico{background:var(--good-tint)} .fi-good .fi-ico svg{color:var(--good)}
+.fi-warn .fi-ico{background:var(--warn-tint)} .fi-warn .fi-ico svg{color:var(--warn)}
+.fi-bad .fi-ico{background:var(--bad-tint)} .fi-bad .fi-ico svg{color:var(--bad)}
+.fi-info .fi-ico{background:var(--info-tint)} .fi-info .fi-ico svg{color:var(--info)}
+.feed-item h4{font-size:14px}
+.feed-item p{font-size:13.5px;color:var(--ink-2);margin-top:3px}
+.feed-item .fi-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:6px;display:inline-block}
+
+.missed-box{border:1px solid var(--warn-line);background:var(--warn-tint);border-radius:var(--r);padding:18px 20px}
+.missed-box .eyebrow{color:var(--warn)}
+.missed-box h3{margin-top:6px;font-size:17px}
+.missed-box p{margin-top:8px;color:var(--ink-2);font-size:14.5px}
+
+.link-note{display:flex;gap:11px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-sm);background:var(--surface-2);border:1px dashed var(--line);font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+.link-note svg{width:16px;height:16px;color:var(--teal-strong);flex:none;margin-top:2px}
+.link-note b{color:var(--teal-strong)}
+
+/* Round 3 clock / notifications */
+.clock-bar{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--navy);color:var(--navy-ink);border-radius:var(--r);border:1px solid rgba(255,255,255,.07)}
+.clock-face{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:1px}
+.clock-bar .c-lbl{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
+.clock-bar .c-run{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(232,238,242,.8)}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--bad);animation:pulse 1.6s infinite}
+.notif-stack{display:flex;flex-direction:column;gap:9px}
+.notif{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);animation:slidein .3s}
+.notif .n-time{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);flex:none;padding-top:1px}
+.notif .n-body{font-size:13.5px;flex:1}
+.notif .n-body b{font-weight:650}
+.notif .n-ico{width:16px;height:16px;flex:none;margin-top:1px}
+.notif-amber{background:var(--warn-tint);border-color:var(--warn-line)} .notif-amber .n-ico{color:var(--warn)}
+.notif-red{background:var(--bad-tint);border-color:var(--bad-line)} .notif-red .n-ico{color:var(--bad)}
+.notif-info{background:var(--info-tint)} .notif-info .n-ico{color:var(--info)}
+.notif .n-x{margin-left:6px;background:none;border:0;color:var(--ink-4);padding:2px;border-radius:5px;flex:none}
+.notif .n-x:hover{background:var(--surface-3);color:var(--ink-2)}
+.notif .n-x svg{width:14px;height:14px}
+
+/* Risk chain */
+.chain{position:relative;padding:6px 0}
+.chain-track{display:flex;flex-direction:column;gap:2px}
+.chain-node{display:grid;grid-template-columns:96px 30px 1fr;gap:0 14px;align-items:stretch;text-align:left;width:100%;background:none;border:0;color:inherit;padding:0}
+.chain-node .cn-time{font-size:11.5px;color:var(--ink-3);font-weight:600;text-align:right;padding:14px 0 0;font-variant-numeric:tabular-nums}
+.chain-rail{display:flex;flex-direction:column;align-items:center}
+.chain-rail .cn-line{width:2px;flex:1;background:var(--line);min-height:12px}
+.chain-rail .cn-dot{width:18px;height:18px;border-radius:50%;flex:none;border:3px solid var(--surface);box-shadow:0 0 0 1.5px var(--line);z-index:1;margin:2px 0}
+.chain-node:first-child .cn-line:first-child{opacity:0}
+.chain-node:last-child .cn-line:last-child{opacity:0}
+.cn-card{margin:8px 0;padding:12px 15px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);transition:border-color .15s,box-shadow .15s;flex:1}
+.chain-node:hover .cn-card{border-color:var(--ink-3);box-shadow:var(--shadow)}
+.chain-node.active .cn-card{border-color:var(--teal);box-shadow:var(--shadow)}
+.cn-card .cn-type{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px}
+.cn-card h4{font-size:14px;margin-top:5px}
+.cn-card .cn-detail{font-size:13px;color:var(--ink-2);margin-top:7px;line-height:1.5}
+.dot-introduced{background:var(--bad)} .type-introduced{color:var(--bad)}
+.dot-identified{background:var(--info)} .type-identified{color:var(--info)}
+.dot-controlled{background:var(--good)} .type-controlled{color:var(--good)}
+.dot-missed{background:var(--warn)} .type-missed{color:var(--warn)}
+.dot-consequence{background:var(--ink-3)} .type-consequence{color:var(--ink-3)}
+:root[data-theme="dark"] .type-consequence,:root:not([data-theme="light"]) .type-consequence{color:var(--ink-2)}
+.chain-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px}
+.chain-legend .cl{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);font-weight:500}
+.chain-legend .cl .sw{width:12px;height:12px;border-radius:50%}
+
+/* Outcome banner */
+.outcome{border-radius:var(--r-lg);padding:26px;border:1px solid;display:flex;gap:18px;align-items:flex-start}
+.outcome .o-ico{width:52px;height:52px;border-radius:12px;flex:none;display:grid;place-items:center}
+.outcome .o-ico svg{width:28px;height:28px}
+.outcome h2{font-size:22px}
+.outcome p{margin-top:8px;font-size:15px}
+.outcome-good{background:var(--good-tint);border-color:var(--good-line)}
+.outcome-good .o-ico{background:var(--good);color:#fff}
+.outcome-mixed{background:var(--warn-tint);border-color:var(--warn-line)}
+.outcome-mixed .o-ico{background:var(--warn);color:#fff}
+.outcome-bad{background:var(--bad-tint);border-color:var(--bad-line)}
+.outcome-bad .o-ico{background:var(--bad);color:#fff}
+
+/* Summary metrics */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:760px){.metric-grid{grid-template-columns:repeat(2,1fr)}}
+.metric{padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.metric .m-lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700}
+.metric .m-val{font-size:30px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+.metric .m-sub{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+
+/* Preview cards */
+.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:820px){.preview-grid{grid-template-columns:1fr}}
+.preview{padding:20px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2);position:relative;overflow:hidden}
+.preview .lock{position:absolute;top:16px;right:16px;color:var(--ink-4)}
+.preview .lock svg{width:17px;height:17px}
+.preview .p-round{font-size:12px;font-weight:700;color:var(--teal-strong);letter-spacing:.05em}
+.preview h4{font-size:17px;margin-top:8px}
+.preview p{font-size:13.5px;color:var(--ink-2);margin-top:9px;font-family:var(--serif);font-style:italic}
+.preview .p-tag{margin-top:14px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-4);font-weight:700}
+
+/* Progress dots on intro */
+.two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:start}
+@media(max-width:820px){.two-col{grid-template-columns:1fr}}
+.fact-list{display:flex;flex-direction:column;gap:0}
+.fact{display:grid;grid-template-columns:28px 1fr;gap:13px;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px;line-height:1.45}
+.fact:last-child{border-bottom:0}
+.fact svg{width:18px;height:18px;color:var(--teal-strong);margin-top:1px}
+.fact b{font-weight:650}
+
+.pill-row{display:flex;flex-wrap:wrap;gap:8px}
+.info-tile{display:flex;gap:11px;align-items:flex-start;padding:13px 15px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.info-tile svg{width:18px;height:18px;color:var(--teal-strong);flex:none;margin-top:2px}
+.info-tile h5{font-size:13.5px;font-weight:650}
+.info-tile p{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;background:var(--navy);color:var(--navy-ink);padding:12px 18px;border-radius:100px;font-size:13.5px;font-weight:500;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:9px;animation:toastin .25s;border:1px solid rgba(255,255,255,.1)}
+.toast svg{width:16px;height:16px;color:var(--warn)}
+
+/* Footer */
+.foot{margin-top:auto;padding:26px 0;border-top:1px solid var(--line);color:var(--ink-3);font-size:12.5px;background:var(--surface)}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:0 22px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+
+/* Animations */
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes slidein{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.rise{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.rise-1{animation-delay:.05s}.rise-2{animation-delay:.12s}.rise-3{animation-delay:.19s}.rise-4{animation-delay:.26s}.rise-5{animation-delay:.33s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .kpi .k-fill{transition:none}
+}
+
+/* spacing helpers */
+.stack{display:flex;flex-direction:column}
+.gap-8{gap:8px}.gap-12{gap:12px}.gap-16{gap:16px}.gap-22{gap:22px}
+.mt-8{margin-top:8px}.mt-16{margin-top:16px}.mt-22{margin-top:22px}.mt-30{margin-top:30px}
+.mb-16{margin-bottom:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.center{text-align:center}
+.tag-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;color:var(--ink-3)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* ---------- v2: prominent tabs (segmented control) ---------- */
+.tabbar{display:inline-flex;gap:4px;flex:none;align-self:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:5px;margin-bottom:6px;box-shadow:var(--shadow)}
+.tab{background:none;border:0;border-radius:9px;padding:10px 18px;font-size:14.5px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:9px;cursor:pointer;transition:background .15s,color .15s;margin-bottom:0}
+.tab:hover:not(.active){background:var(--surface-3);color:var(--ink)}
+.tab.active{background:var(--teal);color:#fff;border-bottom:0;box-shadow:0 1px 2px rgba(20,40,60,.18)}
+.tab svg{width:19px;height:19px}
+.tab .tcount{font-size:11px;font-weight:700;background:var(--surface-3);color:var(--ink-2);border-radius:100px;padding:1px 8px;min-width:21px;text-align:center;font-variant-numeric:tabular-nums}
+.tab.active .tcount{background:rgba(255,255,255,.28);color:#fff}
+/* Guidance strip under the tabs */
+.tab-guide{flex:none;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);background:var(--teal-tint);border:1px solid var(--teal-tint);border-radius:9px;padding:9px 13px;margin:8px 0 12px}
+.tab-guide svg{width:18px;height:18px;color:var(--teal-strong);flex:none}
+.tab-guide b{color:var(--teal-strong);font-weight:700}
+
+/* ---------- v2: time meter ---------- */
+.timecard .tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.timecard .tc-top h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:7px}
+.timecard .tc-top h3 svg{width:15px;height:15px;color:var(--teal-strong)}
+.timecard .tc-pct{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.timebar{height:12px;border-radius:100px;background:var(--surface-3);border:1px solid var(--line);overflow:hidden;position:relative}
+.timebar .tb-fill{height:100%;border-radius:100px;transition:width .5s cubic-bezier(.2,.7,.2,1);background:linear-gradient(90deg,var(--teal),var(--teal-strong))}
+.timebar .tb-fill.low{background:linear-gradient(90deg,var(--warn),#a8761c)}
+.timebar .tb-fill.over{background:var(--bad)}
+.timecard .tc-note{font-size:12px;color:var(--ink-3);margin-top:10px}
+/* per-action / per-source time cost as segments */
+.tcost{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink-3)}
+.tcost svg{width:13px;height:13px}
+.tsegs{display:inline-flex;gap:2px;align-items:center}
+.tseg{width:5px;height:12px;border-radius:1.5px;background:var(--line)}
+.tseg.on{background:var(--teal)}
+.tcost-free{color:var(--good)}
+.a-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.a-ev{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:100px}
+.a-ev svg{width:13px;height:13px}
+.ev-on{background:var(--good-tint);color:var(--good)}
+.ev-off{background:var(--warn-tint);color:var(--warn)}
+.act .a-title{align-items:center}
+.src.capped{opacity:.55}
+.src.capped:hover{border-color:var(--line);box-shadow:none;transform:none}
+
+/* ---------- v2: media placeholders ---------- */
+.media-ph{position:relative;border:1.5px dashed var(--line);border-radius:var(--r);background:repeating-linear-gradient(135deg,var(--surface-2),var(--surface-2) 11px,var(--surface-3) 11px,var(--surface-3) 22px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--ink-3);text-align:center;padding:18px;min-height:120px}
+.media-ph svg{width:30px;height:30px;color:var(--ink-4)}
+.media-ph .mp-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.media-ph .mp-sub{font-size:12px;color:var(--ink-4);max-width:34ch}
+.media-ph.wide{aspect-ratio:16/9;min-height:0}
+.media-ph.strip{flex-direction:row;min-height:0;padding:12px 16px;text-align:left;align-items:center;gap:14px}
+.media-ph.strip svg{width:26px;height:26px}
+.media-ph.strip>div{display:flex;flex-direction:column;gap:2px}
+.media-ph.strip .mp-sub{max-width:none;font-size:11.5px}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+@media(max-width:820px){.hero-grid{grid-template-columns:1fr;gap:24px}.hero-grid .media-ph{min-height:180px !important}}
+.media-ph.portrait{aspect-ratio:3/4;min-height:0}
+.media-ph .mp-badge{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--navy);color:var(--navy-ink);padding:3px 8px;border-radius:6px;opacity:.85}
+
+/* ---------- v2: confidence chooser (in confirm modal) ---------- */
+.conf-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.conf-opt{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r);padding:12px 12px;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.conf-opt:hover{border-color:var(--ink-3)}
+.conf-opt.sel{border-color:var(--teal);background:var(--teal-tint)}
+.conf-opt h5{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:7px;color:var(--ink)}
+.conf-opt h5 svg{width:15px;height:15px;color:var(--teal-strong)}
+.conf-opt p{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.confirm-list{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.confirm-line{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.confirm-line:last-child{border-bottom:0}
+.confirm-line svg{width:16px;height:16px;flex:none;margin-top:2px}
+.confirm-line.ok svg{color:var(--good)} .confirm-line.warn svg{color:var(--warn)}
+.confirm-stat{display:flex;gap:18px;flex-wrap:wrap;margin:4px 0 2px}
+.confirm-stat .cs{font-size:12.5px;color:var(--ink-2)} .confirm-stat .cs b{font-size:16px;color:var(--ink);display:block;font-variant-numeric:tabular-nums}
+
+/* ---------- v2: blind / acted-on-assumption callout ---------- */
+.blind-box{border:1px solid var(--bad-line);background:var(--bad-tint);border-radius:var(--r);padding:16px 18px}
+.blind-box .eyebrow{color:var(--bad)}
+.blind-box h3{margin-top:6px;font-size:16px}
+.blind-box ul{margin:10px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.blind-box li{font-size:13.5px;color:var(--ink-2);display:flex;gap:9px;align-items:flex-start}
+.blind-box li svg{width:16px;height:16px;color:var(--bad);flex:none;margin-top:2px}
+.conf-note{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:100px;padding:5px 12px}
+.conf-note svg{width:14px;height:14px;color:var(--teal-strong)}
+
+/* ---------- v2: between-round bridge ---------- */
+.bridge-wrap{max-width:640px;margin:0 auto;padding:60px 0 40px;text-align:center}
+.bridge-tick{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-strong);background:var(--teal-tint);padding:7px 15px;border-radius:100px;margin-bottom:22px}
+.bridge-tick svg{width:15px;height:15px}
+.bridge-wrap h1{font-size:clamp(26px,4vw,36px);letter-spacing:-.02em}
+.bridge-wrap .b-body{font-size:17px;color:var(--ink-2);line-height:1.6;margin-top:18px;text-align:left}
+.bridge-status{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--warn-tint);border:1px solid var(--warn-line);border-radius:var(--r);padding:15px 18px;margin-top:24px}
+.bridge-status svg{width:19px;height:19px;color:var(--warn);flex:none;margin-top:1px}
+.bridge-status p{font-size:14px;color:var(--ink-2)}
+.bridge-thread{display:flex;flex-direction:column;gap:8px;margin-top:22px;text-align:left}
+.bridge-thread .bt{display:flex;gap:10px;align-items:center;font-size:13.5px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 14px}
+.bridge-thread .bt svg{width:16px;height:16px;color:var(--teal-strong);flex:none}
+
+/* ---------- v3: wider console, better use of screen ---------- */
+#app.is-console .topbar-in,#app.is-console .topbar .wrap{max-width:1500px}
+.console-main{max-width:1500px}
+/* Records flow into as many columns as fit, so wide screens fill up */
+.src-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+/* compact selection status above the submit button (replaces the bottom instruction box) */
+.submit-status{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink-2);padding:0 2px 2px}
+.submit-status .ss-count{color:var(--ink)}
+.submit-status .ss-over{color:var(--bad)}
+
+/* ---------- v3: modal legibility (stands out from the background; visible close) ---------- */
+.modal-scrim{background:rgba(4,9,14,.74);backdrop-filter:blur(4px)}
+.modal{background:var(--surface-2);border:1px solid var(--line);box-shadow:0 0 0 1px rgba(0,0,0,.28),0 30px 70px rgba(0,0,0,.55)}
+.modal-head{background:var(--surface-2)}
+:root[data-theme="dark"] .modal,:root:not([data-theme="light"]) .modal{border-color:#39505f;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 30px 80px rgba(0,0,0,.7)}
+:root[data-theme="light"] .modal{border-color:var(--line);box-shadow:0 0 0 1px rgba(20,40,60,.06),var(--shadow-lg)}
+.icon-x{width:38px;height:38px;border-radius:10px;background:var(--surface-3);border:1px solid var(--line);color:var(--ink);transition:background .15s,color .15s,border-color .15s}
+.icon-x svg{width:20px;height:20px;color:currentColor}
+.icon-x:hover{background:var(--bad-tint);border-color:var(--bad-line);color:var(--bad)}
+
+/* ---------- v4: scene image (Meadow View) ---------- */
+.scene-img{width:100%;border-radius:var(--r);border:1px solid var(--line);object-fit:cover;display:block;box-shadow:var(--shadow)}
+.scene-band{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.scene-band img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:55% 42%;animation:kenburns 24s ease-in-out infinite alternate;will-change:transform}
+@keyframes kenburns{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.18) translate(-2.4%,-1.8%)}}
+@media(prefers-reduced-motion:reduce){.scene-band img{animation:none;transform:none}}
+.scene-band .sb-cap{position:absolute;left:0;right:0;bottom:0;padding:20px 18px 12px;background:linear-gradient(to top,rgba(8,16,24,.72),transparent);color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.scene-band .sb-cap svg{width:15px;height:15px}
+.scene-band .scene-fb{display:none;position:absolute;inset:0;align-items:center;justify-content:center;gap:12px;color:var(--ink-3);padding:14px;text-align:left}
+.scene-band .scene-fb svg{width:28px;height:28px;color:var(--ink-4);flex:none}
+.scene-band.img-failed{border-style:dashed;background:repeating-linear-gradient(135deg,var(--surface-2),var(--surface-2) 11px,var(--surface-3) 11px,var(--surface-3) 22px)}
+.scene-band.img-failed img,.scene-band.img-failed .sb-cap{display:none}
+.scene-band.img-failed .scene-fb{display:flex}
+
+/* ---------- v4: development report (document, downloadable as PDF) ---------- */
+.report-actions{display:flex;justify-content:space-between;gap:12px;max-width:840px;margin:0 auto 16px;flex-wrap:wrap}
+.report-doc{background:#ffffff;color:#25303c;max-width:840px;margin:0 auto;padding:52px 56px;border-radius:14px;box-shadow:var(--shadow-lg);font-size:14px;line-height:1.62}
+.report-doc .r-brand{display:flex;align-items:center;gap:11px;color:#14324a}
+.report-doc .r-brand svg{width:30px;height:30px}
+.report-doc .r-brand b{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.report-doc .r-brand small{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#6c7c8a;font-weight:700;margin-top:2px}
+.report-doc h1{font-size:27px;letter-spacing:-.02em;color:#14324a;margin-top:22px}
+.report-doc .r-sub{font-size:15px;color:#5a6875;margin-top:6px;font-family:var(--serif);font-style:italic}
+.report-doc .r-meta{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:16px;padding:14px 0;border-top:1px solid #e6ecf0;border-bottom:1px solid #e6ecf0;font-size:12.5px;color:#5a6875}
+.report-doc .r-meta b{color:#25303c;font-weight:650}
+.report-doc .r-section{margin-top:30px;break-inside:avoid}
+.report-doc .r-section h2{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#22656f;padding-bottom:8px;border-bottom:2px solid #e6ecf0;margin-bottom:14px}
+.report-doc .r-outcome{display:flex;gap:15px;align-items:flex-start;padding:16px 18px;border-radius:11px;border:1px solid #e2e8ec;background:#f6f9fa}
+.report-doc .r-outcome .ro-ico{width:46px;height:46px;border-radius:11px;flex:none;display:grid;place-items:center;color:#fff}
+.report-doc .r-outcome .ro-ico svg{width:26px;height:26px}
+.report-doc .r-outcome h3{font-size:18px;color:#14324a}
+.report-doc .r-outcome p{color:#41505f;font-size:13.5px;margin-top:5px}
+.ro-good{background:#3c8f63} .ro-mixed{background:#bb8420} .ro-bad{background:#b3453b}
+.report-doc .r-scores{display:grid;grid-template-columns:1fr 1fr;gap:2px 40px}
+.report-doc .r-score{display:grid;grid-template-columns:1fr auto auto;gap:2px 12px;align-items:baseline;padding:8px 0;border-bottom:1px solid #eef2f4}
+.report-doc .r-score .rs-name{font-size:13px;color:#41505f}
+.report-doc .r-score .rs-val{font-size:15px;font-weight:700;color:#14324a;font-variant-numeric:tabular-nums}
+.report-doc .r-score .rs-chg{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.rs-up{color:#3c8f63} .rs-down{color:#b3453b} .rs-flat{color:#95a3ae}
+.report-doc .r-bigscore{display:flex;align-items:center;gap:18px;padding:6px 0 2px}
+.report-doc .r-bigscore .rb-num{font-size:44px;font-weight:800;color:#14324a;letter-spacing:-.02em;line-height:1}
+.report-doc .r-bigscore .rb-txt small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#6c7c8a;font-weight:700}
+.report-doc .r-bigscore .rb-txt p{font-size:13px;color:#5a6875;margin-top:3px}
+.report-doc .r-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f0f4f6}
+.report-doc .r-item:last-child{border-bottom:0}
+.report-doc .r-item .ri-ico{width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;margin-top:1px}
+.report-doc .r-item .ri-ico svg{width:16px;height:16px}
+.ri-good{background:#e6f2ea;color:#3c8f63} .ri-dev{background:#f8efd9;color:#bb8420}
+.report-doc .r-item h4{font-size:13.5px;color:#14324a;font-weight:650}
+.report-doc .r-item p{font-size:12.5px;color:#5a6875;margin-top:2px}
+.report-doc .r-rounds{display:flex;flex-direction:column;gap:12px}
+.report-doc .r-round{padding:12px 14px;border:1px solid #e6ecf0;border-radius:9px;background:#fbfcfd}
+.report-doc .r-round .rr-h{font-size:12.5px;font-weight:700;color:#14324a;display:flex;justify-content:space-between;gap:10px}
+.report-doc .r-round .rr-conf{font-size:11px;color:#6c7c8a;font-weight:600;text-transform:capitalize}
+.report-doc .r-round ul{margin:8px 0 0;padding-left:17px;font-size:12.5px;color:#41505f}
+.report-doc .r-round li{margin-bottom:2px}
+.report-doc .r-foot{margin-top:34px;padding-top:16px;border-top:1px solid #e6ecf0;font-size:11px;color:#8695a1}
+.report-doc .r-two{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+@media(max-width:720px){.report-doc{padding:32px 24px}.report-doc .r-two,.report-doc .r-scores{grid-template-columns:1fr;gap:12px}}
+
+/* ---------- v4: guided walkthrough (numbered) ---------- */
+.walk{max-width:600px}
+.walk .w-head{padding:20px 24px 6px}
+.walk .w-head .eyebrow{color:var(--teal-strong)}
+.walk .w-head h3{font-size:20px;margin-top:6px}
+.walk .w-head p{font-size:13.5px;color:var(--ink-3);margin-top:6px}
+.walk .w-steps{padding:8px 24px 4px;display:flex;flex-direction:column;gap:10px}
+.walk-step{display:flex;gap:14px;align-items:flex-start;padding:13px 15px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.walk-step .ws-num{width:30px;height:30px;border-radius:50%;flex:none;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.walk-step .ws-b h4{font-size:14.5px;display:flex;align-items:center;gap:8px}
+.walk-step .ws-b h4 svg{width:17px;height:17px;color:var(--teal-strong)}
+.walk-step .ws-b p{font-size:13px;color:var(--ink-2);margin-top:3px}
+.walk .w-foot{padding:14px 24px 20px;display:flex;justify-content:flex-end;gap:12px;border-top:1px solid var(--line);margin-top:8px}
+
+/* ---------- v4: print / PDF ---------- */
+@media print{
+  body{background:#fff}
+  .topbar,.foot,.report-actions,#modal-root,#toast-root{display:none !important}
+  #app{height:auto !important;overflow:visible !important;display:block !important}
+  main.wrap{padding:0 !important}
+  .report-doc{box-shadow:none;border-radius:0;max-width:100%;padding:0}
+  @page{margin:15mm}
+}
+
+/* ---------- v4: first-use coach tour (spotlight + anchored pop-ups) ---------- */
+.tour{position:fixed;inset:0;z-index:90}
+.tour-block{position:fixed;inset:0}
+.tour-spot{position:fixed;border-radius:12px;border:2px solid var(--teal);box-shadow:0 0 0 100vmax rgba(6,12,20,.68);transition:top .28s cubic-bezier(.2,.8,.2,1),left .28s cubic-bezier(.2,.8,.2,1),width .28s,height .28s;pointer-events:none}
+.tour-pop{position:fixed;width:312px;max-width:calc(100vw - 24px);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 0 0 1px rgba(255,255,255,.05),0 24px 60px rgba(0,0,0,.55);padding:16px 17px;animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+:root[data-theme="light"] .tour-pop,:root:not([data-theme="dark"]) .tour-pop{box-shadow:0 0 0 1px rgba(20,40,60,.06),var(--shadow-lg)}
+.tour-pop .tp-num{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-strong)}
+.tour-pop h4{font-size:16px;margin-top:8px;display:flex;align-items:center;gap:8px}
+.tour-pop h4 svg{width:19px;height:19px;color:var(--teal-strong)}
+.tour-pop p{font-size:13.5px;color:var(--ink-2);margin-top:6px;line-height:1.5}
+.tour-pop .tp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px}
+.tour-pop .tp-dots{display:flex;gap:5px}
+.tour-pop .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.tour-pop .tp-dot.on{background:var(--teal)}
+.tour-pop .tp-btns{display:flex;gap:8px}
+.tour-btn{font-size:13px;font-weight:600;padding:8px 14px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.tour-btn:hover{background:var(--surface-3)}
+.tour-btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.tour-btn.primary:hover{background:var(--teal-strong)}
+.tour-skip{background:none;border:0;color:var(--ink-3);font-size:12.5px;cursor:pointer;padding:4px}
+.tour-skip:hover{color:var(--ink)}
+.tour-pop .tp-arrow{position:absolute;width:14px;height:14px;background:var(--surface-2);border:1px solid var(--line);transform:rotate(45deg)}
+.tour-pop.pl-bottom .tp-arrow{top:-8px;border-right:0;border-bottom:0}
+.tour-pop.pl-top .tp-arrow{bottom:-8px;border-left:0;border-top:0}
+.tour-pop.pl-left .tp-arrow{right:-8px;top:26px;border-left:0;border-bottom:0}
+.tour-pop.pl-right .tp-arrow{left:-8px;top:26px;border-right:0;border-top:0}
+</style>
+</head>
+<body>
+<div id="app" aria-live="polite"></div>
+<div id="modal-root"></div>
+<div id="tour-root"></div>
+<div id="toast-root"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   THE RISK CHAIN, simulation engine
+   Fictional POC. All people and organisations are invented.
+   ============================================================ */
+
+/* ---------- Icons (inline, no emoji) ---------- */
+const I = {
+  shield:'<path d="M12 2 4 5v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V5z"/>',
+  heart:'<path d="M12 20s-7-4.6-9.2-9C1.3 8 2.6 4.5 6 4.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.4 0 4.7 3.5 3.2 6.5C19 15.4 12 20 12 20z"/>',
+  users:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.5A3 3 0 0 1 16 11M21 20c0-2.6-1.6-4.6-4-5.2"/>',
+  badge:'<path d="M12 3 4 6v5c0 4.8 3.3 8.3 8 9.7 4.7-1.4 8-4.9 8-9.7V6z"/><path d="M9 11.5l2 2 4-4.5"/>',
+  gauge:'<path d="M12 13l4-4"/><path d="M4 18a8 8 0 1 1 16 0"/><circle cx="12" cy="18" r="1.4"/>',
+  alertT:'<path d="M12 3 2 20h20z"/><path d="M12 10v5"/><circle cx="12" cy="17.6" r=".2"/>',
+  bell:'<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  clipboard:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6M9 14h4"/>',
+  stethoscope:'<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M6 3H4M14 3h2"/><path d="M10 13v3a4 4 0 0 0 8 0v-1"/><circle cx="18" cy="12" r="2"/>',
+  pill:'<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/><path d="M8.5 8.5l7 7"/>',
+  hospital:'<rect x="4" y="8" width="16" height="13" rx="1.5"/><path d="M9 21v-4h6v4"/><path d="M12 3v4M10 5h4"/>',
+  message:'<path d="M4 5h16v11H9l-4 3z"/>',
+  home:'<path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5l3 2"/>',
+  check:'<path d="M4 12.5 9 17.5 20 6.5"/>',
+  checkSmall:'<path d="M5 12l4 4 10-11"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  eye:'<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/>',
+  link:'<path d="M9 15l6-6"/><path d="M10.5 6.5 12 5a4 4 0 0 1 6 6l-1.5 1.5M13.5 17.5 12 19a4 4 0 0 1-6-6l1.5-1.5"/>',
+  arrowR:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  restart:'<path d="M4 12a8 8 0 1 1 2.5 5.8"/><path d="M4 20v-5h5"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".4"/>',
+  sun:'<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".3"/>',
+  utensils:'<path d="M7 3v8M5 3v6a2 2 0 0 0 4 0V3M7 11v10"/><path d="M16 3c-1.5 1-2 3-2 5s.5 3 2 3v10"/>',
+  phone:'<path d="M6 3h3l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2 4.5 1.5V18a2 2 0 0 1-2.2 2A16 16 0 0 1 4 6.2 2 2 0 0 1 6 3z"/>',
+  route:'<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
+  person:'<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20c0-3.8 3.1-6.5 7-6.5s7 2.7 7 6.5"/>',
+  expand:'<path d="M8 4H4v4M20 8V4h-4M16 20h4v-4M4 16v4h4"/>',
+  compress:'<path d="M4 8h4V4M16 4v4h4M20 16h-4v4M8 20v-4H4"/>',
+  image:'<rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/>',
+  play:'<circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/>',
+  gauge2:'<path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l5-5"/><circle cx="12" cy="18" r="1.3"/>',
+  scale:'<path d="M12 4v16M7 8h10M7 8l-3 6h6zM17 8l-3 6h6z"/><path d="M4 20h16"/>',
+  bolt:'<path d="M13 3 5 13h6l-1 8 8-10h-6z"/>',
+};
+function svg(p,cls){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"${cls?` class="${cls}"`:''} aria-hidden="true">${p}</svg>`;}
+
+/* Scene photo of Meadow View. Save the supplied image to this path; a labelled
+   placeholder shows if the file is not present, so the app still works offline. */
+const MEADOW_IMG='assets/Meadow-View.jpg';
+const MICHAEL_IMG='assets/Michael.jpg';
+function michaelAvatar(big){return `<div class="s-ava${big?' s-ava-lg':''}"><img src="${MICHAEL_IMG}" alt="Michael Turner" onerror="this.remove();this.parentElement.textContent='MT'"></div>`;}
+function sceneBand(height,cap){
+  return `<div class="scene-band" style="height:${height}px">
+    <img src="${MEADOW_IMG}" alt="Meadow View Supported Living: a modern brick building with landscaped gardens and a signed entrance" onerror="this.closest('.scene-band').classList.add('img-failed')">
+    ${cap?`<div class="sb-cap">${svg(I.home)} ${cap}</div>`:''}
+    <div class="scene-fb">${svg(I.image)}<div><div style="font-weight:700;font-size:12.5px">Meadow View photo</div><div style="font-size:11.5px">Save the supplied image to <b>assets/meadow-view.jpg</b></div></div></div>
+  </div>`;
+}
+
+/* ---------- KPI definitions ---------- */
+const KPIS = [
+  {key:'safety',   name:'Resident Safety',     invert:false},
+  {key:'quality',  name:'Quality of Life',     invert:false},
+  {key:'family',   name:'Family Trust',        invert:false},
+  {key:'staff',    name:'Staff Confidence',    invert:false},
+  {key:'reliability',name:'Care Reliability',  invert:false},
+  {key:'exposure', name:'Regulatory Exposure', invert:true},
+];
+const START_KPI = {safety:64,quality:78,family:70,staff:62,reliability:58,exposure:32};
+const START_PREVENTION = 61;
+// Time available each round, spent on BOTH reviewing records and taking actions.
+// Enough to review a few records and act, but not to read everything and do everything.
+const ROUND_TIME = 10;
+
+/* ---------- State ---------- */
+let S;
+function freshState(){
+  return {
+    screen:'landing',
+    round:1,
+    tab:'situation',
+    kpi:{...START_KPI},
+    prevention:START_PREVENTION,
+    flags:{},
+    opened:{1:{},2:{},3:{}},      // investigations opened per round
+    selected:{1:{},2:{},3:{}},    // actions selected per round
+    confidence:{},                // team confidence per round
+    seenOnboard:false,            // first-round onboarding shown
+    committed:{},                 // committed round results
+    chain:[],                     // risk chain events
+    stats:{identified:0,missed:0},
+    dismissed:{},                 // round 3 dismissed notifications
+    theme:null,
+    outcome:null,
+  };
+}
+function save(){try{localStorage.setItem('riskchain_v1',JSON.stringify(S));}catch(e){}}
+function load(){try{const r=localStorage.getItem('riskchain_v1');if(r){S=JSON.parse(r);return true;}}catch(e){}return false;}
+
+/* ---------- Rounds meta (for stepper) ---------- */
+const ROUNDS_META = [
+  {n:1,title:'The New Admission',short:'New Admission'},
+  {n:2,title:'Early Warning Signs',short:'Early Warnings'},
+  {n:3,title:'The Busy Lunchtime',short:'Busy Lunchtime'},
+  {n:4,title:'The Near Miss',short:'Near Miss'},
+  {n:5,title:'The Family Challenge',short:'Family Challenge'},
+  {n:6,title:'The Organisational Response',short:'Org. Response'},
+];
+
+/* ============================================================
+   CONTENT, investigations & actions per round
+   ============================================================ */
+const DATA = {
+  1:{
+    title:'The New Admission',
+    brief:'Michael Turner is due to arrive at Meadow View this afternoon. The records that have reached the service are incomplete and, in places, contradict one another. Your team has not supported Michael before. Decide what to confirm, what to control, and what must be in place before his first meal.',
+    status:{state:'Awaiting admission',tone:'amber',line:'Arriving 15:30 today. No member of the current team has met Michael. First evening meal expected around 18:00.'},
+    alerts:[
+      {tone:'amber',ico:'alertT',text:'<b>Conflicting diet information.</b> The hospital notes a "soft diet"; the SALT letter specifies a texture-modified diet. These are not the same thing.'},
+      {tone:'info',ico:'clock',text:'<b>Staffing for this evening</b> includes an agency worker who has not supported Michael before.'},
+    ],
+    docs:[
+      {id:'discharge',ico:'hospital',title:'Hospital discharge summary',source:'St. Aldwyn’s Hospital · dated 2 days ago',cred:'incomplete',cost:1,
+       teaser:'Medically fit for discharge. Mentions a "soft diet" and a recent medication change.',
+       body:`<div class="field"><span class="fl">Status</span><span class="fv">Medically fit for discharge</span></div>
+             <div class="field"><span class="fl">Diet</span><span class="fv">"Soft diet", no further detail or swallowing guidance recorded</span></div>
+             <div class="field"><span class="fl">Medication</span><span class="fv">Recent change on the ward (see medication record). Reason not stated here.</span></div>
+             <div class="field"><span class="fl">Swallowing</span><span class="fv">Not assessed on this admission</span></div>`,
+       insight:'"Soft diet" and a texture-modified diet are different things. The summary is recent but silent on swallowing.'},
+      {id:'prevplan',ico:'clipboard',title:'Previous provider care plan',source:'Oakfield House · last reviewed 8 months ago',cred:'outdated',cost:1,
+       teaser:'States Michael should be supervised while eating and eats quickly when distressed.',
+       body:`<div class="field"><span class="fl">Mealtimes</span><span class="fv">"Michael should be supervised while eating."</span></div>
+             <div class="field"><span class="fl">Behaviour</span><span class="fv">"Eats quickly when distressed or rushed."</span></div>
+             <div class="field"><span class="fl">Reviewed</span><span class="fv">8 months ago, predates the hospital admission</span></div>`,
+       insight:'Two early risk signals: supervision at meals, and eating quickly when distressed. Both predate the admission.'},
+      {id:'salt',ico:'stethoscope',title:'SALT letter',source:'Community SALT service · dated 6 months ago',cred:'incomplete',cost:2,
+       teaser:'Recommends a specific texture-modified diet. Notes reassessment may be needed after any significant change.',
+       body:`<div class="field"><span class="fl">Recommendation</span><span class="fv">Level 5 Minced &amp; Moist diet; Level 0 thin fluids. Small mouthfuls, upright, unhurried.</span></div>
+             <div class="field"><span class="fl">Dated</span><span class="fv">6 months ago</span></div>
+             <div class="field"><span class="fl">Caveat</span><span class="fv">"A reassessment may be needed following any significant change in health, medication or presentation."</span></div>`,
+       insight:'The clearest guidance you hold, and it names its own trigger for reassessment: a significant change. Michael has just had one.'},
+      {id:'family',ico:'home',title:'Message from family',source:'Michael’s sister, Angela · received yesterday',cred:'ambiguous',cost:1,
+       teaser:'Says Michael eats normal meals at home and asks staff not to make a fuss.',
+       body:`<div class="msg"><div class="from"><span>From Angela Turner (sister)</span><span>${'yesterday'}</span></div>
+             "Please don’t make a big fuss about Michael’s food. He eats normal meals when he comes to me and he’s fine. All these restrictions just make him miserable and he’s been through enough. He knows his own mind."</div>`,
+       insight:'Angela’s view matters and cannot be dismissed. It also conflicts with the SALT guidance. Both need to be held at once.'},
+      {id:'staff',ico:'users',title:'Staff competence & rota',source:'Meadow View team records · current',cred:'reliable',cost:1,
+       teaser:'Two staff trained in dysphagia awareness; one competency observation overdue; agency worker on this evening.',
+       body:`<div class="field"><span class="fl">Trained</span><span class="fv">2 permanent staff, dysphagia awareness &amp; safe swallowing, current</span></div>
+             <div class="field"><span class="fl">Overdue</span><span class="fv">1 permanent staff member, competency observation lapsed</span></div>
+             <div class="field"><span class="fl">This evening</span><span class="fv">1 agency worker on shift, no prior knowledge of Michael</span></div>`,
+       insight:'The people on shift tonight decide whether any plan is actually delivered. This record is reliable but easily missed in the rush.'},
+    ],
+    actions:[
+      {id:'proceed',title:'Proceed with admission, no additional controls',cost:0,cat:'Decision',
+       blurb:'Admit as planned and settle Michael in. Address eating and drinking as issues arise.',
+       eff:{safety:-9,quality:+4,exposure:+11,reliability:-3},prev:-8,sets:['noControls'],
+       selNote:'You avoided disruption to Michael’s move, but the first meal will happen with no agreed safeguards and unresolved, conflicting diet information.',
+       missNote:''},
+      {id:'delay',title:'Delay the admission',cost:2,cat:'Decision',
+       blurb:'Postpone the move until swallowing information is confirmed.',
+       eff:{safety:+6,quality:-9,family:-8,exposure:-4},prev:+1,sets:['delayed'],
+       selNote:'Immediate mealtime risk is deferred, but Michael’s move is disrupted at short notice, which he finds unsettling, and Angela is unhappy.',
+       missNote:'A full delay was available. Most teams find the risk can be managed with interim controls rather than postponing the move.'},
+      {id:'salt',title:'Contact SALT for clarification',cost:2,cat:'Escalation',
+       blurb:'Ask the SALT service to confirm current recommendations given the admission and medication change.',
+       eff:{safety:+4,exposure:-8,reliability:+3},prev:+9,sets:['saltContacted'],delayed:'A SALT reassessment is requested but will not report before the first meal.',
+       selNote:'The right clinical escalation. A reassessment is requested. Note this will not report before this evening, so the first meal still needs an interim plan.',
+       missNote:'No one asked SALT to reconcile the six-month-old recommendation with the recent change. The clearest route to clarity was left unused.'},
+      {id:'hospital',title:'Contact the hospital ward',cost:1,cat:'Investigation',
+       blurb:'Clarify what "soft diet" meant and why the medication was changed.',
+       eff:{safety:+3,reliability:+3,exposure:-3},prev:+5,sets:['hospitalContacted'],
+       selNote:'You learn "soft diet" was a general catering note, not a swallowing decision, and the medication change may cause drowsiness and a dry mouth.',
+       missNote:'The meaning of "soft diet" and the reason for the medication change were a phone call away.'},
+      {id:'speakfamily',title:'Speak with Michael and Angela',cost:1,cat:'Communication',
+       blurb:'Explain the service’s approach, listen to their wishes, and agree how to work together.',
+       eff:{family:+9,quality:+6,staff:+2},prev:+6,sets:['familyEngaged'],
+       selNote:'Angela feels heard rather than overruled. Michael’s preferences are recorded. This makes later conversations about any restriction far easier.',
+       missNote:'Angela’s message went unanswered. Family trust starts lower than it needed to, and you will feel this in later rounds.'},
+      {id:'supervise',title:'Introduce supervised meals (interim)',cost:2,cat:'Control',
+       blurb:'Put temporary mealtime supervision in place until swallowing is confirmed.',
+       eff:{safety:+11,quality:-4,reliability:+3},prev:+8,sets:['interimControls','supervised'],
+       selNote:'A proportionate interim control. The first meal is supervised by someone who can respond if Michael coughs or eats too quickly.',
+       missNote:'No supervision was arranged for the first meal, despite two records pointing to mealtime risk.'},
+      {id:'texture',title:'Apply the most recent documented texture',cost:1,cat:'Control',
+       blurb:'Follow the SALT letter’s recommendation as an interim measure until reassessed.',
+       eff:{safety:+8,quality:-5,exposure:-3},prev:+6,sets:['interimControls','textureApplied'],
+       selNote:'A defensible interim position: follow the most specific guidance you hold rather than the vaguest, pending reassessment.',
+       missNote:'You held a specific texture recommendation but did not apply it, defaulting instead to the vaguer "soft diet".'},
+      {id:'brief',title:'Complete a staff briefing',cost:1,cat:'Communication',
+       blurb:'Brief everyone on shift, including agency, on Michael’s needs and any interim controls.',
+       eff:{staff:+7,reliability:+5},prev:+6,sets:['staffBriefed'],
+       selNote:'Everyone on shift, including the agency worker, knows what to watch for and what to do. Plans are only as good as the handover.',
+       missNote:'No briefing took place, so any plan you set exists on paper only. The agency worker starts the evening blind.'},
+      {id:'competency',title:'Check staff competency for this shift',cost:1,cat:'Control',
+       blurb:'Confirm a suitably competent person supports Michael at mealtimes.',
+       eff:{reliability:+5,exposure:-4,staff:+2},prev:+5,sets:['competencyChecked'],
+       selNote:'You confirm who is competent to support a mealtime risk and roster accordingly, rather than assuming the cover is adequate.',
+       missNote:'Competency for the shift was not checked, leaving an overdue observation and an unbriefed agency worker unaddressed.'},
+      {id:'experienced',title:'Allocate an experienced worker to settle Michael',cost:1,cat:'Practical',
+       blurb:'Put a known, confident member of staff with Michael for his first meal.',
+       eff:{safety:+5,staff:+4,quality:+3},prev:+5,sets:['experiencedWorker'],
+       selNote:'An experienced worker settles Michael, reduces his anxiety, and is best placed to notice anything concerning at the first meal.',
+       missNote:'No experienced worker was allocated to Michael’s first, highest-uncertainty meal.'},
+      {id:'genericflag',title:'Add a generic choking-risk flag',cost:0,cat:'Practical',
+       blurb:'Place a standard risk marker on the system.',
+       eff:{exposure:-2,reliability:-1},prev:-1,sets:['genericFlag'],
+       selNote:'A marker appears on the system, but a generic flag with no named plan behind it tends to be noticed once and then ignored.',
+       missNote:''},
+      {id:'interimplan',title:'Create a named interim support plan',cost:3,cat:'Control',
+       blurb:'Write a specific, person-centred plan covering diet, supervision, positioning and what to do if Michael struggles.',
+       eff:{safety:+10,reliability:+8,exposure:-7,quality:+2},prev:+11,sets:['interimControls','interimPlan'],
+       selNote:'A single, person-centred plan that staff can actually follow. Its value depends on being briefed and signed, not just written.',
+       missNote:'No single interim plan pulled the conflicting records together into something staff could follow.'},
+    ],
+  },
+  2:{
+    title:'Early Warning Signs',
+    brief:'Michael has been at Meadow View for several days. Nothing dramatic has happened, and no single record says his swallowing risk is rising. But separate observations are appearing in different corners of the service. The question is whether your team connects them into a pattern, or reads each one on its own and lets it pass.',
+    status:{state:'Settling in, mixed signals',tone:'amber',line:'Day 5 at Meadow View. Eating and drinking are mostly unremarkable, with occasional coughing and a few small changes noticed by different staff.'},
+    docs:[
+      {id:'shiftnote',ico:'clipboard',title:'Shift note, tea round',source:'Late shift, yesterday',cred:'ambiguous',cost:1,
+       teaser:'Michael coughed several times while drinking tea but seemed fine afterwards.',
+       body:`<div class="msg"><div class="from"><span>Evening shift note</span><span>yesterday</span></div>
+             "Michael coughed a few times on his tea this evening, went a bit red, but was fine after and finished his cup. Nothing else to report."</div>`,
+       insight:'Coughing on thin fluids is a classic aspiration sign. On its own it looks minor; alongside the medication’s dry-mouth effect, it is a pattern.'},
+      {id:'quickmsg',ico:'message',title:'Message from a support worker',source:'Day shift, today',cred:'reliable',cost:1,
+       teaser:'Michael has been eating more quickly than usual.',
+       body:`<div class="msg"><div class="from"><span>From Priya (support worker)</span><span>today, 10:20</span></div>
+             "Just flagging, Michael’s been wolfing his food down the last couple of days, quicker than when he arrived. Not sure if it’s anything but thought I’d mention it."</div>`,
+       insight:'"Eats quickly when distressed" was in the old care plan. This is the same signal reappearing. Why is he distressed?'},
+      {id:'medupdate',ico:'pill',title:'Medication information',source:'Pharmacy reconciliation',cred:'incomplete',cost:2,
+       teaser:'The medication changed before discharge can cause drowsiness and a dry mouth.',
+       body:`<div class="field"><span class="fl">Change</span><span class="fv">New medication started on the ward shortly before discharge</span></div>
+             <div class="field"><span class="fl">Side effects</span><span class="fv">Drowsiness; dry mouth (reduced saliva)</span></div>
+             <div class="field"><span class="fl">Relevance</span><span class="fv">Both drowsiness and dry mouth increase swallowing risk</span></div>`,
+       insight:'This is the thread connecting the coughing, the tiredness and the quick eating. It is also the reassessment trigger SALT named.'},
+      {id:'sistermsg',ico:'home',title:'Message from Angela',source:'Michael’s sister',cred:'ambiguous',cost:1,
+       teaser:'Says Michael sounds tired and unsettled on the phone.',
+       body:`<div class="msg"><div class="from"><span>From Angela Turner (sister)</span><span>today</span></div>
+             "Spoke to Michael last night. He sounded really tired, not himself, a bit down. Is everything alright there? He didn’t say much."</div>`,
+       insight:'Angela is describing the medication’s effect without knowing it. Family observation is data, if the relationship is open enough to share it.'},
+      {id:'daily',ico:'utensils',title:'Daily record, breakfast',source:'Kitchen / care notes',cred:'incomplete',cost:1,
+       teaser:'Michael ate less than usual at breakfast.',
+       body:`<div class="field"><span class="fl">Breakfast</span><span class="fv">Ate approximately half; left the toast</span></div>
+             <div class="field"><span class="fl">Fluids</span><span class="fv">Small amounts only</span></div>`,
+       insight:'Reduced intake is often the first quiet sign that eating has become hard work. It rarely arrives with a label attached.'},
+      {id:'staffleave',ico:'users',title:'Staffing note',source:'Rota',cred:'reliable',cost:1,
+       teaser:'The worker who knows Michael best is on leave this week.',
+       body:`<div class="field"><span class="fl">On leave</span><span class="fv">Michael’s keyworker, the person who knows his baseline best</span></div>
+             <div class="field"><span class="fl">Effect</span><span class="fv">Changes are harder to notice when the people around Michael keep changing</span></div>`,
+       insight:'The person most likely to join these dots is away. Continuity is not a nicety here; it is how patterns get seen.'},
+      {id:'audit',ico:'file',title:'Care-plan audit',source:'Compliance check',cred:'reliable',cost:1,
+       teaser:'The interim support plan has not been signed by two members of staff.',
+       body:`<div class="field"><span class="fl">Finding</span><span class="fv">Interim support plan present but unsigned by 2 staff</span></div>
+             <div class="field"><span class="fl">Means</span><span class="fv">Those staff may not have read or be following it</span></div>`,
+       insight:'A written plan and a followed plan are different things. Unsigned means some staff may be supporting Michael without it.'},
+    ],
+    actions:[
+      {id:'isolated',title:'Treat each observation as isolated',cost:0,cat:'Decision',
+       blurb:'Note the entries individually and continue monitoring. Nothing yet warrants a change.',
+       eff:{safety:-8,exposure:+9,reliability:-2},prev:-8,sets:['isolatedR2'],
+       selNote:'Each note, taken alone, looked minor, so nothing changed. The risk is that the pattern only becomes obvious after an incident.',
+       missNote:''},
+      {id:'pattern',title:'Connect the observations into a pattern',cost:1,cat:'Risk identification',
+       blurb:'Bring the coughing, quick eating, tiredness and reduced intake together as one developing picture.',
+       eff:{safety:+7,staff:+4,exposure:-5},prev:+11,sets:['patternIdentified'],
+       selNote:'Naming the pattern is the pivotal move this round. Once the observations sit together, the rising swallowing risk is hard to miss.',
+       missNote:'The separate signals were never brought together, so no one saw the developing pattern while there was still time to act calmly.'},
+      {id:'salt2',title:'Seek clinical / SALT advice now',cost:2,cat:'Escalation',
+       blurb:'Escalate for reassessment given the medication change and new signs.',
+       eff:{safety:+5,exposure:-7,reliability:+3},prev:+9,sets:['salt2'],delayed:'A SALT reassessment is booked; interim safety still depends on your own controls until it happens.',
+       selNote:'The correct escalation, triggered by exactly the "significant change" SALT flagged. Interim controls still matter until the review lands.',
+       missNote:'Despite a documented reassessment trigger, no clinical advice was sought. Escalation was left to a later, more urgent moment.'},
+      {id:'medreview',title:'Review the medication with GP / pharmacy',cost:2,cat:'Escalation',
+       blurb:'Ask whether drowsiness and dry mouth can be reduced, and how they affect eating.',
+       eff:{safety:+6,exposure:-4,quality:+2},prev:+8,sets:['medReviewed'],
+       selNote:'You address the mechanism, not just the symptoms. Even small reductions in drowsiness and dry mouth lower mealtime risk.',
+       missNote:'The medication’s role in the new signs was never reviewed, leaving the likely underlying driver in place.'},
+      {id:'updateplan',title:'Update the support plan now',cost:2,cat:'Control',
+       blurb:'Revise the plan to reflect the new signs, with clear mealtime guidance.',
+       eff:{safety:+6,reliability:+5,exposure:-4},prev:+7,sets:['planUpdated2'],
+       selNote:'The plan now matches reality. Its effect depends on staff actually being briefed and signed up to it.',
+       missNote:'The support plan still describes admission day, not Michael as he is now.'},
+      {id:'teambrief2',title:'Brief the whole team on the concerns',cost:1,cat:'Communication',
+       blurb:'Make sure everyone, including cover staff, knows what to watch for.',
+       eff:{staff:+6,reliability:+5},prev:+6,sets:['teamBriefed2'],
+       selNote:'With the keyworker away, a shared briefing is how continuity is recovered. Everyone now knows what a concerning change looks like.',
+       missNote:'No shared briefing, so observation stays fragmented across shifts that don’t talk to each other.'},
+      {id:'supervise2',title:'Strengthen mealtime supervision',cost:1,cat:'Control',
+       blurb:'Ensure Michael is supported and observed at every meal for now.',
+       eff:{safety:+7,quality:-3,reliability:+2},prev:+6,sets:['supervised2'],
+       selNote:'A proportionate response to rising uncertainty: closer support now, reviewed once the picture is clearer.',
+       missNote:'Mealtime supervision was not increased even as the signs accumulated.'},
+      {id:'contactfamily2',title:'Contact family to share concerns',cost:1,cat:'Communication',
+       blurb:'Talk with Angela, explain what you’ve noticed, and gather her observations.',
+       eff:{family:+7,quality:+2,safety:+1},prev:+5,sets:['familyContacted2'],
+       selNote:'Angela becomes a partner in spotting change rather than someone reassured from a distance. Her home observations add real information.',
+       missNote:'Angela’s worry went unanswered, and her useful observations of Michael’s baseline were not gathered.'},
+      {id:'signplan',title:'Get the plan signed and competency completed',cost:1,cat:'Practical',
+       blurb:'Close the audit gap so the plan is actually being delivered.',
+       eff:{reliability:+6,exposure:-5},prev:+5,sets:['planSigned']},
+    ],
+    // effects added below for signplan notes
+  },
+  3:{
+    title:'The Busy Lunchtime',
+    brief:'It is 12:40. The service is stretched, Michael is hungry and unsettled, his prescribed meal is late, and Angela has just arrived with a sandwich from home. Decisions now play out against everything already in place, or not in place, from the last two rounds. Work quickly, but the clock is for atmosphere: take the time you need.',
+    status:{state:'Lunchtime, under pressure',tone:'red',line:'One permanent staff member off sick, agency covering. Another resident needs urgent help. Michael’s texture meal is delayed in the kitchen.'},
+    docs:[
+      {id:'board',ico:'users',title:'Staffing board, right now',source:'Live',cred:'reliable',cost:1,
+       teaser:'Who is actually on the floor, and who is competent to support Michael.',
+       body:`<div class="field"><span class="fl">On shift</span><span class="fv">1 permanent worker (currently with another resident), 1 agency worker</span></div>
+             <div class="field"><span class="fl">Off sick</span><span class="fv">1 permanent worker, no replacement until 14:00</span></div>
+             <div class="field"><span class="fl">Agency worker</span><span class="fv">Competent generally; briefed on Michael only if your team arranged it earlier</span></div>`,
+       insight:'Who can safely support Michael right now was largely decided in Rounds 1 and 2, not at 12:40.'},
+      {id:'foodfromhome',ico:'home',title:'The food Angela brought',source:'At reception now',cred:'contradictory',cost:1,
+       teaser:'A shop-bought sandwich and a packet of crisps, normal texture.',
+       body:`<div class="msg"><div class="from"><span>Angela Turner (sister), at reception</span><span>12:41</span></div>
+             "His lunch clearly isn’t ready and he’s starving and upset. I’ve brought his favourite, a chicken sandwich and some crisps. He has this with me all the time. Can he just have it? Look at the state of him."</div>`,
+       insight:'This is the collision the whole scenario has been building toward: autonomy and affection on one side, swallowing risk on the other.'},
+      {id:'michaelstate',ico:'person',title:'Michael right now',source:'Direct observation',cred:'reliable',cost:1,
+       teaser:'Hungry, agitated, and starting to eat quickly, the distress pattern.',
+       body:`<div class="field"><span class="fl">Presentation</span><span class="fv">Hungry, restless, upset that lunch is late and that "everyone is busy"</span></div>
+             <div class="field"><span class="fl">Risk behaviour</span><span class="fv">This is exactly the "eats quickly when distressed" state noted since admission</span></div>`,
+       insight:'Distress is the accelerant. Calm Michael first and the eating risk drops; escalate the tension and it climbs.'},
+      {id:'kitchen',ico:'clock',title:'Kitchen, the prescribed meal',source:'Catering',cred:'reliable',cost:1,
+       teaser:'Michael’s texture-modified meal is about 12 minutes away.',
+       body:`<div class="field"><span class="fl">Status</span><span class="fv">Being prepared, roughly 12 minutes to ready</span></div>
+             <div class="field"><span class="fl">Options now</span><span class="fv">A safe texture-appropriate snack could bridge the gap if one is available</span></div>`,
+       insight:'You are managing twelve minutes, not a crisis, unless the twelve minutes are handled badly.'},
+      {id:'otherres',ico:'bell',title:'The other resident',source:'Live',cred:'reliable',cost:1,
+       teaser:'Genuinely needs urgent help; ties up the one permanent worker.',
+       body:`<div class="field"><span class="fl">Situation</span><span class="fv">A second resident needs prompt, hands-on support, not something to defer</span></div>
+             <div class="field"><span class="fl">Effect</span><span class="fv">Your most competent person is committed elsewhere</span></div>`,
+       insight:'Two genuine needs, limited hands. Whether that is a dilemma or a disaster depends on earlier staffing decisions.'},
+    ],
+    actions:[
+      {id:'unsupervised',title:'Let Michael have the home sandwich to calm him',cost:0,cat:'Decision',
+       blurb:'Give Michael the food Angela brought, unmodified and unsupervised, to settle him quickly.',
+       eff:{quality:+5,safety:-14,exposure:+10,family:+3},prev:-10,sets:['riskyFood'],
+       selNote:'Michael settles immediately and Angela is pleased, but he is now eating a high-risk texture, quickly, while distressed, with no one supporting him.',
+       missNote:''},
+      {id:'calm',title:'Calm Michael and involve Angela',cost:1,cat:'Communication',
+       blurb:'Sit with Michael, acknowledge the wait, and bring Angela in as part of the solution.',
+       eff:{quality:+6,family:+6,safety:+4,staff:+2},prev:+9,sets:['calmedR3'],
+       selNote:'Reducing distress is the highest-value move available. Michael settles, Angela feels respected, and the unsafe eating driver eases.',
+       missNote:'No one addressed Michael’s distress directly, leaving the very state that makes his eating unsafe running in the background.'},
+      {id:'safealt',title:'Offer a safe, texture-appropriate bridge',cost:1,cat:'Control',
+       blurb:'Provide something suitable to tide Michael over until his meal arrives.',
+       eff:{safety:+8,quality:+3,reliability:+2},prev:+8,sets:['safeAlt'],needs:['textureApplied','interimPlan','planUpdated2','salt2','saltContacted'],
+       selNote:'You bridge the twelve-minute gap safely, which removes the pressure to accept the unsuitable sandwich.',
+       missNote:'No safe alternative was offered, so the only things on the table were an unsafe sandwich or a hungry, escalating wait.'},
+      {id:'deploycompetent',title:'Deploy a competent worker to support Michael',cost:2,cat:'Practical',
+       blurb:'Free up or assign someone competent to supervise Michael’s meal.',
+       eff:{safety:+10,reliability:+4,staff:+2},prev:+9,sets:['competentSupport'],needs:['competencyChecked','experiencedWorker','deploycompetentfallback'],
+       selNote:'Michael is supported by someone who knows what to watch for. This is only possible because competent cover was arranged earlier.',
+       missNote:'No competent worker was freed up for Michael, so his meal would happen with whoever was nearest.'},
+      {id:'guideagency',title:'Guide the agency worker to support Michael',cost:1,cat:'Practical',
+       blurb:'Direct the agency worker to sit with Michael using clear, specific instructions.',
+       eff:{safety:+5,reliability:+2},prev:+4,sets:['agencyGuided'],
+       selNote:'A reasonable use of the hands you have. It works far better if the agency worker was briefed earlier and has a plan to follow.',
+       missNote:'The agency worker was left to support Michael without direction at the busiest moment.'},
+      {id:'supportsister',title:'Support Angela to help safely, with guidance',cost:1,cat:'Communication',
+       blurb:'Keep Angela involved but guide her on safe pace, texture and positioning.',
+       eff:{family:+7,quality:+5,safety:+3},prev:+7,sets:['sisterSupported'],needs:['familyEngaged','familyContacted2'],
+       selNote:'Angela becomes part of keeping Michael safe rather than an adversary. This works because you invested in the relationship earlier.',
+       missNote:'Angela was managed rather than partnered with, making a tense standoff more likely just as Michael needed calm.'},
+      {id:'delaymeal',title:'Ask Michael to wait for his proper meal',cost:1,cat:'Control',
+       blurb:'Hold off on any food until the prescribed meal arrives.',
+       eff:{safety:+4,quality:-6,family:-4},prev:+2,sets:['delayedMealR3'],
+       selNote:'Safe in narrow terms, but a hungry, distressed wait can raise his agitation, and Angela, unless his distress is actively managed.',
+       missNote:''},
+      {id:'escalate3',title:'Escalate clinically if Michael struggles',cost:2,cat:'Escalation',
+       blurb:'Be ready to call for clinical help and act if any signs of difficulty appear.',
+       eff:{safety:+6,exposure:-5},prev:+6,sets:['escalationReady'],
+       selNote:'You put a safety net under the moment. If anything goes wrong, the response is immediate rather than improvised.',
+       missNote:'No clear escalation trigger was set, so a difficulty would meet hesitation rather than a plan.'},
+      {id:'prioritise_other',title:'Send the agency worker to Michael, take the other resident yourself',cost:1,cat:'Practical',
+       blurb:'Split the team so both residents are covered by the most sensible pairing.',
+       eff:{reliability:+5,safety:+2,staff:+3},prev:+5,sets:['deployedBoth'],
+       selNote:'Sensible deployment so neither resident is left unsupported. Its safety for Michael still depends on how well the agency worker was prepared.',
+       missNote:'Deployment was not actively managed, so cover fell out however it happened.'},
+    ],
+  },
+};
+// add signplan effects (kept separate for readability)
+DATA[2].actions.find(a=>a.id==='signplan').selNote='The audit gap closes: the plan is signed and competency confirmed, so what is written is now actually delivered.';
+DATA[2].actions.find(a=>a.id==='signplan').missNote='The unsigned plan and lapsed competency were left open, so delivery stayed a matter of chance.';
+
+/* How many records the team can review each round. Fewer than are available,
+   so you cannot read everything and must choose which records matter. Reviewing
+   does NOT consume management time, that is spent only on actions, so
+   investigating never locks you out of acting. */
+const REVIEW_CAP = { 1:3, 2:4, 3:3 };
+function reviewCap(round){return REVIEW_CAP[round]||3;}
+function reviewedCount(round){const o=S.opened[round]||{};return Object.keys(o).filter(k=>o[k]).length;}
+function canReviewMore(round){return reviewedCount(round)<reviewCap(round);}
+
+/* Which record(s) inform each decision. Taking a decision without having
+   reviewed any of its informing records means acting on assumption:
+   the effect is weaker and a risk goes unseen. */
+const INFORMED_BY = {
+  1:{ salt:['salt'], hospital:['discharge'], texture:['salt'], supervise:['prevplan','salt'],
+      competency:['staff'], experienced:['staff'], interimplan:['salt','prevplan','discharge'],
+      speakfamily:['family'], delay:['salt','discharge'] },
+  2:{ pattern:['shiftnote','quickmsg','daily'], salt2:['medupdate'], medreview:['medupdate'],
+      updateplan:['audit'], signplan:['audit'], contactfamily2:['sistermsg'], teambrief2:['staffleave'],
+      supervise2:['shiftnote'] },
+  3:{ safealt:['kitchen','foodfromhome'], deploycompetent:['board'], calm:['michaelstate'],
+      supportsister:['foodfromhome','michaelstate'], guideagency:['board'], prioritise_other:['otherres','board'],
+      delaymeal:['kitchen'] },
+};
+
+/* Between-round bridges: time passing and rising stakes. */
+const BRIDGES = {
+  2:{ eyebrow:'Five days later', title:'Michael has settled in, mostly',
+      body:'The move went ahead and the first few days passed without drama. Michael is finding his feet. But quiet, scattered things are starting to be noticed by different staff, on different shifts, and no one has yet put them side by side. What you set up at admission is now either helping people see clearly, or leaving them guessing.',
+      status:'Nothing has gone obviously wrong. That is exactly when a developing risk is easiest to miss.' },
+  3:{ eyebrow:'The following week · 12:40', title:'A busy lunchtime begins',
+      body:'A week on, the service hits one of those lunchtimes where everything lands at once. Staffing is short, another resident needs urgent help, Michael’s meal is late, and his sister has just arrived at reception. Everything you have built, or left undone, across the last two rounds is about to be tested in the space of a few minutes.',
+      status:'The decisions now play out fast. What protects Michael in the next few minutes was mostly decided before today.' },
+};
+
+/* ============================================================
+   ENGINE
+   ============================================================ */
+const el = id => document.getElementById(id);
+const app = () => el('app');
+function clamp(v){return Math.max(0,Math.min(100,Math.round(v)));}
+
+function attentionUsed(round){
+  // Time is spent on BOTH reviewing records and taking actions.
+  const d=DATA[round];
+  let used=0;
+  const opened=S.opened[round]||{};
+  d.docs.forEach(doc=>{if(opened[doc.id])used+=doc.cost;});
+  const sel=S.selected[round]||{};
+  d.actions.forEach(a=>{if(sel[a.id])used+=a.cost;});
+  return used;
+}
+function attentionRemaining(round){return ROUND_TIME-attentionUsed(round);}
+
+/* Apply a round's selected actions to KPIs & flags, build chain events */
+function commitRound(round){
+  const d=DATA[round];
+  const before={...S.kpi};
+  const sel=S.selected[round]||{};
+  const chosen=d.actions.filter(a=>sel[a.id]);
+  // Effects are scaled so indicators don't saturate and the middle band stays real.
+  // A round of "risk pressure" also applies: a developing situation quietly erodes
+  // prevention and raises exposure unless the team actively counters it.
+  const KSCALE=0.58, PSCALE=0.5;
+  // Confidence subtly amplifies BOTH gains and losses this round.
+  const conf=S.confidence&&S.confidence[round]||'measured';
+  const CONF_MULT={cautious:0.85,measured:1,confident:1.2}[conf]||1;
+  const opened=S.opened[round]||{};
+  const blind=[];   // actions taken without reviewing any informing record
+  chosen.forEach(a=>{
+    const inf=(INFORMED_BY[round]||{})[a.id];
+    const isBlind = inf && inf.length && !inf.some(id=>opened[id]);
+    if(isBlind){blind.push({id:a.id,title:a.title,docs:inf});S.flags['blind_'+a.id]=true;}
+    // Acting on assumption: weaker benefit, and negative effects are NOT softened.
+    for(const k in a.eff){
+      let v=a.eff[k]*KSCALE*CONF_MULT;
+      if(isBlind && v>0 && k!=='exposure') v*=0.55;   // upside dampened when blind
+      if(isBlind && k==='exposure') v+=2.5;            // acting blind raises exposure
+      S.kpi[k]=clamp(S.kpi[k]+v);
+    }
+    let pv=(a.prev||0)*PSCALE*CONF_MULT;
+    if(isBlind && pv>0) pv*=0.5;
+    S.prevention=clamp(S.prevention+pv);
+    (a.sets||[]).forEach(f=>S.flags[f]=true);
+  });
+  // Background risk pressure for this round
+  S.prevention=clamp(S.prevention-5);
+  S.kpi.exposure=clamp(S.kpi.exposure+3);
+  // cross-round contextual adjustments
+  applyContext(round,chosen);
+  const delta={};KPIS.forEach(k=>delta[k.key]=S.kpi[k.key]-before[k.key]);
+  // stats
+  const idCats=['Risk identification','Escalation','Control'];
+  chosen.forEach(a=>{if(['pattern','salt','salt2','saltContacted','interimplan','medreview','texture','supervise'].includes(a.id)||idCats.includes(a.cat))S.stats.identified++;});
+  S.committed[round]={chosen:chosen.map(a=>a.id),delta,before,blind,conf};
+  buildChainForRound(round,chosen);
+  save();
+  return {chosen,delta,before};
+}
+
+function applyContext(round,chosen){
+  const f=S.flags;
+  if(round===2){
+    // If interim controls established, pattern easier to see -> small safety bonus if pattern identified
+    if(f.interimControls && f.patternIdentified){S.kpi.safety=clamp(S.kpi.safety+3);S.prevention=clamp(S.prevention+2);}
+    // If staff not briefed in R1, observations inconsistent -> reliability penalty
+    if(!f.staffBriefed && !f.teamBriefed2){S.kpi.reliability=clamp(S.kpi.reliability-4);}
+    // High staff confidence -> earlier escalation bonus
+    if(S.kpi.staff>=72 && (f.salt2||f.medreview)){S.kpi.exposure=clamp(S.kpi.exposure-3);}
+  }
+  if(round===3){
+    // riskyFood is much worse if no relationship/interim controls
+    if(f.riskyFood && !f.interimControls){S.kpi.safety=clamp(S.kpi.safety-4);}
+    // agency guided but never briefed -> reduced benefit
+    if(f.agencyGuided && !f.staffBriefed && !f.teamBriefed2){S.kpi.safety=clamp(S.kpi.safety-3);S.kpi.reliability=clamp(S.kpi.reliability-2);}
+    // competent support without prior competency arrangement -> reduced
+    if(f.competentSupport && !(f.competencyChecked||f.experiencedWorker)){S.kpi.safety=clamp(S.kpi.safety-4);}
+  }
+}
+
+/* ---------- Risk chain construction ---------- */
+function buildChainForRound(round,chosen){
+  const f=S.flags;
+  const push=(o)=>S.chain.push(o);
+  if(round===1){
+    push({round:1,time:'Day 0',type:'introduced',title:'Incomplete, conflicting records arrive',
+      detail:'Hospital "soft diet", a six-month-old SALT texture recommendation, an out-of-date supervision note and a family message that all point in different directions.'});
+    if(f.saltContacted||f.hospitalContacted) push({round:1,time:'Day 0',type:'identified',title:'Team sought to clarify the contradictions',detail:'Rather than accept the vaguest instruction, the team went back to the source to reconcile the diet and medication information.'});
+    if(f.interimControls) push({round:1,time:'Day 0',type:'controlled',title:'Interim mealtime controls put in place',detail:'Supervision and/or the documented texture were applied while awaiting reassessment, so the first meal was covered.'});
+    else push({round:1,time:'Day 0',type:'missed',title:'First meal left without agreed safeguards',detail:'Two records pointed to mealtime risk, but no interim control was in place for Michael’s first, highest-uncertainty meal.'});
+    if(!f.staffBriefed) push({round:1,time:'Day 0',type:'missed',title:'No staff briefing at admission',detail:'Whatever was decided existed on paper only; the agency worker started blind.'});
+    if(f.familyEngaged) push({round:1,time:'Day 0',type:'controlled',title:'Relationship built with Angela early',detail:'Michael’s wishes were recorded and his sister felt heard, making later conversations about risk far easier.'});
+  }
+  if(round===2){
+    push({round:2,time:'Day 5',type:'introduced',title:'Warning signs appear across the service',detail:'Coughing on fluids, quicker eating, reduced intake and tiredness surface separately, driven partly by the new medication’s dry-mouth and drowsiness effects.'});
+    if(f.patternIdentified) push({round:2,time:'Day 5',type:'identified',title:'Team connected the signs into a pattern',detail:'The separate observations were read together as a developing swallowing risk while there was still time to act calmly.'});
+    else push({round:2,time:'Day 5',type:'missed',title:'Warning signs read in isolation',detail:'Each note looked minor alone, so the developing pattern was not recognised in time.'});
+    if(f.salt2||f.medReviewed) push({round:2,time:'Day 5',type:'controlled',title:'Clinical reassessment triggered',detail:'The "significant change" prompted escalation to SALT and/or a medication review, addressing the underlying driver.'});
+    if(f.planUpdated2||f.planSigned) push({round:2,time:'Day 5',type:'controlled',title:'Support plan updated and delivered',detail:'The plan was brought up to date and, where signed off, actually followed on the floor.'});
+  }
+}
+
+function buildChainForOutcome(){
+  const f=S.flags;const o=S.outcome;
+  const t=o.tier;
+  let type = t==='controlled'?'controlled':t==='mixed'?'identified':t==='nearmiss'?'missed':'consequence';
+  S.chain.push({round:3,time:'12:52',type:'consequence',title:'The lunchtime outcome',detail:o.chainDetail});
+}
+
+/* ---------- Outcome computation (depends on all 3 rounds) ---------- */
+function computeOutcome(){
+  const f=S.flags;
+  let score=0;
+  const add=(cond,pts)=>{if(cond)score+=pts;};
+  // Round 1 foundations
+  add(f.interimControls,3); add(f.textureApplied,1); add(f.supervised,1);
+  add(f.saltContacted,2); add(f.hospitalContacted,1);
+  add(f.staffBriefed,2); add(f.competencyChecked,2); add(f.experiencedWorker,2);
+  add(f.familyEngaged,2); add(f.interimPlan,2);
+  add(f.noControls,-5); add(f.delayed,-1);
+  // Round 2
+  add(f.patternIdentified,4); add(f.salt2,2); add(f.medReviewed,2);
+  add(f.planUpdated2,2); add(f.teamBriefed2,2); add(f.supervised2,1);
+  add(f.familyContacted2,1); add(f.planSigned,2);
+  add(f.isolatedR2,-5);
+  // Round 3
+  add(f.calmedR3,3); add(f.safeAlt,3); add(f.competentSupport,3);
+  add(f.sisterSupported,2); add(f.escalationReady,2); add(f.agencyGuided,1); add(f.deployedBoth,1);
+  add(f.riskyFood,-6); add(f.delayedMealR3 && !f.calmedR3,-2);
+  // KPI influence
+  score += (S.kpi.safety-64)/6;
+  score -= (S.kpi.exposure-32)/8;
+
+  let tier;
+  if(score>=22) tier='controlled';
+  else if(score>=13) tier='mixed';
+  else if(score>=5) tier='nearmiss';
+  else tier='serious';
+
+  const O = {
+    controlled:{
+      cls:'outcome-good',ico:I.shield,label:'Risk controlled effectively',
+      headline:'Michael has a safe, unhurried lunch',
+      body:'Michael is supported by someone who knows what to watch for, his distress is managed before it drives unsafe eating, and Angela is part of the solution rather than a standoff. The prescribed meal arrives to a calm table. Nothing dramatic happens, which is exactly the point: the incident was prevented several days and several decisions ago.',
+      chainDetail:'A safe, settled lunch. The controls, escalation and relationships built across admission and the early-warning days meant the busy lunchtime was a manageable twelve minutes, not a crisis.'},
+    mixed:{
+      cls:'outcome-mixed',ico:I.flag,label:'Managed, but real vulnerabilities remain',
+      headline:'Lunch passes without harm, but on thin margins',
+      body:'The immediate moment is handled and Michael is not hurt. But it holds together partly by luck: gaps in briefing, delivery or the family relationship meant the response was improvised where it should have been routine. On a worse day, with different staff on shift, this could have gone another way.',
+      chainDetail:'No harm today, but the moment was managed on thin margins. Missing controls or briefings meant safety depended on improvisation rather than the system working as designed.'},
+    nearmiss:{
+      cls:'outcome-bad',ico:I.alertT,label:'A near miss',
+      headline:'Michael coughs hard on unsuitable food, but recovers',
+      body:'In the rush, Michael ends up eating quickly while distressed. He coughs violently and struggles for a moment before clearing it himself. He is shaken but unharmed. It is a near miss, and it was not bad luck: the conditions were set by earlier gaps in controls, escalation and communication that were never closed.',
+      chainDetail:'A near miss. Michael coughed hard on unsuitable food and recovered on his own. The conditions were created by earlier gaps, not by the busy lunchtime alone.'},
+    serious:{
+      cls:'outcome-bad',ico:I.alertT,label:'A serious choking episode, Michael recovers',
+      headline:'Michael experiences a serious choking episode',
+      body:'With no safe alternative, no calm support and an unsuitable meal, Michael chokes. Staff respond and he recovers, badly frightened. This was not one obvious mistake at lunchtime. It was a chain: conflicting records accepted at admission, warning signs read in isolation, plans left unsigned, and no safe hands free when it mattered. Each link, on its own, looked minor.',
+      chainDetail:'A serious choking episode, from which Michael recovers. The lunchtime was only the final link: the chain ran back through unmanaged records, missed warning signs and undelivered plans.'},
+  };
+  const chosen=O[tier];
+  S.outcome={tier,...chosen};
+  save();
+  return S.outcome;
+}
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function render(){
+  const s=S.screen;
+  let html='';
+  html+=topbar();
+  if(s==='landing')html+=viewLanding();
+  else if(s==='briefing')html+=viewBriefing();
+  else if(s==='intro')html+=viewIntro();
+  else if(s==='bridge')html+=viewBridge();
+  else if(s==='dashboard')html+=viewDashboard();
+  else if(s==='reveal')html+=viewReveal();
+  else if(s==='riskchain')html+=viewRiskChain();
+  else if(s==='summary')html+=viewSummary();
+  else if(s==='report')html+=viewReport();
+  html+=footer();
+  app().innerHTML=html;
+  app().classList.toggle('is-console', S.screen==='dashboard');
+  window.scrollTo({top:0,behavior:'auto'});
+  applyTheme();
+  // First-time coach tour on entering the dashboard
+  if(S.screen==='dashboard' && !S.seenOnboard){S.seenOnboard=true;save();setTimeout(startTour,80);}
+}
+
+function topbar(){
+  const showStepper = ['dashboard','reveal','riskchain','summary','intro','bridge'].includes(S.screen);
+  const themeIco = (S.theme==='dark')?I.sun:I.moon;
+  const isFs = !!(document.fullscreenElement);
+  return `<header class="topbar">
+    <div class="topbar-in">
+      <div class="brand">
+        <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${I.route}</svg>
+        <div>The Risk Chain<small>Meadow View · Operational Simulation</small></div>
+      </div>
+      <div class="topbar-spacer"></div>
+      ${S.screen==='dashboard'?`<button class="ghost-btn help-fab" data-act="open-help" aria-label="How to play">${svg(I.info)}<span>How to play</span></button>`:''}
+      <button class="ghost-btn" data-act="toggle-fullscreen" aria-label="${isFs?'Exit full screen':'Enter full screen'}">${svg(isFs?I.compress:I.expand)}<span>${isFs?'Exit':'Full screen'}</span></button>
+      <button class="ghost-btn" data-act="toggle-theme" aria-label="Switch colour theme">${svg(themeIco)}<span>Theme</span></button>
+      ${S.screen!=='landing'?`<button class="ghost-btn" data-act="restart" aria-label="Restart the simulation">${svg(I.restart)}<span>Restart</span></button>`:''}
+    </div>
+    ${showStepper?`<div class="wrap"><nav class="stepper" aria-label="Six-round journey">${stepper()}</nav></div>`:''}
+  </header>`;
+}
+
+function stepper(){
+  const cur=S.screen==='summary'||S.screen==='riskchain'?7:S.round;
+  return ROUNDS_META.map((r,i)=>{
+    let cls='step';
+    if(r.n<cur||S.screen==='summary'||(S.screen==='riskchain'))cls+= r.n<=3?' done':' locked';
+    if(r.n===cur && S.screen!=='summary')cls+=' active';
+    if(r.n>3)cls+=' locked';
+    if(r.n<S.round)cls='step done';
+    if(r.n===S.round && ['dashboard','reveal','intro'].includes(S.screen))cls='step active';
+    if((S.screen==='summary'||S.screen==='riskchain')&&r.n<=3)cls='step done';
+    const done=cls.includes('done');
+    const inner = done?svg(I.checkSmall):(r.n>3?svg(I.lock):r.n);
+    const link = i<ROUNDS_META.length-1?`<span class="step-link ${(r.n<S.round||S.screen==='summary')&&r.n<=3?'done':''}"></span>`:'';
+    return `<div class="${cls}"><div class="dot">${inner}</div><span class="lbl">${r.short}</span></div>${link}`;
+  }).join('');
+}
+
+function footer(){
+  return `<footer class="foot"><div class="foot-in">
+    <span>The Risk Chain · proof of concept. All people, services and organisations shown are fictional.</span>
+    <span>Spot the signs. Connect the decisions. Prevent the consequence.</span>
+  </div></footer>`;
+}
+
+/* ---------- Landing ---------- */
+function viewLanding(){
+  return `<main class="wrap">
+    <section class="hero hero-grid">
+      <div class="prose">
+        <div class="kick"><span class="chip chip-teal">${svg(I.route)} Team-based operational simulation</span></div>
+        <h1 class="display">The Risk Chain<span class="l2">Preventing a choking incident, one decision at a time.</span></h1>
+        <p class="subline">Spot the signs. Connect the decisions. Prevent the consequence.</p>
+        <p class="lead mt-22" style="max-width:56ch">You are the management team of Meadow View Supported Living. A new resident, Michael Turner, is arriving with incomplete and contradictory information about his eating and drinking. Over three rounds you will decide what to investigate, what to control, and where to spend your limited time, then watch the consequences unfold.</p>
+        <div class="hero-cta">
+          <button class="btn btn-lg" data-act="goto-briefing">Begin the simulation ${svg(I.arrowR)}</button>
+          <span class="muted" style="font-size:13.5px">About 15 to 20 minutes · 3 playable rounds</span>
+        </div>
+      </div>
+      <div class="media-ph" style="min-height:280px"><span class="mp-badge">Media slot</span>${svg(I.play)}<span class="mp-label">Opening film</span><span class="mp-sub">A short, calm establishing film introducing Meadow View and Michael could open the experience here.</span></div>
+    </section>
+    <section class="card card-pad" style="margin-bottom:40px">
+      <div class="preview-grid">
+        <div class="info-tile">${svg(I.eye)}<div><h5>Read the situation</h5><p>Realistic records, messages and alerts, some reliable, some outdated or contradictory.</p></div></div>
+        <div class="info-tile">${svg(I.clock)}<div><h5>Manage your time</h5><p>There is only so much you can review and act on each round. You cannot do everything, so choose.</p></div></div>
+        <div class="info-tile">${svg(I.link)}<div><h5>Live with the consequences</h5><p>Earlier decisions shape later rounds and the final outcome. There are no obvious right answers.</p></div></div>
+      </div>
+    </section>
+  </main>`;
+}
+
+/* ---------- Briefing ---------- */
+function viewBriefing(){
+  return `<main class="wrap" style="padding-top:34px;padding-bottom:44px">
+    <div class="two-col">
+      <div class="prose">
+        <span class="eyebrow">Simulation briefing</span>
+        <h1 style="font-size:30px;margin-top:12px">How this works</h1>
+        <p class="mt-16">This is an operational simulation, not a course or a quiz. You will play as the management team responsible for a supported-living service. Your job is not to find the single right answer, because there rarely is one. It is to weigh safety against dignity, autonomy, staffing pressure and family relationships, and to decide where your limited attention goes.</p>
+        <p>Across three rounds you follow one resident, Michael Turner, through a developing choking risk. Small decisions, incomplete information and communication gaps combine over time. The final outcome is shaped by the whole chain of decisions, not one obvious mistake.</p>
+        <h3 style="margin-top:24px;font-size:17px">Each round you will</h3>
+        <div class="fact-list mt-8">
+          <div class="fact">${svg(I.eye)}<div><b>Investigate</b> information sources. Reviewing one takes time, so you cannot read everything.</div></div>
+          <div class="fact">${svg(I.check)}<div><b>Select actions</b> as a team, combining controls, escalation and communication within your points.</div></div>
+          <div class="fact">${svg(I.arrowR)}<div><b>Submit</b> your decisions and see immediate and delayed consequences.</div></div>
+          <div class="fact">${svg(I.gauge)}<div><b>Review</b> how six performance indicators and your Prevention Capability have moved.</div></div>
+        </div>
+        <div class="hero-cta">
+          <button class="btn btn-lg" data-act="goto-intro">Meet the service and Michael ${svg(I.arrowR)}</button>
+        </div>
+      </div>
+      <aside class="stack gap-16">
+        <div class="card card-pad">
+          <div class="sec-title-ico" style="margin-bottom:12px">${svg(I.gauge)}<h3 style="font-size:15px">Six indicators, always live</h3></div>
+          <p class="muted" style="font-size:13.5px;margin-bottom:14px">They do not all move together. A restrictive decision can raise safety while lowering quality of life and family trust.</p>
+          ${miniKpiList()}
+        </div>
+        <div class="card card-pad">
+          <div class="sec-title-ico" style="margin-bottom:10px">${svg(I.clock)}<h3 style="font-size:15px">Time available</h3></div>
+          <p class="muted" style="font-size:13.5px">You have limited time each round, spent on both reviewing records and taking actions. Reviewing and bigger interventions take time; some actions take none. You will always see what remains.</p>
+        </div>
+      </aside>
+    </div>
+  </main>`;
+}
+function miniKpiList(){
+  return `<div class="kpi-row">${KPIS.map(k=>{
+    const v=START_KPI[k.key];const zone=zoneClass(k,v);
+    return `<div class="kpi"><div class="k-name">${k.invert?svg(I.alertT,'warn-ico'):''}${k.name}</div><div class="k-val">${v}</div>
+      <div class="k-bar"><div class="k-fill ${zone}" style="width:${v}%"></div></div></div>`;}).join('')}</div>`;
+}
+
+/* ---------- Intro ---------- */
+function viewIntro(){
+  return `<main class="wrap" style="padding-top:26px;padding-bottom:44px">
+    <div class="two-col">
+      <div>
+        <span class="eyebrow">The service &amp; the resident</span>
+        <h1 style="font-size:30px;margin-top:12px">Meadow View Supported Living</h1>
+        <div style="margin-top:16px">${sceneBand(210,'Meadow View Supported Living')}</div>
+        <p class="prose mt-16">Meadow View supports adults to live as independently as possible in their own tenancies, with staff on site. It is a good service under everyday pressure: a stable core team, some reliance on agency cover, and the usual gap between what is written in a plan and what happens on a busy shift.</p>
+        <div class="status-banner" style="margin-top:20px;align-items:center">
+          ${michaelAvatar(true)}
+          <div class="s-body">
+            <h4>Michael Turner</h4>
+            <div class="s-meta">Age 62 · New resident · Mild learning disability</div>
+            <p class="serif" style="font-style:italic;font-size:16px;line-height:1.55;color:var(--ink);margin-top:9px">"He values his independence and his routine. He enjoys familiar food, and he becomes anxious when people rush him or change things without explaining why."</p>
+          </div>
+        </div>
+        <p class="prose mt-22">Michael has just moved to Meadow View following a hospital admission. The information that has arrived with him is incomplete and partly contradictory. What the team does with that, over the next few days and one busy lunchtime, is the simulation.</p>
+        <div class="hero-cta">
+          <button class="btn btn-lg" data-act="start-sim">Enter the operational dashboard ${svg(I.arrowR)}</button>
+        </div>
+      </div>
+      <aside class="stack gap-16">
+      <div class="card card-pad">
+        <div class="sec-title-ico" style="margin-bottom:14px">${svg(I.clipboard)}<h3 style="font-size:15px">What the records suggest</h3></div>
+        <div class="fact-list">
+          <div class="fact">${svg(I.stethoscope)}<div>A noted history of <b>coughing during meals</b></div></div>
+          <div class="fact">${svg(I.file)}<div>A <b>previous SALT assessment</b> recommending a texture-modified diet</div></div>
+          <div class="fact">${svg(I.utensils)}<div>A previous note that he <b>eats quickly when distressed</b></div></div>
+          <div class="fact">${svg(I.pill)}<div>A <b>recent medication change</b> around the time of discharge</div></div>
+          <div class="fact">${svg(I.home)}<div>A message from family asking staff <b>not to make a fuss</b></div></div>
+          <div class="fact">${svg(I.file)}<div>Records from the <b>hospital, previous provider, SALT and family</b></div></div>
+        </div>
+        <div class="link-note" style="margin-top:16px">${svg(I.info)}<div>None of this is confirmed. Part of your task is deciding what is reliable enough to act on.</div></div>
+      </div>
+      </aside>
+    </div>
+  </main>`;
+}
+
+/* ---------- Between-round bridge ---------- */
+function viewBridge(){
+  const round=S.round; const b=BRIDGES[round]; if(!b) {S.screen='dashboard';return viewDashboard();}
+  const f=S.flags;
+  // A couple of threads that carry forward, reflecting the actual path
+  const threads=[];
+  if(round===2){
+    threads.push(f.interimControls?'Your interim controls are in place, giving staff a clear baseline':'No interim controls were set, so staff have little to measure change against');
+    threads.push((f.staffBriefed||f.familyEngaged)?'The groundwork you laid at admission is carrying forward':'Gaps left at admission are still open as the days pass');
+  }
+  if(round===3){
+    threads.push(f.patternIdentified?'The pattern you named last week means the team is watching the right things':'Last week’s signs were read in isolation, so the team is not primed for what is coming');
+    threads.push((f.salt2||f.medReviewed)?'Your clinical escalation is in motion':'No clinical escalation is in motion as pressure builds');
+  }
+  return `<main class="wrap"><div class="bridge-wrap">
+    <div class="bridge-tick">${svg(I.clock)} ${b.eyebrow}</div>
+    <h1>${b.title}</h1>
+    <p class="b-body">${b.body}</p>
+    <div class="bridge-thread">
+      ${threads.map((t,i)=>`<div class="bt rise-${i+1}" style="animation-delay:${.15+i*.12}s">${svg(I.link)}<div>${t}</div></div>`).join('')}
+    </div>
+    <div class="bridge-status">${svg(I.alertT)}<p>${b.status}</p></div>
+    <div class="hero-cta" style="justify-content:center;margin-top:28px">
+      <button class="btn btn-lg" data-act="enter-round">Enter Round ${round}: ${DATA[round].title} ${svg(I.arrowR)}</button>
+    </div>
+  </div></main>`;
+}
+
+/* ---------- Dashboard ---------- */
+function viewDashboard(){
+  const round=S.round;const d=DATA[round];
+  const remaining=attentionRemaining(round);
+  const used=attentionUsed(round);
+  const sel=S.selected[round]||{};
+  const anySel=Object.values(sel).some(Boolean);
+  const over=used>ROUND_TIME;
+  const canSubmit=anySel && !over;
+  const tab=S.tab||'situation';
+  const openedCount=Object.keys(S.opened[round]||{}).filter(k=>(S.opened[round]||{})[k]).length;
+  const selCount=Object.values(sel).filter(Boolean).length;
+  const alertCount=(d.alerts||[]).length;
+
+  const tabBtn=(id,label,ico,count)=>`<button class="tab ${tab===id?'active':''}" role="tab" aria-selected="${tab===id}" data-act="set-tab" data-tab="${id}">${svg(ico)}<span>${label}</span>${count?`<span class="tcount">${count}</span>`:''}</button>`;
+
+  const situationPanel=`
+    <section class="card card-pad">
+      <div class="row between" style="align-items:flex-start;margin-bottom:14px">
+        <div><span class="eyebrow">Round ${round} of 6</span><h2 style="font-size:20px;margin-top:5px">${d.title}</h2></div>
+        <span class="chip chip-${d.status.tone==='red'?'contradictory':d.status.tone==='amber'?'incomplete':'teal'}" style="white-space:nowrap">${d.status.state}</span>
+      </div>
+      <div class="status-banner" style="background:var(--surface-2)">
+        ${michaelAvatar()}
+        <div class="s-body"><h4>Michael Turner · current status</h4><p style="margin-top:4px">${d.status.line}</p></div>
+      </div>
+      <p class="prose" style="max-width:72ch;margin-top:14px">${d.brief}</p>
+    </section>
+    ${alertCount?`<section>
+      <div class="sec-head"><div class="sec-title-ico">${svg(I.bell)}<h3>New alerts</h3></div></div>
+      <div class="stack gap-12" style="margin-top:8px">
+        ${d.alerts.map(a=>`<div class="alert alert-${a.tone==='red'?'red':a.tone==='info'?'info':'amber'}">${svg(I[a.ico])}<div>${a.text}</div></div>`).join('')}
+      </div>
+    </section>`:''}
+    ${round===3?round3Notifs():''}`;
+
+  const revd=reviewedCount(round);
+  const informationPanel=`
+    <section>
+      <div class="sec-head"><div class="sec-title-ico">${svg(I.eye)}<h3>Information sources</h3></div>
+        <span class="chip chip-teal" style="font-size:12px">Reviewed ${revd} of ${d.docs.length}</span></div>
+      <div class="link-note" style="margin:10px 0 4px">${svg(I.info)}<div>Reviewing a record uses some of your time, the same time you need for actions, so you cannot read everything. Choose the ones most likely to matter; you can still act on the rest, just with less certainty.</div></div>
+      <div class="src-grid" style="margin-top:10px">
+        ${d.docs.map(doc=>srcCard(doc,round)).join('')}
+      </div>
+    </section>`;
+
+  const decisionsPanel=`
+    <section>
+      <div class="sec-head" style="margin-bottom:9px"><div class="sec-title-ico">${svg(I.check)}<h3 style="font-size:16px">Your decisions</h3></div>
+        <span class="muted" style="font-size:12px">Colour shows the type of action</span></div>
+      <div class="acts">
+        ${d.actions.map(a=>actCard(a,round,remaining,sel[a.id])).join('')}
+      </div>
+    </section>`;
+
+  return `<main class="console-main">
+    <div class="console-col">
+      ${round===3?`<div class="clock-strip">${round3ClockBar()}</div>`:''}
+      <div class="tabbar" role="tablist">
+        ${tabBtn('situation','Situation',I.clipboard,alertCount||'')}
+        ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
+        ${tabBtn('decisions','Decisions',I.check,selCount||'')}
+      </div>
+      <div class="tab-guide">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
+      <div class="tabpanel" role="tabpanel">
+        ${tab==='situation'?situationPanel:tab==='information'?informationPanel:decisionsPanel}
+      </div>
+    </div>
+
+    <aside class="console-rail">
+      <div class="rail-scroll">
+        ${preventionCard()}
+        ${attentionCard(round)}
+        ${kpiCard()}
+      </div>
+      <div class="rail-submit">
+        <div class="submit-status">
+          <span><span class="ss-count">${selCount}</span> action${selCount===1?'':'s'} selected</span>
+          <span class="${over?'ss-over':''}">${over?'Over time':`${Math.max(0,Math.round((ROUND_TIME-used)/ROUND_TIME*100))}% time left`}</span>
+        </div>
+        <button class="btn btn-lg" style="width:100%" data-act="submit-round" ${canSubmit?'':'disabled'}>
+          ${anySel?'Review &amp; submit':'Choose an action to continue'} ${anySel?svg(I.arrowR):''}
+        </button>
+        ${over?`<div class="alert alert-red">${svg(I.alertT)}<div>You have taken on more than there is time for. Deselect an action or leave a record unread.</div></div>`:''}
+      </div>
+    </aside>
+  </main>`;
+}
+
+function docTitle(round,id){const doc=(DATA[round].docs||[]).find(d=>d.id===id);return doc?doc.title.toLowerCase().replace(/^the /,''):'record';}
+
+function decisionPrompt(round){
+  if(round===1)return 'Should the admission proceed? What must be confirmed, controlled or communicated before Michael’s first meal, and who needs to be involved?';
+  if(round===2)return 'Which observations matter? Is this an isolated issue or a developing pattern, and what should change now, clinically and practically?';
+  return 'Deploy your staff, decide Michael’s support and food, respond to Angela, and set your safety net, all in the next few minutes.';
+}
+
+function srcCard(doc,round){
+  const opened=(S.opened[round]||{})[doc.id];
+  const noTime = !opened && attentionRemaining(round)<doc.cost;   // not enough time left to review
+  const credLabel={reliable:'Reliable',incomplete:'Incomplete',outdated:'Outdated',ambiguous:'Ambiguous',contradictory:'Contradictory'}[doc.cred];
+  return `<button class="src ${opened?'opened':''} ${noTime?'capped':''}" data-act="open-doc" data-doc="${doc.id}" ${noTime?'disabled title="Not enough time left this round to review this"':''}>
+    <div class="s-h">
+      <div class="s-ico">${svg(I[doc.ico])}</div>
+      <span class="opened-mark">${svg(I.checkSmall)} Reviewed</span>
+      ${opened?'':`<span class="s-open-cost">${timeCost(doc.cost)}</span>`}
+    </div>
+    <div><h4>${doc.title}</h4><div class="s-src">${doc.source}</div></div>
+    <div class="s-teaser">${doc.teaser}</div>
+    <div class="s-foot"><span class="chip chip-${doc.cred}">${credLabel}</span>
+      ${opened?'<span class="muted" style="font-size:11.5px">Reopen · free</span>':''}
+    </div>
+  </button>`;
+}
+
+const CAT_META={
+  'Decision':{ico:'flag',cls:'cat-decision'},
+  'Control':{ico:'shield',cls:'cat-control'},
+  'Escalation':{ico:'phone',cls:'cat-escalation'},
+  'Communication':{ico:'message',cls:'cat-communication'},
+  'Practical':{ico:'users',cls:'cat-practical'},
+  'Risk identification':{ico:'spark',cls:'cat-risk'},
+  'Investigation':{ico:'eye',cls:'cat-control'},
+};
+function catMeta(cat){return CAT_META[cat]||CAT_META['Decision'];}
+
+function actCard(a,round,remaining,selected){
+  const cost=a.cost;
+  const affordable = selected || cost<=remaining;
+  const dis = !affordable;
+  const cm=catMeta(a.cat);
+  const inf=(INFORMED_BY[round]||{})[a.id];
+  const opened=S.opened[round]||{};
+  let evTag='';
+  if(inf&&inf.length){
+    const informed=inf.some(id=>opened[id]);
+    evTag=informed
+      ? `<span class="a-ev ev-on" title="You have reviewed the relevant record">${svg(I.checkSmall)} Evidence reviewed</span>`
+      : `<span class="a-ev ev-off" title="Relevant record not yet reviewed">${svg(I.eye)} Acting on assumption</span>`;
+  }
+  const foot = (evTag||dis)?`<span class="a-foot">${evTag}${dis?`<span class="a-ev ev-off">${svg(I.clock)} No time, deselect another</span>`:''}</span>`:'';
+  return `<button class="act ${selected?'sel':''} ${dis?'disabled':''}" data-act="toggle-action" data-action-id="${a.id}" aria-pressed="${selected}" ${dis?'disabled':''}>
+    <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}${selected?`<span class="a-checkdot">${svg(I.checkSmall)}</span>`:''}</span>
+    <span class="a-main">
+      <span class="a-title">${a.title} ${timeCost(cost)}</span>
+      <span class="a-blurb">${a.blurb}</span>
+      ${foot}
+    </span>
+  </button>`;
+}
+
+function preventionCard(){
+  const v=S.prevention;const circ=2*Math.PI*30;const off=circ*(1-v/100);
+  const col=v>=68?'var(--good)':v>=52?'var(--teal)':v>=38?'var(--warn)':'var(--bad)';
+  return `<div class="prev-cap">
+    <div class="prev-ring">
+      <svg width="74" height="74"><circle cx="37" cy="37" r="30" stroke="rgba(255,255,255,.15)" stroke-width="7" fill="none"/>
+        <circle cx="37" cy="37" r="30" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>
+      <div class="pv">${v}</div>
+    </div>
+    <div class="pc-txt"><small>Prevention capability</small><h4>${prevLabel(v)}</h4><p>Your overall ability to prevent an incident, right now.</p></div>
+  </div>`;
+}
+function prevLabel(v){return v>=72?'Strong':v>=58?'Developing':v>=44?'Fragile':'At risk';}
+
+function attentionCard(round){
+  const used=attentionUsed(round);
+  const pct=Math.max(0,Math.round((ROUND_TIME-used)/ROUND_TIME*100));
+  const cls=used>ROUND_TIME?'over':pct<=34?'low':'';
+  const whenNote={1:'before Michael arrives',2:'this shift',3:'in the next few minutes'}[round]||'this round';
+  return `<div class="card card-pad timecard">
+    <div class="tc-top"><h3>${svg(I.clock)} Time available</h3><span class="tc-pct">${used>ROUND_TIME?'0':pct}%</span></div>
+    <div class="timebar"><div class="tb-fill ${cls}" style="width:${Math.max(0,Math.min(100,pct))}%"></div></div>
+    <div class="tc-note">${used===0?`Your time ${whenNote}, spent on both reviewing records and taking actions. There is more here than you can get to, so choose where it goes.`:used>ROUND_TIME?`You have committed more than the time available ${whenNote}.`:`${pct}% of your time remains ${whenNote}.`}</div>
+  </div>`;
+}
+
+/* per-item time cost as segments (0 = no extra time) */
+function timeCost(cost){
+  if(!cost) return `<span class="tcost tcost-free">${svg(I.clock)} No extra time</span>`;
+  let seg='';for(let i=0;i<3;i++)seg+=`<i class="tseg ${i<cost?'on':''}"></i>`;
+  const lbl={1:'A little time',2:'Some time',3:'A lot of time'}[cost]||'';
+  return `<span class="tcost" title="${lbl}">${svg(I.clock)}<span class="tsegs">${seg}</span></span>`;
+}
+
+function tabGuide(tab,round){
+  if(tab==='information') return `<b>Review the records that matter most.</b> Each one uses some of your time, and acting without the evidence is riskier.`;
+  if(tab==='decisions') return `<b>Choose your actions, then Review &amp; submit.</b> Change your mind freely until you commit.`;
+  return `<b>Start here.</b> Read the situation, then work through <b>Information</b> and <b>Decisions</b>.`;
+}
+
+function kpiCard(deltas){
+  return `<div class="card kpi-panel">
+    <h3>Performance indicators</h3>
+    <div class="kpi-row">${KPIS.map(k=>kpiRow(k,deltas)).join('')}</div>
+    <div class="tag-legend" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+      <span>${svg(I.alertT,'')} Regulatory Exposure: higher means greater exposure</span>
+    </div>
+  </div>`;
+}
+function zoneClass(k,v){
+  if(k.invert){return v<=35?'f-good':v<=55?'f-warn':'f-bad';}
+  return v>=66?'f-good':v>=48?'f-warn':'f-bad';
+}
+function kpiRow(k,deltas){
+  const v=S.kpi[k.key];const zone=zoneClass(k,v);
+  let deltaHtml='';
+  if(deltas && deltas[k.key]!==undefined && deltas[k.key]!==0){
+    const dv=deltas[k.key];
+    // improvement direction: for invert, negative is good
+    const good = k.invert? dv<0 : dv>0;
+    const cls=good?'k-good':'k-bad';
+    const arrow=dv>0?'▲':'▼';
+    deltaHtml=`<span class="k-delta ${cls}">${arrow} ${dv>0?'+':''}${dv}</span>`;
+  }
+  return `<div class="kpi">
+    <div class="k-name">${k.invert?`<span class="warn-ico">${svg(I.alertT)}</span>`:''}${k.name}</div>
+    <div class="k-val">${v}${k.invert?'<span class="muted" style="font-size:11px;font-weight:500"> exp.</span>':''}</div>
+    <div class="k-bar"><div class="k-fill ${zone}" style="width:${v}%"></div></div>
+    ${deltaHtml}
+  </div>`;
+}
+
+/* ---------- Round 3 clock & notifications ---------- */
+function round3ClockBar(){
+  return `<div class="clock-bar">
+    <div><div class="c-lbl">Meadow View · lunchtime</div><div class="clock-face">12:41</div></div>
+    <div class="c-run"><span class="pulse"></span> Live · the clock is for atmosphere; take the time you need</div>
+  </div>`;
+}
+function round3Notifs(){
+  const notifs=[
+    {id:'n1',time:'12:38',tone:'amber',ico:'users',text:'<b>Priya has called in sick.</b> Agency cover is on the floor; no permanent replacement until 14:00.'},
+    {id:'n2',time:'12:40',tone:'red',ico:'bell',text:'<b>Another resident needs urgent help.</b> Your permanent worker is responding.'},
+    {id:'n3',time:'12:41',tone:'amber',ico:'clock',text:'<b>Michael’s texture meal is delayed</b> in the kitchen, roughly 12 minutes away.'},
+    {id:'n4',time:'12:41',tone:'info',ico:'home',text:'<b>Angela has arrived</b> at reception with a sandwich and crisps from home for Michael.'},
+  ].filter(n=>!S.dismissed[n.id]);
+  if(!notifs.length)return '';
+  return `<section>
+    <div class="sec-head"><div class="sec-title-ico">${svg(I.bell)}<h3>Incoming</h3></div></div>
+    <div class="notif-stack" style="margin-top:8px">${notifs.map(n=>`
+      <div class="notif notif-${n.tone}"><span class="n-time">${n.time}</span>${svg(I[n.ico],'n-ico')}<div class="n-body">${n.text}</div>
+      <button class="n-x" data-act="dismiss-notif" data-notif="${n.id}" aria-label="Dismiss notification">${svg(I.x)}</button></div>`).join('')}</div>
+  </section>`;
+}
+
+/* ---------- Consequence reveal ---------- */
+function viewReveal(){
+  const round=S.round;const d=DATA[round];
+  const res=S.committed[round];
+  const chosen=res.chosen.map(id=>d.actions.find(a=>a.id===id));
+  const sel=res.chosen;
+  // feed items from chosen actions
+  const feed=chosen.map(a=>{
+    const good=(a.prev||0)>=5; const bad=(a.prev||0)<=-3;
+    const tone=bad?'bad':good?'good':'info';
+    return `<div class="feed-item fi-${tone}">
+      <div class="fi-ico">${svg(bad?I.alertT:good?I.check:I.info)}</div>
+      <div><h4>${a.title}</h4><p>${a.selNote}</p>
+      ${a.delayed?`<span class="fi-tag" style="color:var(--warn)">Delayed effect · ${a.delayed}</span>`:''}</div>
+    </div>`;
+  }).join('');
+  // missed: pick 1-2 high value unchosen actions
+  const missedCandidates=d.actions.filter(a=>!sel.includes(a.id)&&a.missNote&&(a.prev||0)>=5)
+    .sort((x,y)=>(y.prev||0)-(x.prev||0));
+  const missed=missedCandidates[0];
+  const missed2=missedCandidates[1];
+  // context links
+  const links=contextLinks(round);
+  const blind=res.blind||[];
+  const conf=res.conf||'measured';
+  const confText={cautious:'You committed <b>cautiously</b>, which softened the swing this round.',measured:'You committed with <b>measured</b> confidence.',confident:'You committed with <b>full confidence</b>, which amplified this round’s outcome in both directions.'}[conf];
+  return `<main class="wrap" style="padding-top:14px;padding-bottom:44px">
+    <div class="reveal-head rise rise-1">
+      <span class="eyebrow">Round ${round} · consequences</span>
+      <h2>${d.title}: what your decisions set in motion</h2>
+      <p>This is what your decisions have set in motion. Some effects show now; others will surface later. A full account of what worked and where to focus comes in your report at the end.</p>
+      <div style="margin-top:14px"><span class="conf-note" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:rgba(232,238,242,.9)">${svg(conf==='confident'?I.bolt:conf==='cautious'?I.scale:I.gauge2)} ${confText}</span></div>
+    </div>
+
+    <div class="two-col" style="margin-top:22px;align-items:start">
+      <div class="stack gap-22">
+        <section class="rise rise-2">
+          <div class="sec-head"><div class="sec-title-ico">${svg(I.spark)}<h3>Immediate effects</h3></div></div>
+          <div class="feed" style="margin-top:8px">${feed||`<div class="feed-item fi-warn"><div class="fi-ico">${svg(I.alertT)}</div><div><h4>No active decisions taken</h4><p>Inaction leaves the existing risks in place and unmanaged.</p></div></div>`}</div>
+        </section>
+
+        ${links.length?`<section class="rise rise-3">
+          <div class="sec-head"><div class="sec-title-ico">${svg(I.link)}<h3>How earlier rounds shaped this</h3></div></div>
+          <div class="stack gap-12" style="margin-top:8px">
+            ${links.map(l=>`<div class="link-note">${svg(I.link)}<div>${l}</div></div>`).join('')}
+          </div>
+        </section>`:''}
+
+      </div>
+
+      <aside class="stack gap-16">
+        ${preventionCard()}
+        ${kpiCard(res.delta)}
+        <button class="btn btn-lg btn-navy" style="width:100%" data-act="next-round">
+          ${round<3?`Continue to Round ${round+1} ${svg(I.arrowR)}`:`See the outcome &amp; Risk Chain ${svg(I.arrowR)}`}
+        </button>
+      </aside>
+    </div>
+  </main>`;
+}
+
+function contextLinks(round){
+  const f=S.flags;const out=[];
+  if(round===2){
+    if(f.interimControls&&f.patternIdentified)out.push('Because you put <b>interim controls</b> in place at admission, the new warning signs were easier to read against a clear baseline.');
+    if(!f.staffBriefed&&!f.teamBriefed2)out.push('With <b>no staff briefing</b> at admission, observations arrived inconsistently across shifts, and care reliability took a further knock.');
+    if(f.familyEngaged||f.familyContacted2)out.push('The <b>relationship you built with Angela</b> meant her call about Michael sounding tired was shared openly rather than held back.');
+    else if(S.kpi.family<62)out.push('With <b>family trust low</b>, Angela offered less detail than she might have, so a useful observation nearly went unrecorded.');
+    if(S.kpi.staff>=72)out.push('<b>High staff confidence</b> meant concerns were raised and escalated earlier rather than sat on.');
+  }
+  if(round===3){
+    if(f.competencyChecked||f.experiencedWorker)out.push('Because you <b>arranged competent cover earlier</b>, there was a safe pair of hands to deploy even with a worker off sick.');
+    else out.push('With <b>competency never confirmed</b>, there was no clearly safe person to put with Michael when the shift lost a worker.');
+    if(f.interimControls&&(f.textureApplied||f.planUpdated2||f.salt2))out.push('Your earlier <b>texture and escalation work</b> meant a safe alternative to the home sandwich was actually available.');
+    else out.push('Without earlier <b>texture or escalation decisions</b>, there was no ready safe alternative to offer instead of the sandwich.');
+    if(f.familyEngaged||f.familyContacted2||f.sisterSupported)out.push('The <b>trust built with Angela</b> turned a potential standoff over the sandwich into a conversation.');
+    else out.push('With <b>little relationship built</b>, Angela’s arrival with food became a confrontation at the worst possible moment.');
+  }
+  return out;
+}
+
+function riskSummary(round){
+  const f=S.flags;const reduced=[];const remaining=[];
+  if(round===1){
+    if(f.interimControls)reduced.push('Mealtime risk covered for the first meal');else remaining.push('First meal has no agreed safeguard');
+    if(f.saltContacted||f.hospitalContacted)reduced.push('Conflicting diet information being clarified');else remaining.push('Diet contradiction unresolved');
+    if(f.staffBriefed)reduced.push('Staff know what to watch for');else remaining.push('Staff, including agency, not briefed');
+    if(f.competencyChecked)reduced.push('Competent cover confirmed for the shift');else remaining.push('Competency for the shift unchecked');
+    if(!f.familyEngaged)remaining.push('Angela’s message not yet answered');
+  }
+  if(round===2){
+    if(f.patternIdentified)reduced.push('Developing pattern recognised in time');else remaining.push('Pattern of warning signs not connected');
+    if(f.salt2||f.medReviewed)reduced.push('Clinical reassessment / medication review triggered');else remaining.push('Underlying medication driver unaddressed');
+    if(f.planUpdated2||f.planSigned)reduced.push('Support plan current and being delivered');else remaining.push('Plan out of date or unsigned');
+    if(!f.teamBriefed2&&!f.staffBriefed)remaining.push('Observation still fragmented across shifts');
+  }
+  if(round===3){
+    if(f.calmedR3||f.sisterSupported)reduced.push('Michael’s distress actively managed');else remaining.push('Distress left to drive unsafe eating');
+    if(f.safeAlt)reduced.push('Safe alternative bridged the wait');else remaining.push('No safe alternative to the home food');
+    if(f.competentSupport||f.agencyGuided||f.deployedBoth)reduced.push('Someone assigned to support the meal');else remaining.push('No one clearly supporting the meal');
+    if(f.riskyFood)remaining.push('Unmodified food eaten while distressed');
+  }
+  return {reduced,remaining};
+}
+
+/* ---------- Risk chain ---------- */
+function viewRiskChain(){
+  const nodes=S.chain;
+  return `<main class="wrap" style="padding-top:14px;padding-bottom:44px">
+    <div class="reveal-head rise rise-1">
+      <span class="eyebrow">After Round 3 · the central idea</span>
+      <h2>The Risk Chain</h2>
+      <p>The lunchtime outcome was not one decision. It was a chain: information received, decisions made, warning signs seen or missed, and actions taken or skipped. Select any point to read what it did.</p>
+    </div>
+
+    <div class="card card-pad rise rise-2" style="margin-top:20px">
+      <div class="chain-legend" style="margin-bottom:18px">
+        ${legendItem('introduced','Risk introduced')}
+        ${legendItem('identified','Risk identified')}
+        ${legendItem('controlled','Risk controlled')}
+        ${legendItem('missed','Opportunity missed')}
+        ${legendItem('consequence','Consequence')}
+      </div>
+      <div class="chain"><div class="chain-track" id="chain-track">
+        ${nodes.map((n,i)=>chainNode(n,i)).join('')}
+      </div></div>
+    </div>
+
+    <div class="row between mt-30">
+      <button class="btn btn-secondary" data-act="back-reveal">${svg(I.arrowR,'')} Review outcome again</button>
+      <button class="btn btn-lg" data-act="goto-summary">See your POC summary ${svg(I.arrowR)}</button>
+    </div>
+  </main>`;
+}
+function legendItem(type,label){
+  return `<span class="cl"><span class="sw dot-${type}"></span>${label}</span>`;
+}
+function chainNode(n,i){
+  const typeLabels={introduced:'Risk introduced',identified:'Risk identified',controlled:'Risk controlled',missed:'Opportunity missed',consequence:'Consequence'};
+  return `<button class="chain-node" data-act="toggle-chain" data-idx="${i}" aria-expanded="false">
+    <div class="cn-time">${n.time}</div>
+    <div class="chain-rail"><div class="cn-line"></div><div class="cn-dot dot-${n.type}"></div><div class="cn-line"></div></div>
+    <div class="cn-card">
+      <span class="cn-type type-${n.type}"><span class="sw dot-${n.type}" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span>${typeLabels[n.type]}</span>
+      <h4>${n.title}</h4>
+      <div class="cn-detail">${n.detail}</div>
+    </div>
+  </button>`;
+}
+
+/* ---------- Summary ---------- */
+function viewSummary(){
+  const o=S.outcome;
+  const strongest=strongestKpi();const weakest=weakestKpi();
+  const missedCount=S.chain.filter(n=>n.type==='missed').length;
+  const idCount=S.chain.filter(n=>n.type==='identified'||n.type==='controlled').length;
+  return `<main class="wrap" style="padding-top:14px;padding-bottom:50px">
+    <section class="outcome ${o.cls} rise rise-1">
+      <div class="o-ico">${svg(o.ico)}</div>
+      <div><span class="eyebrow" style="color:inherit;opacity:.75">Overall outcome</span>
+        <h2>${o.label}</h2>
+        <p><b>${o.headline}.</b> ${o.body}</p>
+      </div>
+    </section>
+
+    <div class="metric-grid rise rise-2" style="margin-top:22px">
+      <div class="metric"><div class="m-lbl">Prevention capability</div><div class="m-val" style="color:${S.prevention>=58?'var(--good)':S.prevention>=44?'var(--warn)':'var(--bad)'}">${S.prevention}</div><div class="m-sub">Started at ${START_PREVENTION} · ${prevLabel(S.prevention)}</div></div>
+      <div class="metric"><div class="m-lbl">Strongest capability</div><div class="m-val" style="font-size:19px;line-height:1.2;margin-top:12px">${strongest.name}</div><div class="m-sub">${strongest.val} / 100</div></div>
+      <div class="metric"><div class="m-lbl">Greatest vulnerability</div><div class="m-val" style="font-size:19px;line-height:1.2;margin-top:12px">${weakest.name}</div><div class="m-sub">${weakest.disp}</div></div>
+      <div class="metric"><div class="m-lbl">Risks vs missed</div><div class="m-val">${idCount}<span class="muted" style="font-size:18px"> / ${missedCount}</span></div><div class="m-sub">identified &amp; controlled / opportunities missed</div></div>
+    </div>
+
+    <section class="card card-pad rise rise-2" style="margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border:1px solid rgba(255,255,255,.06)">
+      <div style="display:flex;gap:14px;align-items:center;min-width:260px;flex:1">
+        <div style="width:44px;height:44px;border-radius:11px;background:rgba(255,255,255,.1);display:grid;place-items:center;flex:none">${svg(I.file)}</div>
+        <div><div style="font-weight:700;font-size:16px">Development report</div><div style="font-size:13px;color:rgba(232,238,242,.72)">A written summary of what the team did well and where to focus, ready to save as a PDF.</div></div>
+      </div>
+      <button class="btn" data-act="goto-report">${svg(I.file)} Open the report</button>
+    </section>
+
+    <div class="two-col" style="margin-top:22px;align-items:start">
+      <div class="stack gap-22">
+        <section class="card card-pad rise rise-3">
+          <div class="sec-title-ico" style="margin-bottom:12px">${svg(I.person)}<h3 style="font-size:16px">Your team’s path</h3></div>
+          <p class="prose" style="margin:0">${personalSummary()}</p>
+        </section>
+        <section class="rise rise-4">
+          <div class="sec-head"><div class="sec-title-ico">${svg(I.route)}<h3>The chain you created</h3></div></div>
+          <div class="card card-pad" style="margin-top:8px">
+            <div class="chain-legend" style="margin-bottom:14px">
+              ${legendItem('introduced','Introduced')}${legendItem('identified','Identified')}${legendItem('controlled','Controlled')}${legendItem('missed','Missed')}${legendItem('consequence','Consequence')}
+            </div>
+            <div class="chain"><div class="chain-track">${S.chain.map((n,i)=>chainNode(n,i)).join('')}</div></div>
+          </div>
+        </section>
+      </div>
+      <aside class="stack gap-16">
+        ${kpiCard()}
+        <div class="card card-pad">
+          <div class="sec-title-ico" style="margin-bottom:8px">${svg(I.restart)}<h3 style="font-size:15px">Play it differently</h3></div>
+          <p class="muted" style="font-size:13.5px;margin-bottom:12px">Different decisions produce a visibly different chain and outcome. Try a more restrictive path, or one that leans harder on family and autonomy.</p>
+          <button class="btn" style="width:100%" data-act="restart">${svg(I.restart)} Restart the simulation</button>
+        </div>
+      </aside>
+    </div>
+
+    <section class="rise rise-5" style="margin-top:34px">
+      <div class="center" style="max-width:60ch;margin:0 auto 22px">
+        <span class="eyebrow">The full simulation</span>
+        <h2 style="font-size:24px;margin-top:8px">Three more rounds in the complete programme</h2>
+        <p class="muted" style="margin-top:8px">This proof of concept covers admission to the first serious pressure point. The full simulation continues the chain.</p>
+      </div>
+      <div class="preview-grid">
+        ${previewCard(4,'The Near Miss','Investigate, report and learn before tragedy occurs. The team runs the incident review, decides what to record, what to escalate and how honestly to reflect.')}
+        ${previewCard(5,'The Family Challenge','Balance professional guidance, autonomy, mental capacity and family expectations when Angela formally challenges the restrictions on Michael’s diet.')}
+        ${previewCard(6,'The Organisational Response','Identify why the service created the conditions for risk, and decide what must change in staffing, systems and culture so it does not recur.')}
+      </div>
+    </section>
+
+    <div class="center" style="margin-top:36px">
+      <button class="btn btn-lg" data-act="restart">${svg(I.restart)} Replay with different decisions</button>
+    </div>
+  </main>`;
+}
+
+function previewCard(n,title,desc){
+  return `<div class="preview">
+    <span class="lock">${svg(I.lock)}</span>
+    <div class="p-round">Round ${n}</div>
+    <h4>${title}</h4>
+    <p>${desc}</p>
+    <div class="p-tag">Preview · full simulation</div>
+  </div>`;
+}
+
+/* ---------- Development report ---------- */
+function reportItems(){
+  const f=S.flags; const strengths=[], dev=[];
+  const anyBlind=[1,2,3].some(r=>((S.committed[r]||{}).blind||[]).length>0);
+  const S1=(h,p)=>strengths.push({h,p}); const D1=(h,p)=>dev.push({h,p});
+  if(f.interimControls) S1('Proportionate interim controls','You put mealtime safeguards in place at admission while seeking clarity, rather than accepting the vaguest instruction on file.');
+  if(f.saltContacted||f.salt2||f.medReviewed) S1('Timely clinical escalation','You escalated to SALT or a medication review at a point of significant change, which is exactly the trigger the guidance named.');
+  if(f.patternIdentified) S1('Pattern recognition','You connected separate, low-level observations into a developing picture while there was still time to act calmly.');
+  if(f.staffBriefed||f.teamBriefed2) S1('Handover and briefing','You briefed the team so plans were delivered on the floor, not just written down, which matters most with agency cover and keyworkers away.');
+  if(f.competencyChecked||f.experiencedWorker||f.competentSupport) S1('Competent cover','You made sure a suitably competent person supported Michael at the highest-risk moments.');
+  if(f.familyEngaged||f.familyContacted2||f.sisterSupported) S1('Working with the family','You treated Angela as a partner rather than an obstacle, which paid off when pressure peaked at lunchtime.');
+  if(f.calmedR3||f.safeAlt) S1('Managing the pressure point','At the busy lunchtime you reduced Michael’s distress and offered a safe option, rather than forcing the moment.');
+  if(!strengths.length) S1('Kept the service moving','The team kept things running, though few decisions actively reduced Michael’s risk. The areas below are where the biggest gains sit.');
+
+  if(!f.interimControls) D1('Interim safeguards at admission','The first meal went ahead without an agreed control, despite records pointing to mealtime risk. A proportionate interim measure buys safety while information is confirmed.');
+  if(!f.patternIdentified) D1('Spotting a developing pattern','Coughing, quicker eating, reduced intake and tiredness were read in isolation. Reading them together is what surfaces a rising swallowing risk in time.');
+  if(!(f.salt2||f.medReviewed||f.saltContacted)) D1('Escalating on a significant change','A hospital admission and a medication change are exactly the triggers for reassessment. Escalating early keeps the underlying driver in view.');
+  if(!f.staffBriefed&&!f.teamBriefed2) D1('Briefing so plans are delivered','Without a briefing, a written plan can quietly fail in delivery. Closing the gap between the plan and the shift is a recurring theme in serious incidents.');
+  if(!(f.familyEngaged||f.familyContacted2)) D1('Family as partners in safety','A relationship built early makes conversations about risk far easier, and turns family into a source of information rather than conflict.');
+  if(anyBlind) D1('Reviewing the evidence before acting','Several decisions were taken without reviewing the relevant record. Acting on assumption tends to work less well and can hide a risk that reading would have surfaced.');
+  if(f.riskyFood) D1('Holding a safe line under pressure','Unmodified food was given while Michael was distressed and unsupported. Under pressure, a safe alternative and calm support protect the person without a standoff.');
+  const w=weakestKpi();
+  D1('Strengthen '+w.name.toLowerCase(),'This finished as the team’s lowest indicator ('+w.disp+'), and is the area most worth attention in a real service response.');
+  return {strengths,dev:dev.slice(0,6)};
+}
+
+function viewReport(){
+  const o=S.outcome; const {strengths,dev}=reportItems();
+  const d=new Date();
+  const date=d.getDate()+' '+['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()]+' '+d.getFullYear();
+  const outClass=o.tier==='controlled'?'ro-good':o.tier==='mixed'?'ro-mixed':'ro-bad';
+  const scoreRows=KPIS.map(k=>{
+    const v=S.kpi[k.key], st=START_KPI[k.key], ch=v-st;
+    const good=k.invert?ch<0:ch>0; const cls=ch===0?'rs-flat':good?'rs-up':'rs-down';
+    const arrow=ch>0?'▲':ch<0?'▼':'—';
+    return `<div class="r-score"><span class="rs-name">${k.name}${k.invert?' (exposure)':''}</span><span class="rs-val">${v}</span><span class="rs-chg ${cls}">${ch===0?'no change':arrow+' '+(ch>0?'+':'')+ch}</span></div>`;
+  }).join('');
+  const rounds=[1,2,3].map(r=>{
+    const c=S.committed[r]||{}; const acts=(c.chosen||[]).map(id=>{const a=DATA[r].actions.find(x=>x.id===id);return a?a.title:id;});
+    return `<div class="r-round"><div class="rr-h"><span>Round ${r}: ${DATA[r].title}</span><span class="rr-conf">${c.conf||'measured'} confidence</span></div>
+      <ul>${acts.length?acts.map(t=>`<li>${t}</li>`).join(''):'<li>No active decisions recorded</li>'}</ul></div>`;
+  }).join('');
+  const chainMissed=S.chain.filter(n=>n.type==='missed');
+  return `<main class="wrap" style="padding:18px 0 50px">
+    <div class="report-actions">
+      <button class="btn btn-secondary" data-act="back-summary">${svg(I.arrowR)} Back to summary</button>
+      <button class="btn" data-act="print-report">${svg(I.file)} Save as PDF</button>
+    </div>
+    <article class="report-doc" id="report-doc">
+      <div class="r-brand">${svg(I.route)}<div><b>The Risk Chain</b><small>Choking-risk prevention simulation</small></div></div>
+      <h1>Team development report</h1>
+      <div class="r-sub">A reflective summary of how the team supported Michael Turner through a developing choking risk.</div>
+      <div class="r-meta"><span>Service: <b>Meadow View Supported Living</b></span><span>Resident: <b>Michael Turner (fictional)</b></span><span>Date: <b>${date}</b></span></div>
+
+      <div class="r-section">
+        <h2>Overall outcome</h2>
+        <div class="r-outcome"><div class="ro-ico ${outClass}">${svg(o.ico)}</div><div><h3>${o.label}</h3><p>${o.headline}. ${o.body}</p></div></div>
+      </div>
+
+      <div class="r-section">
+        <h2>Prevention capability &amp; indicators</h2>
+        <div class="r-bigscore"><div class="rb-num">${S.prevention}</div><div class="rb-txt"><small>Prevention capability</small><p>Started at ${START_PREVENTION}. Finished ${prevLabel(S.prevention).toLowerCase()}. This reflects how well the team was positioned to prevent an incident, not luck on the day.</p></div></div>
+        <div class="r-scores" style="margin-top:6px">${scoreRows}</div>
+      </div>
+
+      <div class="r-two">
+        <div class="r-section" style="margin-top:30px">
+          <h2>What the team did well</h2>
+          ${strengths.map(s=>`<div class="r-item"><div class="ri-ico ri-good">${svg(I.checkSmall)}</div><div><h4>${s.h}</h4><p>${s.p}</p></div></div>`).join('')}
+        </div>
+        <div class="r-section" style="margin-top:30px">
+          <h2>Where to focus development</h2>
+          ${dev.map(s=>`<div class="r-item"><div class="ri-ico ri-dev">${svg(I.target)}</div><div><h4>${s.h}</h4><p>${s.p}</p></div></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="r-section">
+        <h2>Decisions taken, by round</h2>
+        <div class="r-rounds">${rounds}</div>
+      </div>
+
+      ${chainMissed.length?`<div class="r-section">
+        <h2>Opportunities the chain revealed</h2>
+        ${chainMissed.map(n=>`<div class="r-item"><div class="ri-ico ri-dev">${svg(I.alertT)}</div><div><h4>${n.title}</h4><p>${n.detail}</p></div></div>`).join('')}
+      </div>`:''}
+
+      <div class="r-foot">The Risk Chain is a training simulation. Michael Turner, Meadow View and all people and organisations named are fictional. This report reflects decisions made in one playthrough and is intended to prompt reflection and discussion, not to assess clinical competence.</div>
+    </article>
+  </main>`;
+}
+
+function strongestKpi(){
+  let best=null;
+  KPIS.forEach(k=>{const eff=k.invert?100-S.kpi[k.key]:S.kpi[k.key];if(!best||eff>best.eff)best={name:k.name,val:S.kpi[k.key],eff};});
+  return best;
+}
+function weakestKpi(){
+  let worst=null;
+  KPIS.forEach(k=>{const eff=k.invert?100-S.kpi[k.key]:S.kpi[k.key];if(!worst||eff<worst.eff)worst={name:k.name,val:S.kpi[k.key],eff,invert:k.invert};});
+  worst.disp=worst.invert?`${worst.val} / 100 exposure (higher is worse)`:`${worst.val} / 100`;
+  return worst;
+}
+
+function personalSummary(){
+  const f=S.flags;const parts=[];
+  // opening
+  const o=S.outcome.tier;
+  if(o==='controlled')parts.push('Your team prevented an incident the hard way: quietly, and early. ');
+  else if(o==='mixed')parts.push('Your team got Michael through the lunchtime unharmed, but the response leaned on improvisation where the system should have carried it. ');
+  else if(o==='nearmiss')parts.push('Your team experienced a near miss. Michael recovered, but the warning was real and the causes were upstream. ');
+  else parts.push('Your team saw a serious episode from which Michael recovered. It was the end of a chain, not a single lunchtime error. ');
+  // admission
+  if(f.interimControls&&(f.saltContacted||f.hospitalContacted))parts.push('At admission you refused to accept the vaguest instruction and put proportionate controls in place while seeking clarity. ');
+  else if(f.noControls)parts.push('At admission the move proceeded without agreed safeguards, which set the tone for everything after. ');
+  else parts.push('At admission your controls were partial, leaving some contradictions in the records unresolved. ');
+  // warning
+  if(f.patternIdentified)parts.push('When the warning signs appeared, you connected them into a pattern rather than reading each in isolation, and escalated on the clinical trigger. ');
+  else if(f.isolatedR2)parts.push('When the warning signs appeared, they were read one at a time, so the developing pattern was not named while it was still calm. ');
+  // family
+  if(f.familyEngaged||f.familyContacted2||f.sisterSupported)parts.push('Throughout, you treated Angela as a partner, which paid off when she arrived with food at the worst moment. ');
+  else parts.push('The relationship with Angela was never really built, which made the lunchtime confrontation harder than it needed to be. ');
+  parts.push('The Risk Chain above shows exactly where risk entered, where it was seen, where it was held, and where the openings were missed.');
+  return parts.join('');
+}
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');
+  if(!t)return;
+  const act=t.getAttribute('data-act');
+  switch(act){
+    case 'goto-briefing':goFullscreen();S.screen='briefing';save();render();break;
+    case 'goto-intro':S.screen='intro';save();render();break;
+    case 'start-sim':goFullscreen();S.tab='situation';S.screen='dashboard';save();render();break;
+    case 'toggle-theme':toggleTheme();break;
+    case 'toggle-fullscreen':toggleFullscreen();break;
+    case 'set-tab':S.tab=t.getAttribute('data-tab');save();render();break;
+    case 'restart':doRestart();break;
+    case 'open-doc':openDoc(t.getAttribute('data-doc'));break;
+    case 'close-modal':closeModal();break;
+    case 'toggle-action':toggleAction(t.getAttribute('data-action-id'));break;
+    case 'submit-round':submitRound();break;
+    case 'set-confidence':setConfidence(t.getAttribute('data-conf'));break;
+    case 'commit-round':commitAndReveal();break;
+    case 'next-round':nextRound();break;
+    case 'enter-round':S.screen='dashboard';S.tab='situation';save();render();break;
+    case 'dismiss-notif':S.dismissed[t.getAttribute('data-notif')]=true;save();render();break;
+    case 'toggle-chain':toggleChain(t);break;
+    case 'goto-summary':S.screen='summary';save();render();break;
+    case 'back-reveal':S.screen='reveal';save();render();break;
+    case 'goto-report':S.screen='report';save();render();break;
+    case 'back-summary':S.screen='summary';save();render();break;
+    case 'print-report':window.print();break;
+    case 'open-help':startTour();break;
+    case 'tour-next':tourNext();break;
+    case 'tour-prev':tourPrev();break;
+    case 'tour-skip':endTour();break;
+  }
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(tourActive())endTour();else closeModal();}else if(tourActive()){if(e.key==='ArrowRight')tourNext();else if(e.key==='ArrowLeft')tourPrev();}});
+
+function openDoc(id){
+  const round=S.round;const doc=DATA[round].docs.find(d=>d.id===id);
+  if(!doc)return;
+  const opened=(S.opened[round]||{})[doc.id];
+  if(!opened){
+    if(attentionRemaining(round)<doc.cost){toast('Not enough time left this round to review this record');return;}
+    if(!S.opened[round])S.opened[round]={};
+    S.opened[round][doc.id]=true;save();
+  }
+  showModal(doc);
+  // re-render behind modal to update points/opened state
+  renderDashboardBehind();
+}
+function renderDashboardBehind(){
+  // update side panel numbers without closing modal
+  const main=app();
+  // simplest: re-render app then re-open modal
+  const openModal=el('modal-root').innerHTML;
+  render();
+  el('modal-root').innerHTML=openModal;
+  bindModal();
+}
+function showModal(doc){
+  const credLabel={reliable:'Reliable source',incomplete:'Incomplete',outdated:'Out of date',ambiguous:'Ambiguous',contradictory:'Contradictory'}[doc.cred];
+  el('modal-root').innerHTML=`<div class="modal-scrim">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="${doc.title}" tabindex="-1">
+      <div class="modal-head">
+        <div><h3 style="font-size:18px">${doc.title}</h3>
+          <div class="mh-src">${doc.source} <span class="chip chip-${doc.cred}">${credLabel}</span></div></div>
+        <button class="icon-x" data-act="close-modal" aria-label="Close record">${svg(I.x)}</button>
+      </div>
+      <div class="modal-body">
+        <div class="record">${doc.body}</div>
+      </div>
+    </div></div>`;
+  bindModal();
+  const m=el('modal-root').querySelector('.modal');if(m&&m.focus)m.focus();
+}
+function bindModal(){
+  const scrim=el('modal-root').querySelector('.modal-scrim');
+  if(scrim){scrim.addEventListener('click',e=>{if(e.target===scrim)closeModal();});}
+}
+function closeModal(){if(el('modal-root').innerHTML){el('modal-root').innerHTML='';render();}}
+function closeModalSilent(){el('modal-root').innerHTML='';}
+
+/* Guided walkthrough (numbered), on first use and revisitable via the How-to-play button */
+/* First-use coach tour: spotlight + pop-up anchored to each element */
+const TOUR=[
+  {sel:'.tab[data-tab="situation"]',ico:'clipboard',h:'Read the situation',p:'Start on the Situation tab each round. It briefs you on Michael, his current status and any new alerts.',place:'bottom'},
+  {sel:'.tab[data-tab="information"]',ico:'eye',h:'Review the key records',p:'Open the Information tab to read the records. You can only review a few, so choose the ones that matter. Acting without the evidence is riskier.',place:'bottom'},
+  {sel:'.tab[data-tab="decisions"]',ico:'check',h:'Make your decisions',p:'On the Decisions tab, pick a combination of actions. The coloured icon shows the type, and each shows how much time it takes.',place:'bottom'},
+  {sel:'.timecard',ico:'clock',h:'Watch your time',p:'This is your time available this round, spent on both reviewing records and taking actions. There is more here than you can get to, so choose where it goes.',place:'left'},
+  {sel:'.kpi-panel',ico:'gauge2',h:'Read the indicators',p:'Your Prevention Capability and six performance indicators live here. They do not all move in the same direction.',place:'left'},
+  {sel:'[data-act="submit-round"]',ico:'arrowR',h:'Review and submit',p:'When ready, Review and submit shows a summary and lets you set the team’s confidence, then reveals the consequences.',place:'top'},
+];
+let tourIdx=0;
+function tourActive(){return !!el('tour-root').innerHTML;}
+function startTour(){tourIdx=0;showTourStep(0);}
+function endTour(){el('tour-root').innerHTML='';}
+function tourNext(){ if(tourIdx>=TOUR.length-1){endTour();return;} showTourStep(++tourIdx);}
+function tourPrev(){ if(tourIdx<=0)return; showTourStep(--tourIdx);}
+function showTourStep(i){
+  const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const step=TOUR[i];
+  const t=document.querySelector(step.sel);
+  if(!t){ if(i<TOUR.length-1){tourIdx=i+1;return showTourStep(i+1);} endTour(); return; }
+  const r=t.getBoundingClientRect();
+  const vw=window.innerWidth, vh=window.innerHeight, pad=8, popW=312, popH=182, gap=14;
+  const spot={t:r.top-pad,l:r.left-pad,w:r.width+pad*2,h:r.height+pad*2};
+  let popL=0, popT=0;
+  const below=()=>{popT=r.bottom+gap;popL=cl(r.left+r.width/2-popW/2,12,vw-popW-12);return popT+popH<vh-8;};
+  const above=()=>{popT=r.top-gap-popH;popL=cl(r.left+r.width/2-popW/2,12,vw-popW-12);return popT>8;};
+  const left =()=>{popL=r.left-gap-popW;popT=cl(r.top,12,vh-popH-12);return popL>8;};
+  const right=()=>{popL=r.right+gap;popT=cl(r.top,12,vh-popH-12);return popL+popW<vw-8;};
+  let plClass='pl-bottom', done=false;
+  const tryPlace=(name)=>{ if(name==='left'&&left()){plClass='pl-left';return true;} if(name==='top'&&above()){plClass='pl-top';return true;} if(name==='right'&&right()){plClass='pl-right';return true;} if(name==='bottom'&&below()){plClass='pl-bottom';return true;} return false; };
+  done=tryPlace(step.place);
+  if(!done){ if(below()){plClass='pl-bottom';} else if(above()){plClass='pl-top';} else if(left()){plClass='pl-left';} else {right();plClass='pl-right';} }
+  const last=i===TOUR.length-1;
+  el('tour-root').innerHTML=`<div class="tour">
+    <div class="tour-block" data-act="tour-skip"></div>
+    <div class="tour-spot" style="top:${spot.t}px;left:${spot.l}px;width:${spot.w}px;height:${spot.h}px"></div>
+    <div class="tour-pop ${plClass}" style="top:${Math.round(popT)}px;left:${Math.round(popL)}px" role="dialog" aria-label="${step.h}">
+      <div class="tp-arrow"></div>
+      <span class="tp-num">${svg(I.route)} Step ${i+1} of ${TOUR.length}</span>
+      <h4>${svg(I[step.ico])} ${step.h}</h4>
+      <p>${step.p}</p>
+      <div class="tp-foot">
+        <div class="tp-dots">${TOUR.map((_,j)=>`<span class="tp-dot ${j===i?'on':''}"></span>`).join('')}</div>
+        <div class="tp-btns">
+          ${i>0?`<button class="tour-btn" data-act="tour-prev">Back</button>`:`<button class="tour-skip" data-act="tour-skip">Skip</button>`}
+          <button class="tour-btn primary" data-act="tour-next">${last?'Done':'Next'}</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+window.addEventListener('resize',()=>{ if(tourActive())showTourStep(tourIdx); });
+
+function toggleAction(id){
+  const round=S.round;const a=DATA[round].actions.find(x=>x.id===id);
+  if(!a)return;
+  if(!S.selected[round])S.selected[round]={};
+  const cur=!!S.selected[round][id];
+  if(!cur){
+    if(a.cost>attentionRemaining(round)){toast('Not enough time left this round for that');return;}
+    S.selected[round][id]=true;
+  }else{delete S.selected[round][id];}
+  save();render();
+}
+
+function submitRound(){
+  const round=S.round;
+  const sel=S.selected[round]||{};
+  if(!Object.values(sel).some(Boolean)){toast('Choose at least one action in the Decisions tab');return;}
+  if(attentionUsed(round)>ROUND_TIME){toast('You have taken on more than there is time for');return;}
+  if(!S.confidence[round])S.confidence[round]='measured';
+  showConfirmModal(round);
+}
+
+/* Deliberate submit: summary + unread nudge + confidence input */
+function showConfirmModal(round){
+  const d=DATA[round];
+  const sel=S.selected[round]||{};
+  const chosen=d.actions.filter(a=>sel[a.id]);
+  const opened=S.opened[round]||{};
+  const reviewed=reviewedCount(round), totalDocs=d.docs.length;
+  const usedPct=Math.round(attentionUsed(round)/ROUND_TIME*100);
+  // actions being taken without their evidence read
+  const blind=chosen.filter(a=>{const inf=(INFORMED_BY[round]||{})[a.id];return inf&&inf.length&&!inf.some(id=>opened[id]);});
+  const conf=S.confidence[round]||'measured';
+  const confOpt=(id,ico,name,desc)=>`<button class="conf-opt ${conf===id?'sel':''}" data-act="set-confidence" data-conf="${id}"><h5>${svg(ico)}${name}</h5><p>${desc}</p></button>`;
+  el('modal-root').innerHTML=`<div class="modal-scrim">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Confirm your decisions" tabindex="-1">
+      <div class="modal-head">
+        <div><h3 style="font-size:18px">Before you commit</h3>
+          <div class="mh-src">Round ${round} · review what you are about to submit</div></div>
+        <button class="icon-x" data-act="close-modal" aria-label="Close">${svg(I.x)}</button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-stat">
+          <div class="cs"><b>${chosen.length}</b> action${chosen.length===1?'':'s'} chosen</div>
+          <div class="cs"><b>${usedPct}%</b> of time used</div>
+          <div class="cs"><b>${reviewed} / ${totalDocs}</b> records reviewed</div>
+        </div>
+        <div class="confirm-list">
+          ${chosen.map(a=>`<div class="confirm-line ok">${svg(I.checkSmall)}<div>${a.title}</div></div>`).join('')}
+        </div>
+        ${blind.length?`<div class="link-note" style="margin-top:14px;border-color:var(--warn-line);background:var(--warn-tint)">${svg(I.alertT)}<div><b>${blind.length} decision${blind.length===1?'':'s'} taken without the evidence.</b> ${blind.map(a=>a.title).join('; ')}. You can still proceed, but acting on assumption tends to work less well and can miss a risk.</div></div>`:''}
+        ${reviewed<totalDocs?`<div class="link-note" style="margin-top:10px">${svg(I.eye)}<div>You reviewed ${reviewed} of ${totalDocs} records. Holding one back can be the right call; sometimes it hides the thing that mattered.</div></div>`:''}
+
+        <div style="margin-top:20px">
+          <div class="sec-title-ico" style="margin-bottom:4px">${svg(I.gauge2)}<h3 style="font-size:15px">How confident is the team?</h3></div>
+          <p class="muted" style="font-size:12.5px;margin-bottom:4px">Confidence commits the team. It amplifies this round’s outcome, the gains if you are right, and the costs if you are not.</p>
+          <div class="conf-row">
+            ${confOpt('cautious',I.scale,'Cautious','Hedge your bets. Smaller swing either way.')}
+            ${confOpt('measured',I.check,'Measured','A considered, balanced commitment.')}
+            ${confOpt('confident',I.bolt,'Confident','Full conviction. Larger swing either way.')}
+          </div>
+        </div>
+      </div>
+      <div class="modal-head" style="border-top:1px solid var(--line);border-bottom:0;position:static;justify-content:flex-end;gap:10px">
+        <button class="btn btn-secondary" data-act="close-modal">Go back</button>
+        <button class="btn" data-act="commit-round">Commit decisions ${svg(I.arrowR)}</button>
+      </div>
+    </div></div>`;
+  bindModal();
+}
+function setConfidence(c){
+  S.confidence[S.round]=c;save();
+  // update selection in place (no modal rebuild, so no flicker)
+  document.querySelectorAll('.conf-opt').forEach(b=>b.classList.toggle('sel',b.getAttribute('data-conf')===c));
+}
+
+function commitAndReveal(){
+  const round=S.round;
+  closeModalSilent();
+  commitRound(round);
+  if(round===3){computeOutcome();buildChainForOutcome();}
+  S.screen='reveal';save();render();
+}
+
+function nextRound(){
+  if(S.round<3){S.round++;S.screen='bridge';save();render();}
+  else{S.screen='riskchain';save();render();}
+}
+
+/* ---------- Fullscreen ---------- */
+function goFullscreen(){
+  try{const e=document.documentElement;if(e.requestFullscreen&&!document.fullscreenElement){const p=e.requestFullscreen();if(p&&p.catch)p.catch(()=>{});}}catch(err){}
+}
+function exitFullscreen(){
+  try{if(document.fullscreenElement&&document.exitFullscreen){const p=document.exitFullscreen();if(p&&p.catch)p.catch(()=>{});}}catch(err){}
+}
+function toggleFullscreen(){document.fullscreenElement?exitFullscreen():goFullscreen();}
+document.addEventListener('fullscreenchange',()=>{ if(S) render(); });
+
+function toggleChain(btn){
+  // scroll the node into center and mark active
+  document.querySelectorAll('.chain-node').forEach(n=>n.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function doRestart(){
+  if(!confirm('Restart the simulation? All decisions and scores will be reset.'))return;
+  S=freshState();applyStoredTheme();save();render();
+}
+
+/* ---------- Theme ---------- */
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const isDark = cur? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const next=isDark?'light':'dark';
+  S.theme=next;document.documentElement.setAttribute('data-theme',next);save();render();
+}
+function applyTheme(){if(S.theme)document.documentElement.setAttribute('data-theme',S.theme);}
+function applyStoredTheme(){if(S.theme)document.documentElement.setAttribute('data-theme',S.theme);}
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg){
+  el('toast-root').innerHTML=`<div class="toast">${svg(I.alertT)}<span>${msg}</span></div>`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{el('toast-root').innerHTML='';},2600);
+}
+
+/* ---------- Boot ---------- */
+(function boot(){
+  S=freshState();       // always start fresh for a clean demo
+  applyStoredTheme();
+  render();
+})();
+</script>
+</body>
+</html>

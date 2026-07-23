@@ -1,0 +1,13 @@
+# Render Blueprint for "The Risk Chain" (static site, no build step)
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: the-risk-chain
+    runtime: static
+    buildCommand: "echo 'no build needed'"
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: "public, max-age=0, must-revalidate"
