@@ -501,14 +501,21 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .tabbar{display:inline-flex;gap:4px;flex:none;align-self:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:5px;margin-bottom:6px;box-shadow:var(--shadow)}
 .tab{background:none;border:0;border-radius:9px;padding:10px 18px;font-size:14.5px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:9px;cursor:pointer;transition:background .15s,color .15s;margin-bottom:0}
 .tab:hover:not(.active){background:var(--surface-3);color:var(--ink)}
-.tab.active{background:var(--teal);color:#fff;border-bottom:0;box-shadow:0 1px 2px rgba(20,40,60,.18)}
+.tab.active{background:var(--teal-strong);color:#fff;border-bottom:0;box-shadow:0 1px 2px rgba(20,40,60,.18)}
 .tab svg{width:19px;height:19px}
 .tab .tcount{font-size:11px;font-weight:700;background:var(--surface-3);color:var(--ink-2);border-radius:100px;padding:1px 8px;min-width:21px;text-align:center;font-variant-numeric:tabular-nums}
 .tab.active .tcount{background:rgba(255,255,255,.28);color:#fff}
-/* Guidance strip under the tabs */
-.tab-guide{flex:none;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);background:var(--teal-tint);border:1px solid var(--teal-tint);border-radius:9px;padding:9px 13px;margin:8px 0 12px}
-.tab-guide svg{width:18px;height:18px;color:var(--teal-strong);flex:none}
-.tab-guide b{color:var(--teal-strong);font-weight:700}
+/* In dark mode teal is a bright cyan — white text on it is low-contrast,
+   so the active tab uses dark text instead. */
+@media (prefers-color-scheme:dark){.tab.active{background:var(--teal);color:#05242c}.tab.active .tcount{background:rgba(0,0,0,.22);color:#05242c}.tab.active svg{color:#05242c}}
+:root[data-theme="dark"] .tab.active{background:var(--teal);color:#05242c}
+:root[data-theme="dark"] .tab.active .tcount{background:rgba(0,0,0,.22);color:#05242c}
+:root[data-theme="dark"] .tab.active svg{color:#05242c}
+/* Instruction banner — a dark navy bar, deliberately a DIFFERENT hue
+   from the teal tabs so "what to do" never blends into "where I am". */
+.tab-guide{flex:none;display:flex;align-items:center;gap:12px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.92);background:linear-gradient(135deg,var(--navy),var(--navy-2));border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:14px 18px;margin:8px 0 14px;box-shadow:0 8px 24px rgba(8,16,24,.35),inset 0 1px 0 rgba(255,255,255,.1)}
+.tab-guide svg{width:22px;height:22px;color:var(--teal);flex:none}
+.tab-guide b{color:#fff;font-weight:750}
 
 /* ---------- v2: time meter ---------- */
 .timecard .tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
@@ -771,15 +778,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 }
 
 /* ============================================================
-   v5.1: a visual taxonomy — every panel type reads differently
-   The screen had too many near-white panels, so instruction, content,
-   metric and alert all blurred together. Each category now has a
-   distinct, consistent identity:
-     INSTRUCTION  filled teal banner    ("do this now")
-     CONTENT      clean white card      (what you read)
-     METRIC       tinted card, teal cap (your readouts)
-     INFO NOTE    blue tint + bar       (helper / FYI)
-     ALERT        amber/red + bar       (something's wrong)
+   v5.1: differentiation by fill, elevation and hue — NEVER by
+   edge accents. No left-edge bars, no top strips, anywhere.
+   Categories:
+     INSTRUCTION  navy banner        (see the .tab-guide rule above)
+     CONTENT      raised card, shadow (what you read / act on)
+     INFO NOTE    blue-tinted fill    (helper / FYI)
+     ALERT        amber/red fill      (something's wrong)
+     METER        vivid RAG gauge
    ============================================================ */
 
 /* Vivid gauge colours — the institutional --good/--bad are muted
@@ -789,57 +795,40 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 :root[data-theme="light"]{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;}
 :root[data-theme="dark"]{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;}
 
-/* INSTRUCTION — the loudest thing on the screen ------------- */
-.tab-guide-start{
-  font-size:14.5px;padding:15px 18px;color:#fff;font-weight:500;
-  background:linear-gradient(135deg,var(--teal),var(--teal-strong));
-  border:0;border-radius:12px;
-  box-shadow:0 8px 24px rgba(44,127,140,.42),inset 0 1px 0 rgba(255,255,255,.18);
-}
-.tab-guide-start b{color:#fff;font-weight:750}
-.tab-guide-start svg{width:24px;height:24px;color:#fff;animation:nudge 2.6s ease-in-out infinite}
+/* INSTRUCTION banner: the gold "Start here" pill on the navy bar,
+   plus the gently-nudging leading icon. */
+.tab-guide svg{animation:nudge 2.6s ease-in-out infinite}
 @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
 .guide-badge{
   display:inline-block;margin-right:9px;padding:3px 11px;border-radius:100px;
-  background:#fff;color:var(--teal-strong);font-size:11px;font-weight:800;
+  background:var(--accent);color:#20180a;font-size:11px;font-weight:800;
   letter-spacing:.07em;text-transform:uppercase;vertical-align:1px;
-  box-shadow:0 1px 3px rgba(20,40,60,.25);
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
 }
 
-/* CONTENT — white cards, clearly raised off the page -------- */
-.card{
+/* CONTENT — cards and tiles clearly raised off the page so they
+   don't dissolve into the background (dark mode especially).
+   Depth comes from a slightly lighter surface + real shadow, never
+   from an edge accent. */
+.card,.src,.act{
   box-shadow:0 1px 2px rgba(20,40,60,.06),0 10px 26px rgba(20,40,60,.09),
              inset 0 1px 0 rgba(255,255,255,.6);
-  transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s;
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s,border-color .15s,background .15s;
 }
+.src,.act{background:linear-gradient(180deg,var(--surface-2),var(--surface))}
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-@media (prefers-color-scheme:dark){.card{box-shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}}
-:root[data-theme="dark"] .card{box-shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
-
-/* METRIC — readouts read as an instrument cluster: tinted
-   surface + a teal cap strip, distinct from white content. */
-.kpi-panel,.timecard{
-  background:var(--surface-2);
-  border-top:3px solid var(--teal);
-  border-radius:var(--r);
+@media (prefers-color-scheme:dark){
+  .card,.src,.act{box-shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)}
 }
-.prev-cap{border-top:3px solid var(--teal)}
+:root[data-theme="dark"] .card,:root[data-theme="dark"] .src,:root[data-theme="dark"] .act{box-shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06)}
+/* Rail readouts lift on hover like everything else (no accents). */
 .kpi-panel,.timecard,.prev-cap{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
 .kpi-panel:hover,.timecard:hover,.prev-cap:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 
-/* INFO NOTE — blue = "for your information", never confused with
-   the teal "do this" instruction. */
-.link-note{
-  background:var(--info-tint);border:1px solid transparent;
-  border-left:4px solid var(--info);color:var(--ink-2);
-}
+/* INFO NOTE — a blue-tinted fill (no edge bar) so "for your
+   information" never reads as the navy "do this" instruction. */
+.link-note{background:var(--info-tint);border:1px solid transparent;color:var(--ink-2)}
 .link-note svg,.link-note b{color:var(--info)}
-
-/* ALERT / NOTIFICATION — a strong severity bar down the side. */
-.alert,.notif{border-left-width:4px}
-.alert-amber,.notif-amber{border-left-color:var(--warn)}
-.alert-red,.notif-red{border-left-color:var(--bad)}
-.alert-info,.notif-info{border-left-color:var(--info)}
 
 /* METERS as vivid red→amber→green gauges -------------------- */
 /* The fill is a window onto a full-width RAG spectrum anchored to the
@@ -855,7 +844,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .kpi .k-fill.k-inv::before{
   background:linear-gradient(90deg,var(--g-green) 0%,var(--g-amber) 50%,var(--g-red) 100%);
 }
-@media(prefers-reduced-motion:reduce){.tab-guide-start svg{animation:none}}
+@media(prefers-reduced-motion:reduce){.tab-guide svg{animation:none}}
 </style>
 </head>
 <body>
@@ -1834,7 +1823,7 @@ function viewDashboard(){
         ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
         ${tabBtn('decisions','Decisions',I.check,selCount||'')}
       </div>
-      <div class="tab-guide ${tab==='situation'?'tab-guide-start':''}">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
+      <div class="tab-guide">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
       <div class="tabpanel" role="tabpanel">
         ${tab==='situation'?situationPanel:tab==='information'?informationPanel:decisionsPanel}
       </div>
