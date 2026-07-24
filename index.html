@@ -284,8 +284,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .src:hover{border-color:var(--teal);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
 .src.opened{border-color:var(--good-line);background:var(--surface)}
 .src .s-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.src .s-ico{width:52px;height:52px;border-radius:13px;background:linear-gradient(150deg,var(--teal-tint),var(--surface-2));display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 1px var(--line)}
-.src .s-ico svg{width:27px;height:27px;color:var(--teal-strong)}
+.src .s-ico{width:62px;height:62px;border-radius:15px;background:linear-gradient(150deg,var(--teal-tint),var(--surface-2));display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 1px var(--line)}
+.src .s-ico svg{width:34px;height:34px;color:var(--teal-strong)}
 .src.opened .s-ico{background:linear-gradient(150deg,var(--good-tint),var(--surface-2))}
 .src.opened .s-ico svg{color:var(--good)}
 .src h4{font-size:15.5px;line-height:1.22;font-weight:650;letter-spacing:-.01em}
@@ -307,8 +307,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .act.sel{border-color:var(--teal);background:var(--teal-tint);box-shadow:0 0 0 1px var(--teal) inset}
 .act.disabled{opacity:.5;cursor:not-allowed}
 /* Prominent, colour-coded category icon */
-.act .a-ico{width:42px;height:42px;border-radius:11px;flex:none;display:grid;place-items:center;position:relative}
-.act .a-ico svg{width:23px;height:23px}
+.act .a-ico{width:54px;height:54px;border-radius:14px;flex:none;display:grid;place-items:center;position:relative}
+.act .a-ico svg{width:30px;height:30px}
 .act .a-checkdot{position:absolute;right:-6px;bottom:-6px;width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;border:2.5px solid var(--surface)}
 .act.sel .a-checkdot{border-color:var(--teal-tint)}
 .act .a-checkdot svg{width:12px;height:12px}
@@ -844,52 +844,63 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .kpi-panel:hover,.timecard:hover,.prev-cap:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 
 /* ============================================================
-   ELEMENT IDENTITIES — each type has a consistent, learnable look:
-     RECORDS  = case files  → warm "paper" icon + a reliability STAMP
-     ALERTS   = warnings     → glowing severity medallion + title
-     DECISIONS= choices      → category-colour icon + a SELECT checkbox
+   ELEMENT IDENTITIES — each type is a different KIND of object, so a
+   glance tells you what it is and what to do with it:
+     RECORDS   = warm "paper" files you REVIEW (parchment icon, folded
+                 corner, warm panel). No pre-judged reliability — you
+                 decide by reading source + date.
+     DECISIONS = cool action TILES you SELECT (big colour-coded icon,
+                 a real checkbox, a decisive lit-up selected state).
+     ALERTS    = warnings (glowing severity medallion + title).
+     INFO NOTE = a bright "intel" briefing you should read.
    ============================================================ */
 
-/* RECORDS ("case files") — a warm parchment icon tile marks these as
-   documents to inspect, and the reliability reads as an inked stamp.
-   Deliberately WARM, so records never blur into the cool decision tiles. */
-.src .s-ico{background:linear-gradient(150deg,#f0e7d1,#d9caa6);box-shadow:0 5px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.55);border:0}
+/* RECORDS — warm paper files. A warm panel + parchment icon + a folded
+   top corner make these read as documents, unmistakably different from
+   the cool decision tiles beside them. */
+.src{background:linear-gradient(180deg,#fffdf6,#f4efe2)}
+@media (prefers-color-scheme:dark){.src{background:linear-gradient(180deg,#2c302c,#1e211d)}}
+:root[data-theme="dark"] .src{background:linear-gradient(180deg,#2c302c,#1e211d)}
+.src .s-ico{background:linear-gradient(150deg,#f2e9d3,#dbcca8);box-shadow:0 6px 16px rgba(60,45,15,.3),inset 0 1px 0 rgba(255,255,255,.6);border:0}
 .src .s-ico svg{color:#6a5a33}
 .src.opened .s-ico{background:linear-gradient(145deg,var(--g-green),#0e7a3c);box-shadow:0 6px 16px rgba(18,161,80,.5),inset 0 1px 0 rgba(255,255,255,.3)}
 .src.opened .s-ico svg{color:#fff}
-.src:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--card-sh),0 0 0 1px var(--teal),0 0 26px rgba(44,180,194,.28)}
-.src .s-review{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--teal-strong);opacity:0;transform:translateX(-4px);transition:.18s}
-.src .s-review svg{width:14px;height:14px}
-.src:hover .s-review{opacity:1;transform:none}
-/* the reliability STAMP */
-.cred-stamp{display:inline-block;transform:rotate(-3.5deg);border:2px solid currentColor;border-radius:5px;padding:2px 9px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.92;background:transparent}
-.cred-reliable{color:var(--good)} .cred-incomplete{color:var(--warn)} .cred-outdated{color:var(--ink-3)}
-.cred-ambiguous{color:var(--info)} .cred-contradictory{color:var(--bad)}
+.src:hover{border-color:var(--warn);transform:translateY(-3px);box-shadow:var(--card-sh),0 0 0 1px var(--warn),0 0 26px rgba(214,165,68,.25)}
+.src .s-review-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:750;color:var(--ink);background:var(--surface-3);border:1px solid var(--line);transition:.15s}
+.src .s-review-btn svg{width:16px;height:16px;color:var(--teal-strong)}
+.src:hover .s-review-btn{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff}
+.src:hover .s-review-btn svg{color:#fff}
+.src .s-reviewed{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:750;color:var(--good)}
+.src .s-reviewed svg{width:15px;height:15px}
+.src .s-foot{align-items:center}
 
-/* DECISIONS ("choices") — category-colour icon (type at a glance) plus a
-   real SELECT checkbox top-right, so these read as things you tick, not
-   read. Selecting lights the card and fills the box. */
-.act{padding-right:46px}
-.act .a-ico{box-shadow:0 4px 12px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.25)}
+/* DECISIONS — cool action tiles. Big colour-coded icon = type at a
+   glance; a real checkbox top-right = "you tick these"; a decisive
+   selected state (lit border, gradient wash, filled box, lift). */
+.act{padding-right:50px}
+.act .a-ico{box-shadow:0 5px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.28)}
 .act .a-ico svg{color:#fff}
-.a-ico.cat-decision{background:linear-gradient(145deg,#6d7f90,#4a5a68)}
-.a-ico.cat-control{background:linear-gradient(145deg,var(--teal),var(--teal-strong))}
-.a-ico.cat-escalation{background:linear-gradient(145deg,#e7a531,#c67d18)}
-.a-ico.cat-communication{background:linear-gradient(145deg,#5695d6,#3a6ea5)}
-.a-ico.cat-practical{background:linear-gradient(145deg,#3fa76a,#2e7d54)}
-.a-ico.cat-risk{background:linear-gradient(145deg,#8172d6,#5a4ba5)}
-.act .a-cat{display:block;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
-.act .a-select{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);background:var(--surface-2);display:grid;place-items:center;transition:.15s}
-.act .a-select svg{width:14px;height:14px;color:#fff}
+.a-ico.cat-decision{background:linear-gradient(145deg,#738596,#465268)}
+.a-ico.cat-control{background:linear-gradient(145deg,#38c6d6,#1f7a86)}
+.a-ico.cat-escalation{background:linear-gradient(145deg,#f4b13a,#c67d18)}
+.a-ico.cat-communication{background:linear-gradient(145deg,#5aa0e6,#3462a5)}
+.a-ico.cat-practical{background:linear-gradient(145deg,#45c078,#217a48)}
+.a-ico.cat-risk{background:linear-gradient(145deg,#9179e6,#5a45a5)}
+.act .a-cat{display:block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.act .a-select{position:absolute;top:13px;right:13px;width:26px;height:26px;border-radius:8px;border:2px solid var(--ink-4);background:transparent;display:grid;place-items:center;transition:.15s}
+.act .a-select svg{width:15px;height:15px;color:#fff}
 .act:hover .a-select{border-color:var(--teal)}
-.act:hover{transform:translateY(-2px);box-shadow:var(--card-sh),0 0 0 1px var(--ink-3)}
-.act.sel{border-color:transparent;background:var(--teal-tint);box-shadow:0 0 0 2px var(--teal),0 8px 24px rgba(44,180,194,.3)}
-.act.sel .a-select{background:var(--teal-deep);border-color:var(--teal-deep);box-shadow:0 0 12px rgba(44,180,194,.6)}
+.act:hover{transform:translateY(-2px);box-shadow:var(--card-sh),0 0 0 1px var(--teal)}
+.act.sel{border-color:var(--teal);background:linear-gradient(180deg,var(--teal-tint),transparent);box-shadow:0 0 0 2px var(--teal),0 10px 30px rgba(44,180,194,.32);transform:translateY(-2px)}
+.act.sel .a-ico{transform:scale(1.05)}
+.act.sel .a-select{background:var(--teal-deep);border-color:var(--teal-deep);transform:scale(1.12);box-shadow:0 0 14px rgba(44,180,194,.7)}
 
-/* INFO NOTE — a blue-tinted fill (no edge bar) so "for your
-   information" never reads as the gold "do this" instruction. */
-.link-note{background:var(--info-tint);border:1px solid transparent;color:var(--ink-2)}
-.link-note svg,.link-note b{color:var(--info)}
+/* INFO NOTE — an "intel briefing": a bright filled medallion icon + a
+   soft glow so the eye lands on it and reads "you should know this".
+   Distinct from gold instructions and warm alerts. */
+.link-note{background:linear-gradient(180deg,var(--info-tint),transparent);border:1px solid var(--info);box-shadow:0 6px 22px rgba(58,110,165,.2);color:var(--ink);gap:14px;align-items:center;padding:15px 18px}
+.link-note svg{width:22px;height:22px;padding:9px;box-sizing:content-box;border-radius:11px;background:linear-gradient(145deg,#5aa0e6,#3462a5);color:#fff;box-shadow:0 5px 14px rgba(58,110,165,.45),inset 0 1px 0 rgba(255,255,255,.3);flex:none}
+.link-note b{color:var(--info)}
 
 /* DOSSIER — the situation card as a character briefing: the person is
    the hero (large photo with a glow ring), key facts as scannable
@@ -1971,17 +1982,17 @@ function decisionPrompt(round){
 function srcCard(doc,round){
   const opened=(S.opened[round]||{})[doc.id];
   const noTime = !opened && attentionRemaining(round)<doc.cost;   // not enough time left to review
-  const credLabel={reliable:'Reliable',incomplete:'Incomplete',outdated:'Outdated',ambiguous:'Ambiguous',contradictory:'Contradictory'}[doc.cred];
   return `<button class="src ${opened?'opened':''} ${noTime?'capped':''}" data-act="open-doc" data-doc="${doc.id}" ${noTime?'disabled title="Not enough time left this round to review this"':''}>
     <div class="s-h">
       <div class="s-ico">${svg(I[doc.ico])}</div>
-      <span class="opened-mark">${svg(I.checkSmall)} Reviewed</span>
       ${opened?'':`<span class="s-open-cost">${timeCost(doc.cost)}</span>`}
     </div>
     <div><h4>${doc.title}</h4><div class="s-src">${doc.source}</div></div>
     <div class="s-teaser">${doc.teaser}</div>
-    <div class="s-foot"><span class="cred-stamp cred-${doc.cred}">${credLabel}</span>
-      ${opened?'<span class="muted" style="font-size:11.5px">Reopen · free</span>':`<span class="s-review">Review ${svg(I.arrowR)}</span>`}
+    <div class="s-foot">
+      ${opened
+        ? `<span class="s-reviewed">${svg(I.checkSmall)} Reviewed</span><span class="muted" style="font-size:12px">Reopen · free</span>`
+        : `<span class="s-review-btn">${svg(I.eye)} Review record</span>`}
     </div>
   </button>`;
 }
