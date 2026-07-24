@@ -769,6 +769,60 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
   .step.active .dot{animation:none}
   .act .a-checkdot{animation:none}
 }
+
+/* ============================================================
+   v5.1: prominence + dimension
+   Three targeted lifts, palette unchanged:
+   1) the "Start here" guide reads as a call-to-action, not body text
+   2) cards get depth (layered shadow, top sheen) + a gentle hover lift
+   3) the performance meters become red→amber→green gauges
+   ============================================================ */
+
+/* 1 — Start here: a proper call-to-action -------------------- */
+.tab-guide-start{
+  font-size:14px;padding:13px 15px;
+  background:linear-gradient(135deg,var(--teal-tint),var(--surface) 85%);
+  border:1px solid var(--teal);border-left:4px solid var(--teal);
+  box-shadow:0 2px 12px rgba(44,127,140,.16);
+}
+.tab-guide-start svg{width:22px;height:22px;animation:nudge 2.6s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+.guide-badge{
+  display:inline-block;margin-right:8px;padding:3px 10px;border-radius:100px;
+  background:var(--teal);color:#fff;font-size:11px;font-weight:800;
+  letter-spacing:.07em;text-transform:uppercase;vertical-align:1px;
+  box-shadow:0 1px 3px rgba(20,40,60,.2);
+}
+
+/* 2 — Cards: depth without changing hue ---------------------- */
+.card{
+  box-shadow:0 1px 2px rgba(20,40,60,.05),0 8px 22px rgba(20,40,60,.07),
+             inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s;
+}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+@media (prefers-color-scheme:dark){.card{box-shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)}}
+:root[data-theme="dark"] .card{box-shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)}
+/* The navy prevention panel isn't a .card — give it the same life. */
+.prev-cap{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+.prev-cap:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+
+/* 3 — Performance meters as R→A→G gauges -------------------- */
+/* The fill is a window onto a full-width red→amber→green spectrum
+   anchored to the track (100cqi), so a low value shows only the red
+   end and green is reached only when the bar is near full. Inverted
+   KPIs (exposure: high = bad) flip the spectrum. */
+.kpi .k-bar{container-type:inline-size}
+.kpi .k-fill{position:relative;overflow:hidden}
+.kpi .k-fill::before{
+  content:"";position:absolute;top:0;left:0;height:100%;width:100cqi;
+  background:linear-gradient(90deg,var(--bad) 0%,var(--warn) 50%,var(--good) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(0,0,0,.1);
+}
+.kpi .k-fill.k-inv::before{
+  background:linear-gradient(90deg,var(--good) 0%,var(--warn) 50%,var(--bad) 100%);
+}
+@media(prefers-reduced-motion:reduce){.tab-guide-start svg{animation:none}}
 </style>
 </head>
 <body>
@@ -1612,7 +1666,7 @@ function miniKpiList(){
   return `<div class="kpi-row">${KPIS.map(k=>{
     const v=START_KPI[k.key];const zone=zoneClass(k,v);
     return `<div class="kpi"><div class="k-name">${k.invert?svg(I.alertT,'warn-ico'):''}${k.name}</div><div class="k-val">${v}</div>
-      <div class="k-bar"><div class="k-fill ${zone}" style="width:${v}%"></div></div></div>`;}).join('')}</div>`;
+      <div class="k-bar"><div class="k-fill ${zone}${k.invert?' k-inv':''}" style="width:${v}%"></div></div></div>`;}).join('')}</div>`;
 }
 
 /* ---------- Intro ---------- */
@@ -1747,7 +1801,7 @@ function viewDashboard(){
         ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
         ${tabBtn('decisions','Decisions',I.check,selCount||'')}
       </div>
-      <div class="tab-guide">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
+      <div class="tab-guide ${tab==='situation'?'tab-guide-start':''}">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
       <div class="tabpanel" role="tabpanel">
         ${tab==='situation'?situationPanel:tab==='information'?informationPanel:decisionsPanel}
       </div>
@@ -1872,7 +1926,7 @@ function timeCost(cost){
 function tabGuide(tab,round){
   if(tab==='information') return `<b>Review the records that matter most.</b> Each one uses some of your time, and acting without the evidence is riskier.`;
   if(tab==='decisions') return `<b>Choose your actions, then Review &amp; submit.</b> Change your mind freely until you commit.`;
-  return `<b>Start here.</b> Read the situation, then work through <b>Information</b> and <b>Decisions</b>.`;
+  return `<span class="guide-badge">Start here</span>Read the situation, then work through <b>Information</b> and <b>Decisions</b>.`;
 }
 
 function kpiCard(deltas){
@@ -1904,7 +1958,7 @@ function kpiRow(k,deltas){
   return `<div class="kpi">
     <div class="k-name">${k.invert?`<span class="warn-ico">${svg(I.alertT)}</span>`:''}${k.name}</div>
     <div class="k-val"><span class="k-num" data-count="${v}" data-from="${from}">${from}</span>${k.invert?'<span class="muted" style="font-size:11px;font-weight:500"> exp.</span>':''}</div>
-    <div class="k-bar"><div class="k-fill ${zone}" style="width:${v}%"></div></div>
+    <div class="k-bar"><div class="k-fill ${zone}${k.invert?' k-inv':''}" style="width:${v}%"></div></div>
     ${deltaHtml}
   </div>`;
 }
