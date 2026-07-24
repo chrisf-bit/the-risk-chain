@@ -15,7 +15,7 @@
    ============================================================ */
 :root{
   --ground:#e9edf0; --surface:#fdfefe; --surface-2:#f2f6f7; --surface-3:#e7eef0;
-  --ink:#15212e; --ink-2:#3f5061; --ink-3:#6c7c8a; --ink-4:#95a3ae;
+  --ink:#15212e; --ink-2:#3a4b5a; --ink-3:#5a6b78; --ink-4:#6f7d88;
   --line:#d6dee3; --line-2:#e6ecef;
   --navy:#14324a; --navy-2:#1c4462; --navy-ink:#e8eef2;
   --teal:#2c7f8c; --teal-strong:#22656f; --teal-tint:#e3f0f1;
@@ -34,7 +34,7 @@
 @media (prefers-color-scheme:dark){
   :root{
     --ground:#0c141c; --surface:#141f2a; --surface-2:#1a2836; --surface-3:#213141;
-    --ink:#e9f0f4; --ink-2:#b3c2cd; --ink-3:#8494a1; --ink-4:#5f6f7c;
+    --ink:#eef4f7; --ink-2:#c2ced7; --ink-3:#b0bec8; --ink-4:#93a2ad;
     --line:#28394a; --line-2:#20303f;
     --navy:#0a1822; --navy-2:#123049; --navy-ink:#e8eef2;
     --teal:#4db4c2; --teal-strong:#3d9aa7; --teal-tint:#123138;
@@ -48,7 +48,7 @@
 }
 :root[data-theme="light"]{
   --ground:#e9edf0; --surface:#fdfefe; --surface-2:#f2f6f7; --surface-3:#e7eef0;
-  --ink:#15212e; --ink-2:#3f5061; --ink-3:#6c7c8a; --ink-4:#95a3ae;
+  --ink:#15212e; --ink-2:#3a4b5a; --ink-3:#5a6b78; --ink-4:#6f7d88;
   --line:#d6dee3; --line-2:#e6ecef;
   --navy:#14324a; --navy-2:#1c4462; --navy-ink:#e8eef2;
   --teal:#2c7f8c; --teal-strong:#22656f; --teal-tint:#e3f0f1;
@@ -237,9 +237,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .prev-ring{position:relative;width:74px;height:74px;flex:none}
 .prev-ring svg{transform:rotate(-90deg)}
 .prev-ring .pv{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
-.prev-cap .pc-txt small{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.62);font-weight:700}
+.prev-cap .pc-txt small{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.9);font-weight:700}
 .prev-cap .pc-txt h4{font-size:16px;margin-top:2px}
-.prev-cap .pc-txt p{font-size:12px;color:rgba(232,238,242,.7);margin-top:3px}
+.prev-cap .pc-txt p{font-size:12.5px;color:rgba(233,240,244,.9);margin-top:4px;line-height:1.4}
 
 /* Attention meter */
 .attn{padding:16px 18px}
@@ -289,9 +289,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .src.opened .s-ico{background:linear-gradient(150deg,var(--good-tint),var(--surface-2))}
 .src.opened .s-ico svg{color:var(--good)}
 .src h4{font-size:15.5px;line-height:1.22;font-weight:650;letter-spacing:-.01em}
-.src .s-src{font-size:11.5px;color:var(--ink-4);margin-top:2px}
+.src .s-src{font-size:12.5px;color:var(--ink-3);margin-top:3px}
 .src .s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
-.src .s-teaser{font-size:12.5px;color:var(--ink-3);line-height:1.45}
+.src .s-teaser{font-size:13.5px;color:var(--ink-2);line-height:1.5}
 .src .opened-mark{display:none;align-items:center;gap:5px;font-size:11.5px;font-weight:650;color:var(--good)}
 .src .opened-mark svg{width:14px;height:14px}
 .src.opened .opened-mark{display:inline-flex}
@@ -503,7 +503,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .between{justify-content:space-between}
 .center{text-align:center}
-.tag-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;color:var(--ink-3)}
+.tag-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12.5px;color:var(--ink-2)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 
 /* ---------- v2: prominent tabs (segmented control) ---------- */
@@ -539,7 +539,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .timebar .tb-fill{height:100%;border-radius:100px;transition:width .5s cubic-bezier(.2,.7,.2,1);background:linear-gradient(90deg,var(--teal),var(--teal-strong))}
 .timebar .tb-fill.low{background:linear-gradient(90deg,var(--warn),#a8761c)}
 .timebar .tb-fill.over{background:var(--bad)}
-.timecard .tc-note{font-size:12px;color:var(--ink-3);margin-top:10px}
+.timecard .tc-note{font-size:12.5px;color:var(--ink-2);margin-top:10px;line-height:1.45}
 /* per-action / per-source time cost as segments */
 .tcost{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink-3)}
 .tcost svg{width:13px;height:13px}
@@ -865,6 +865,44 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
    information" never reads as the gold "do this" instruction. */
 .link-note{background:var(--info-tint);border:1px solid transparent;color:var(--ink-2)}
 .link-note svg,.link-note b{color:var(--info)}
+
+/* DOSSIER — the situation card as a character briefing: the person is
+   the hero (large photo with a glow ring), key facts as scannable
+   bullets, and the scenario brief set as an editorial serif callout. */
+.dossier-top{display:flex;gap:22px;align-items:flex-start}
+.dossier-photo{flex:none;position:relative;align-self:flex-start}
+.dossier-photo .s-ava{width:104px;height:104px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--teal-tint);color:var(--teal-strong);font-weight:700;font-size:32px;border:3px solid var(--surface);box-shadow:0 6px 20px rgba(8,16,24,.3)}
+.dossier-photo .s-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.dossier-photo::after{content:"";position:absolute;inset:-3px;border-radius:50%;pointer-events:none;box-shadow:0 0 0 2px var(--teal),0 0 22px rgba(44,180,194,.4)}
+.dossier-id{flex:1;min-width:0}
+.dossier-name{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:6px}
+.dossier-sub{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:650;color:var(--ink-3);margin-top:4px}
+.dossier-sub svg{width:16px;height:16px;color:var(--teal-strong)}
+.dossier-facts{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.dossier-facts li{position:relative;padding-left:24px;font-size:14px;color:var(--ink-2);line-height:1.4}
+.dossier-facts li::before{content:"";position:absolute;left:3px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px rgba(44,180,194,.75)}
+.dossier-chip{flex:none;align-self:flex-start}
+.dossier-brief{margin:22px 0 0;padding:20px 24px 20px 26px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);font-family:var(--serif);font-size:16.5px;line-height:1.62;color:var(--ink);position:relative;quotes:none}
+.dossier-brief::before{content:"\201C";position:absolute;top:2px;left:12px;font-family:var(--serif);font-size:52px;line-height:1;color:var(--teal);opacity:.4}
+@media(max-width:640px){.dossier-top{flex-wrap:wrap}.dossier-chip{order:-1}}
+
+/* ALERTS — their own "warning module" identity: a filled, glowing icon
+   medallion (colour = severity), a bold coloured title, and a tinted
+   fill with a soft glow. Distinct from cards, notes and instructions. */
+.alert{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:13px;border:1px solid;position:relative;overflow:hidden}
+.alert .al-ico{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;box-shadow:0 5px 14px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.28)}
+.alert .al-ico svg{width:22px;height:22px;color:#fff}
+.alert .al-body{font-size:13.5px;line-height:1.5;color:var(--ink-2);padding-top:1px}
+.alert .al-body b{display:block;font-size:14.5px;font-weight:750;margin-bottom:3px}
+.alert-amber{background:linear-gradient(180deg,var(--warn-tint),transparent);border-color:var(--warn-line);box-shadow:0 6px 20px rgba(187,132,32,.14)}
+.alert-amber .al-ico{background:linear-gradient(145deg,#eeb54e,#c67d18)}
+.alert-amber .al-body b{color:var(--warn)}
+.alert-red{background:linear-gradient(180deg,var(--bad-tint),transparent);border-color:var(--bad-line);box-shadow:0 6px 20px rgba(179,69,59,.2)}
+.alert-red .al-ico{background:linear-gradient(145deg,#e57264,#b3453b)}
+.alert-red .al-body b{color:var(--bad)}
+.alert-info{background:linear-gradient(180deg,var(--info-tint),transparent);border-color:transparent;box-shadow:0 6px 18px rgba(58,110,165,.14)}
+.alert-info .al-ico{background:linear-gradient(145deg,#5f97d6,#3a6ea5)}
+.alert-info .al-body b{color:var(--info)}
 
 /* METERS as vivid red→amber→green gauges -------------------- */
 /* The fill is a window onto a full-width RAG spectrum anchored to the
@@ -1813,22 +1851,26 @@ function viewDashboard(){
 
   const tabBtn=(id,label,ico,count)=>`<button class="tab ${tab===id?'active':''}" role="tab" aria-selected="${tab===id}" data-act="set-tab" data-tab="${id}">${svg(ico)}<span>${label}</span>${count?`<span class="tcount">${count}</span>`:''}</button>`;
 
+  const facts=(d.status.line||'').split('. ').map(s=>s.replace(/\.\s*$/,'').trim()).filter(Boolean);
+  const chipTone=d.status.tone==='red'?'contradictory':d.status.tone==='amber'?'incomplete':'teal';
   const situationPanel=`
-    <section class="card card-pad">
-      <div class="row between" style="align-items:flex-start;margin-bottom:14px">
-        <div><span class="eyebrow">Round ${round} of 6</span><h2 style="font-size:20px;margin-top:5px">${d.title}</h2></div>
-        <span class="chip chip-${d.status.tone==='red'?'contradictory':d.status.tone==='amber'?'incomplete':'teal'}" style="white-space:nowrap">${d.status.state}</span>
+    <section class="card card-pad dossier">
+      <div class="dossier-top">
+        <div class="dossier-photo">${michaelAvatar(true)}</div>
+        <div class="dossier-id">
+          <span class="eyebrow">Round ${round} of 6 · ${d.title}</span>
+          <h2 class="dossier-name">Michael Turner</h2>
+          <div class="dossier-sub">${svg(I.user||I.users)} The person you're supporting</div>
+          <ul class="dossier-facts">${facts.map(f=>`<li>${f}</li>`).join('')}</ul>
+        </div>
+        <span class="chip chip-${chipTone} dossier-chip" style="white-space:nowrap">${d.status.state}</span>
       </div>
-      <div class="status-banner" style="background:var(--surface-2)">
-        ${michaelAvatar()}
-        <div class="s-body"><h4>Michael Turner · current status</h4><p style="margin-top:4px">${d.status.line}</p></div>
-      </div>
-      <p class="prose" style="max-width:72ch;margin-top:14px">${d.brief}</p>
+      <blockquote class="dossier-brief">${d.brief}</blockquote>
     </section>
     ${alertCount?`<section>
       <div class="sec-head"><div class="sec-title-ico">${svg(I.bell)}<h3>New alerts</h3></div></div>
       <div class="stack gap-12" style="margin-top:8px">
-        ${d.alerts.map(a=>`<div class="alert alert-${a.tone==='red'?'red':a.tone==='info'?'info':'amber'}">${svg(I[a.ico])}<div>${a.text}</div></div>`).join('')}
+        ${d.alerts.map(a=>{const tn=a.tone==='red'?'red':a.tone==='info'?'info':'amber';return `<div class="alert alert-${tn}"><span class="al-ico">${svg(I[a.ico])}</span><div class="al-body">${a.text}</div></div>`;}).join('')}
       </div>
     </section>`:''}
     ${round===3?round3Notifs():''}`;
@@ -1984,9 +2026,10 @@ function timeCost(cost){
 }
 
 function tabGuide(tab,round){
-  if(tab==='information') return `<b>Review the records that matter most.</b> Each one uses some of your time, and acting without the evidence is riskier.`;
-  if(tab==='decisions') return `<b>Choose your actions, then Review &amp; submit.</b> Change your mind freely until you commit.`;
-  return `<span class="guide-badge">Start here</span>Read the situation, then work through <b>Information</b> and <b>Decisions</b>.`;
+  const pill=n=>`<span class="guide-badge">Step ${n} of 3</span>`;
+  if(tab==='information') return `${pill(2)}<b>Review the records that matter most.</b> Each one uses some of your time, and acting without the evidence is riskier.`;
+  if(tab==='decisions') return `${pill(3)}<b>Choose your actions, then Review &amp; submit.</b> Change your mind freely until you commit.`;
+  return `${pill(1)}Read the <b>Situation</b>, then work through <b>Information</b> and <b>Decisions</b>.`;
 }
 
 function kpiCard(deltas){
