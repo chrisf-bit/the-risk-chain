@@ -720,6 +720,55 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .tour-pop.pl-top .tp-arrow{bottom:-8px;border-left:0;border-top:0}
 .tour-pop.pl-left .tp-arrow{right:-8px;top:26px;border-left:0;border-bottom:0}
 .tour-pop.pl-right .tp-arrow{left:-8px;top:26px;border-right:0;border-top:0}
+
+/* ============================================================
+   v5: motion + a light gamified layer
+   The palette stays institutional (this is adult social care, not
+   an arcade). Engagement comes from timing at the emotional beats
+   and a little dimensional polish: glow, gloss, count-up, pop.
+   A single warm "points" gold is used sparingly as a reward accent.
+   ============================================================ */
+:root{--accent:#c68a1e;--accent-tint:#f6ecd4}
+@media (prefers-color-scheme:dark){:root{--accent:#e6b64c;--accent-tint:#2b2411}}
+:root[data-theme="light"]{--accent:#c68a1e;--accent-tint:#f6ecd4}
+:root[data-theme="dark"]{--accent:#e6b64c;--accent-tint:#2b2411}
+
+/* Prevention Capability = the running "score". Animated ring sweep, soft
+   glow, a metallic value read-out, and a gold reward label. */
+.prev-ring .prev-arc{transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 5px currentColor)}
+.prev-cap{position:relative;overflow:hidden}
+.prev-cap::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(140px 90px at 14% 26%,rgba(255,255,255,.07),transparent 70%)}
+.prev-ring .pv{background:linear-gradient(180deg,#fff,rgba(255,255,255,.68));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.02em}
+.prev-cap .pc-txt small{color:var(--accent)}
+
+/* KPI + time bars: give the fills a glossy, "meter"-like read so the rail
+   feels alive without changing hue. */
+.kpi .k-fill,.timebar .tb-fill{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -3px 6px rgba(0,0,0,.09)}
+.pip.used{box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+
+/* KPI change flash on the consequence reveal — draws the eye to what moved,
+   tinted in the direction of the change. */
+@keyframes flashgood{0%,100%{box-shadow:0 0 0 0 transparent}28%{box-shadow:0 0 0 5px var(--good-tint)}}
+@keyframes flashbad{0%,100%{box-shadow:0 0 0 0 transparent}28%{box-shadow:0 0 0 5px var(--bad-tint)}}
+.kpi.flash-good{animation:flashgood 1.5s ease-out;border-radius:8px}
+.kpi.flash-bad{animation:flashbad 1.5s ease-out;border-radius:8px}
+
+/* Selecting an action: a small tactile pop on the check dot. */
+.act .a-checkdot{animation:dotpop .32s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes dotpop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* Journey progress: the active step gently breathes. */
+.step.active .dot{animation:steppulse 2.4s ease-in-out infinite}
+@keyframes steppulse{0%,100%{box-shadow:0 0 0 4px var(--teal-tint)}50%{box-shadow:0 0 0 7px var(--teal-tint)}}
+
+/* Risk chain assembling in, node by node. */
+@keyframes chainpop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+@media(prefers-reduced-motion:reduce){
+  .prev-ring .prev-arc{transition:none}
+  .step.active .dot{animation:none}
+  .act .a-checkdot{animation:none}
+}
 </style>
 </head>
 <body>
@@ -1351,8 +1400,108 @@ function render(){
   app().classList.toggle('is-console', S.screen==='dashboard');
   window.scrollTo({top:0,behavior:'auto'});
   applyTheme();
+  try{afterRender();}catch(err){/* animations are non-essential; never block the UI */}
   // First-time coach tour on entering the dashboard
   if(S.screen==='dashboard' && !S.seenOnboard){S.seenOnboard=true;save();setTimeout(startTour,80);}
+}
+
+/* ============================================================
+   Arrival animations — motion at the beats.
+   render() replaces innerHTML on every interaction (tab switches,
+   selecting actions), so "arrival" effects are gated on a
+   screen:round key and only play when you actually land somewhere
+   new. In-screen re-renders leave everything at its final state.
+   ============================================================ */
+let _animKey=null, _clockTimer=null;
+function prefersReduce(){return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches);}
+function afterRender(){
+  if(_clockTimer){clearInterval(_clockTimer);_clockTimer=null;}
+  const key=S.screen+':'+S.round;
+  const fresh = key!==_animKey;
+  _animKey=key;
+  const motion = fresh && !prefersReduce();
+  animateBars(motion);
+  animateCounts(motion);
+  if(motion){
+    if(S.screen==='reveal'){staggerFeed();flashDeltas();}
+    if(S.screen==='riskchain')drawChain();
+  }
+  if(S.screen==='dashboard' && S.round===3) startAtmosClock();
+}
+/* Grow the meter fills and sweep the prevention ring from empty. */
+function animateBars(play){
+  document.querySelectorAll('.k-fill,.tb-fill').forEach(b=>{
+    if(!play)return;
+    const target=b.style.width||'0%';
+    b.style.width='0%';
+    void b.offsetWidth;                       // commit the reset before the transition
+    requestAnimationFrame(()=>{b.style.width=target;});
+  });
+  const arc=document.querySelector('.prev-arc');
+  if(arc && play){
+    const full=arc.getAttribute('stroke-dasharray');
+    const target=arc.getAttribute('stroke-dashoffset');
+    arc.style.strokeDashoffset=full;          // empty ring
+    void arc.getBoundingClientRect();
+    requestAnimationFrame(()=>{arc.style.strokeDashoffset=target;});
+  }
+}
+/* Tick numbers up/down to their value (a subtle "scoring" feel). */
+function animateCounts(play){
+  document.querySelectorAll('[data-count]').forEach(elm=>{
+    const to=parseInt(elm.getAttribute('data-count'),10);
+    if(isNaN(to))return;
+    const from=parseInt(elm.getAttribute('data-from')||'0',10);
+    if(!play || from===to){elm.textContent=to;return;}
+    const dur=850, t0=performance.now();
+    (function tick(now){
+      const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3);
+      elm.textContent=Math.round(from+(to-from)*e);
+      if(p<1)requestAnimationFrame(tick); else elm.textContent=to;
+    })(t0);
+  });
+}
+/* Consequence feed lands item by item, like alerts arriving. */
+function staggerFeed(){
+  document.querySelectorAll('.feed .feed-item').forEach((it,i)=>{
+    it.style.animation='none';void it.offsetWidth;
+    it.style.animation='slidein .5s cubic-bezier(.2,.7,.2,1) both';
+    it.style.animationDelay=(0.12+i*0.11)+'s';
+  });
+}
+/* Pulse the indicators that actually changed, in the change's direction. */
+function flashDeltas(){
+  document.querySelectorAll('.kpi').forEach((row,i)=>{
+    const d=row.querySelector('.k-delta');
+    if(!d)return;
+    const cls=d.classList.contains('k-good')?'flash-good':'flash-bad';
+    setTimeout(()=>{
+      row.classList.add(cls);
+      setTimeout(()=>row.classList.remove(cls),1500);
+    },550+i*90);
+  });
+}
+/* The Risk Chain assembles from the top down. */
+function drawChain(){
+  document.querySelectorAll('#chain-track .chain-node').forEach((n,i)=>{
+    n.style.animation='none';void n.offsetWidth;
+    n.style.animation='chainpop .5s cubic-bezier(.2,.8,.2,1) both';
+    n.style.animationDelay=(i*0.15)+'s';
+  });
+}
+/* Round 3: a gently ticking clock for atmosphere and quiet time pressure. */
+function startAtmosClock(){
+  if(prefersReduce())return;
+  const face=document.querySelector('.clock-strip .clock-face');
+  if(!face)return;
+  const parts=face.textContent.trim().split(':').map(Number);
+  let h=parts[0]||12, m=parts[1]||0, sec=0;
+  const paint=()=>face.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  paint();
+  _clockTimer=setInterval(()=>{
+    if(++sec>=60){sec=0;if(++m>=60){m=0;h++;}}
+    paint();
+  },1000);
 }
 
 function topbar(){
@@ -1692,8 +1841,8 @@ function preventionCard(){
   return `<div class="prev-cap">
     <div class="prev-ring">
       <svg width="74" height="74"><circle cx="37" cy="37" r="30" stroke="rgba(255,255,255,.15)" stroke-width="7" fill="none"/>
-        <circle cx="37" cy="37" r="30" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>
-      <div class="pv">${v}</div>
+        <circle class="prev-arc" cx="37" cy="37" r="30" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>
+      <div class="pv" data-count="${v}" data-from="0">0</div>
     </div>
     <div class="pc-txt"><small>Prevention capability</small><h4>${prevLabel(v)}</h4><p>Your overall ability to prevent an incident, right now.</p></div>
   </div>`;
@@ -1750,9 +1899,11 @@ function kpiRow(k,deltas){
     const arrow=dv>0?'▲':'▼';
     deltaHtml=`<span class="k-delta ${cls}">${arrow} ${dv>0?'+':''}${dv}</span>`;
   }
+  const hasD = deltas && deltas[k.key]!==undefined;
+  const from = hasD ? v-deltas[k.key] : 0;
   return `<div class="kpi">
     <div class="k-name">${k.invert?`<span class="warn-ico">${svg(I.alertT)}</span>`:''}${k.name}</div>
-    <div class="k-val">${v}${k.invert?'<span class="muted" style="font-size:11px;font-weight:500"> exp.</span>':''}</div>
+    <div class="k-val"><span class="k-num" data-count="${v}" data-from="${from}">${from}</span>${k.invert?'<span class="muted" style="font-size:11px;font-weight:500"> exp.</span>':''}</div>
     <div class="k-bar"><div class="k-fill ${zone}" style="width:${v}%"></div></div>
     ${deltaHtml}
   </div>`;
