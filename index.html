@@ -771,56 +771,89 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 }
 
 /* ============================================================
-   v5.1: prominence + dimension
-   Three targeted lifts, palette unchanged:
-   1) the "Start here" guide reads as a call-to-action, not body text
-   2) cards get depth (layered shadow, top sheen) + a gentle hover lift
-   3) the performance meters become red→amber→green gauges
+   v5.1: a visual taxonomy — every panel type reads differently
+   The screen had too many near-white panels, so instruction, content,
+   metric and alert all blurred together. Each category now has a
+   distinct, consistent identity:
+     INSTRUCTION  filled teal banner    ("do this now")
+     CONTENT      clean white card      (what you read)
+     METRIC       tinted card, teal cap (your readouts)
+     INFO NOTE    blue tint + bar       (helper / FYI)
+     ALERT        amber/red + bar       (something's wrong)
    ============================================================ */
 
-/* 1 — Start here: a proper call-to-action -------------------- */
+/* Vivid gauge colours — the institutional --good/--bad are muted
+   (brown-red, sage-green); the meters want a true RAG signal. */
+:root{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;}
+@media (prefers-color-scheme:dark){:root{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;}}
+:root[data-theme="light"]{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;}
+:root[data-theme="dark"]{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;}
+
+/* INSTRUCTION — the loudest thing on the screen ------------- */
 .tab-guide-start{
-  font-size:14px;padding:13px 15px;
-  background:linear-gradient(135deg,var(--teal-tint),var(--surface) 85%);
-  border:1px solid var(--teal);border-left:4px solid var(--teal);
-  box-shadow:0 2px 12px rgba(44,127,140,.16);
+  font-size:14.5px;padding:15px 18px;color:#fff;font-weight:500;
+  background:linear-gradient(135deg,var(--teal),var(--teal-strong));
+  border:0;border-radius:12px;
+  box-shadow:0 8px 24px rgba(44,127,140,.42),inset 0 1px 0 rgba(255,255,255,.18);
 }
-.tab-guide-start svg{width:22px;height:22px;animation:nudge 2.6s ease-in-out infinite}
+.tab-guide-start b{color:#fff;font-weight:750}
+.tab-guide-start svg{width:24px;height:24px;color:#fff;animation:nudge 2.6s ease-in-out infinite}
 @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
 .guide-badge{
-  display:inline-block;margin-right:8px;padding:3px 10px;border-radius:100px;
-  background:var(--teal);color:#fff;font-size:11px;font-weight:800;
+  display:inline-block;margin-right:9px;padding:3px 11px;border-radius:100px;
+  background:#fff;color:var(--teal-strong);font-size:11px;font-weight:800;
   letter-spacing:.07em;text-transform:uppercase;vertical-align:1px;
-  box-shadow:0 1px 3px rgba(20,40,60,.2);
+  box-shadow:0 1px 3px rgba(20,40,60,.25);
 }
 
-/* 2 — Cards: depth without changing hue ---------------------- */
+/* CONTENT — white cards, clearly raised off the page -------- */
 .card{
-  box-shadow:0 1px 2px rgba(20,40,60,.05),0 8px 22px rgba(20,40,60,.07),
-             inset 0 1px 0 rgba(255,255,255,.5);
+  box-shadow:0 1px 2px rgba(20,40,60,.06),0 10px 26px rgba(20,40,60,.09),
+             inset 0 1px 0 rgba(255,255,255,.6);
   transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s;
 }
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-@media (prefers-color-scheme:dark){.card{box-shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)}}
-:root[data-theme="dark"] .card{box-shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)}
-/* The navy prevention panel isn't a .card — give it the same life. */
-.prev-cap{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
-.prev-cap:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+@media (prefers-color-scheme:dark){.card{box-shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}}
+:root[data-theme="dark"] .card{box-shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
 
-/* 3 — Performance meters as R→A→G gauges -------------------- */
-/* The fill is a window onto a full-width red→amber→green spectrum
-   anchored to the track (100cqi), so a low value shows only the red
-   end and green is reached only when the bar is near full. Inverted
-   KPIs (exposure: high = bad) flip the spectrum. */
+/* METRIC — readouts read as an instrument cluster: tinted
+   surface + a teal cap strip, distinct from white content. */
+.kpi-panel,.timecard{
+  background:var(--surface-2);
+  border-top:3px solid var(--teal);
+  border-radius:var(--r);
+}
+.prev-cap{border-top:3px solid var(--teal)}
+.kpi-panel,.timecard,.prev-cap{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+.kpi-panel:hover,.timecard:hover,.prev-cap:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+
+/* INFO NOTE — blue = "for your information", never confused with
+   the teal "do this" instruction. */
+.link-note{
+  background:var(--info-tint);border:1px solid transparent;
+  border-left:4px solid var(--info);color:var(--ink-2);
+}
+.link-note svg,.link-note b{color:var(--info)}
+
+/* ALERT / NOTIFICATION — a strong severity bar down the side. */
+.alert,.notif{border-left-width:4px}
+.alert-amber,.notif-amber{border-left-color:var(--warn)}
+.alert-red,.notif-red{border-left-color:var(--bad)}
+.alert-info,.notif-info{border-left-color:var(--info)}
+
+/* METERS as vivid red→amber→green gauges -------------------- */
+/* The fill is a window onto a full-width RAG spectrum anchored to the
+   track (100cqi): a low value shows only the red end, green is reached
+   only near full. Inverted KPIs (exposure: high = bad) flip it. */
 .kpi .k-bar{container-type:inline-size}
 .kpi .k-fill{position:relative;overflow:hidden}
 .kpi .k-fill::before{
   content:"";position:absolute;top:0;left:0;height:100%;width:100cqi;
-  background:linear-gradient(90deg,var(--bad) 0%,var(--warn) 50%,var(--good) 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(0,0,0,.1);
+  background:linear-gradient(90deg,var(--g-red) 0%,var(--g-amber) 50%,var(--g-green) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(0,0,0,.12);
 }
 .kpi .k-fill.k-inv::before{
-  background:linear-gradient(90deg,var(--good) 0%,var(--warn) 50%,var(--bad) 100%);
+  background:linear-gradient(90deg,var(--g-green) 0%,var(--g-amber) 50%,var(--g-red) 100%);
 }
 @media(prefers-reduced-motion:reduce){.tab-guide-start svg{animation:none}}
 </style>
