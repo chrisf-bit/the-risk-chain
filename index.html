@@ -805,10 +805,16 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 
 /* Vivid gauge colours — the institutional --good/--bad are muted
    (brown-red, sage-green); the meters want a true RAG signal. */
-:root{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;}
-@media (prefers-color-scheme:dark){:root{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;}}
-:root[data-theme="light"]{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;}
-:root[data-theme="dark"]{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;}
+:root{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;--teal-deep:#1c6470;}
+@media (prefers-color-scheme:dark){:root{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;--teal-deep:#177483;}}
+:root[data-theme="light"]{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;--teal-deep:#1c6470;}
+:root[data-theme="dark"]{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;--teal-deep:#177483;}
+
+/* ACCESSIBILITY — white text on the bright cyan teal fails WCAG AA
+   (~2.2:1). Filled primary buttons use a deep teal so white passes
+   (~5:1+). Bright teal stays for non-text accents (rings, icons). */
+.btn{background:var(--teal-deep);border-color:var(--teal-deep)}
+.btn:hover{background:var(--teal-deep);border-color:var(--teal-deep);filter:brightness(1.12)}
 
 /* INSTRUCTION badge — a dark navy pill on the gold bar (high contrast,
    the inverse of the banner so it reads as a distinct "tag"). */
@@ -837,19 +843,33 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .kpi-panel,.timecard,.prev-cap{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
 .kpi-panel:hover,.timecard:hover,.prev-cap:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 
-/* INFO SOURCE tiles — the icon becomes a vivid, glowing "app icon" so
-   each record reads as a tangible thing to pick up and inspect. Cards
-   lift with a teal glow on hover; opened records turn green (collected). */
-.src .s-ico{background:linear-gradient(145deg,var(--teal),var(--teal-strong));box-shadow:0 6px 16px rgba(44,130,140,.45),inset 0 1px 0 rgba(255,255,255,.3);border:0}
-@media (prefers-color-scheme:dark){.src .s-ico{box-shadow:0 6px 18px rgba(77,180,194,.4),inset 0 1px 0 rgba(255,255,255,.3)}}
-.src .s-ico svg{color:#fff}
+/* ============================================================
+   ELEMENT IDENTITIES — each type has a consistent, learnable look:
+     RECORDS  = case files  → warm "paper" icon + a reliability STAMP
+     ALERTS   = warnings     → glowing severity medallion + title
+     DECISIONS= choices      → category-colour icon + a SELECT checkbox
+   ============================================================ */
+
+/* RECORDS ("case files") — a warm parchment icon tile marks these as
+   documents to inspect, and the reliability reads as an inked stamp.
+   Deliberately WARM, so records never blur into the cool decision tiles. */
+.src .s-ico{background:linear-gradient(150deg,#f0e7d1,#d9caa6);box-shadow:0 5px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.55);border:0}
+.src .s-ico svg{color:#6a5a33}
 .src.opened .s-ico{background:linear-gradient(145deg,var(--g-green),#0e7a3c);box-shadow:0 6px 16px rgba(18,161,80,.5),inset 0 1px 0 rgba(255,255,255,.3)}
 .src.opened .s-ico svg{color:#fff}
 .src:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--card-sh),0 0 0 1px var(--teal),0 0 26px rgba(44,180,194,.28)}
+.src .s-review{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--teal-strong);opacity:0;transform:translateX(-4px);transition:.18s}
+.src .s-review svg{width:14px;height:14px}
+.src:hover .s-review{opacity:1;transform:none}
+/* the reliability STAMP */
+.cred-stamp{display:inline-block;transform:rotate(-3.5deg);border:2px solid currentColor;border-radius:5px;padding:2px 9px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.92;background:transparent}
+.cred-reliable{color:var(--good)} .cred-incomplete{color:var(--warn)} .cred-outdated{color:var(--ink-3)}
+.cred-ambiguous{color:var(--info)} .cred-contradictory{color:var(--bad)}
 
-/* DECISION tiles — each action's icon is a vivid category-coloured tile
-   (like ability icons), so type is legible at a glance. Selecting one
-   lights the whole card teal. */
+/* DECISIONS ("choices") — category-colour icon (type at a glance) plus a
+   real SELECT checkbox top-right, so these read as things you tick, not
+   read. Selecting lights the card and fills the box. */
+.act{padding-right:46px}
 .act .a-ico{box-shadow:0 4px 12px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.25)}
 .act .a-ico svg{color:#fff}
 .a-ico.cat-decision{background:linear-gradient(145deg,#6d7f90,#4a5a68)}
@@ -858,8 +878,13 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .a-ico.cat-communication{background:linear-gradient(145deg,#5695d6,#3a6ea5)}
 .a-ico.cat-practical{background:linear-gradient(145deg,#3fa76a,#2e7d54)}
 .a-ico.cat-risk{background:linear-gradient(145deg,#8172d6,#5a4ba5)}
+.act .a-cat{display:block;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+.act .a-select{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);background:var(--surface-2);display:grid;place-items:center;transition:.15s}
+.act .a-select svg{width:14px;height:14px;color:#fff}
+.act:hover .a-select{border-color:var(--teal)}
 .act:hover{transform:translateY(-2px);box-shadow:var(--card-sh),0 0 0 1px var(--ink-3)}
-.act.sel{box-shadow:var(--card-sh),0 0 0 2px var(--teal),0 0 24px rgba(44,180,194,.25)}
+.act.sel{border-color:transparent;background:var(--teal-tint);box-shadow:0 0 0 2px var(--teal),0 8px 24px rgba(44,180,194,.3)}
+.act.sel .a-select{background:var(--teal-deep);border-color:var(--teal-deep);box-shadow:0 0 12px rgba(44,180,194,.6)}
 
 /* INFO NOTE — a blue-tinted fill (no edge bar) so "for your
    information" never reads as the gold "do this" instruction. */
@@ -904,16 +929,22 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .alert-info .al-ico{background:linear-gradient(145deg,#5f97d6,#3a6ea5)}
 .alert-info .al-body b{color:var(--info)}
 
-/* METERS as vivid red→amber→green gauges -------------------- */
-/* The fill is a window onto a full-width RAG spectrum anchored to the
-   track (100cqi): a low value shows only the red end, green is reached
-   only near full. Inverted KPIs (exposure: high = bad) flip it. */
-.kpi .k-bar{container-type:inline-size}
-.kpi .k-fill{position:relative;overflow:hidden}
+/* METERS — a SEGMENTED red→amber→green gauge (a crisp game stat bar,
+   not a smeared gradient). The fill is a window onto a full-width RAG
+   spectrum anchored to the track (100cqi) so a low value shows only the
+   red end; a repeating mask cuts it into notches; the track carries the
+   same notches so the whole thing reads as a segmented gauge. Inverted
+   KPIs (exposure: high = bad) flip the spectrum. */
+.kpi .k-bar{container-type:inline-size;height:10px;border-radius:4px;
+  background-color:var(--surface-3);
+  background-image:repeating-linear-gradient(90deg,transparent 0 13px,rgba(0,0,0,.24) 13px 17px);}
+.kpi .k-fill{position:relative;overflow:hidden;border-radius:3px;
+  -webkit-mask:repeating-linear-gradient(90deg,#000 0 13px,transparent 13px 17px);
+  mask:repeating-linear-gradient(90deg,#000 0 13px,transparent 13px 17px);}
 .kpi .k-fill::before{
   content:"";position:absolute;top:0;left:0;height:100%;width:100cqi;
   background:linear-gradient(90deg,var(--g-red) 0%,var(--g-amber) 50%,var(--g-green) 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 6px rgba(0,0,0,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 6px rgba(0,0,0,.15);
 }
 .kpi .k-fill.k-inv::before{
   background:linear-gradient(90deg,var(--g-green) 0%,var(--g-amber) 50%,var(--g-red) 100%);
@@ -1898,12 +1929,12 @@ function viewDashboard(){
   return `<main class="console-main">
     <div class="console-col">
       ${round===3?`<div class="clock-strip">${round3ClockBar()}</div>`:''}
+      <div class="tab-guide">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
       <div class="tabbar" role="tablist">
         ${tabBtn('situation','Situation',I.clipboard,alertCount||'')}
         ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
         ${tabBtn('decisions','Decisions',I.check,selCount||'')}
       </div>
-      <div class="tab-guide">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
       <div class="tabpanel" role="tabpanel">
         ${tab==='situation'?situationPanel:tab==='information'?informationPanel:decisionsPanel}
       </div>
@@ -1949,8 +1980,8 @@ function srcCard(doc,round){
     </div>
     <div><h4>${doc.title}</h4><div class="s-src">${doc.source}</div></div>
     <div class="s-teaser">${doc.teaser}</div>
-    <div class="s-foot"><span class="chip chip-${doc.cred}">${credLabel}</span>
-      ${opened?'<span class="muted" style="font-size:11.5px">Reopen · free</span>':''}
+    <div class="s-foot"><span class="cred-stamp cred-${doc.cred}">${credLabel}</span>
+      ${opened?'<span class="muted" style="font-size:11.5px">Reopen · free</span>':`<span class="s-review">Review ${svg(I.arrowR)}</span>`}
     </div>
   </button>`;
 }
@@ -1982,8 +2013,10 @@ function actCard(a,round,remaining,selected){
   }
   const foot = (evTag||dis)?`<span class="a-foot">${evTag}${dis?`<span class="a-ev ev-off">${svg(I.clock)} No time, deselect another</span>`:''}</span>`:'';
   return `<button class="act ${selected?'sel':''} ${dis?'disabled':''}" data-act="toggle-action" data-action-id="${a.id}" aria-pressed="${selected}" ${dis?'disabled':''}>
-    <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}${selected?`<span class="a-checkdot">${svg(I.checkSmall)}</span>`:''}</span>
+    <span class="a-select" aria-hidden="true">${selected?svg(I.checkSmall):''}</span>
+    <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}</span>
     <span class="a-main">
+      <span class="a-cat">${a.cat}</span>
       <span class="a-title">${a.title} ${timeCost(cost)}</span>
       <span class="a-blurb">${a.blurb}</span>
       ${foot}
