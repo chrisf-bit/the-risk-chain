@@ -369,7 +369,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .hero .kick{margin-bottom:18px}
 .display{font-size:clamp(34px,6vw,60px);font-weight:700;letter-spacing:-.025em;line-height:1.02}
 .display .l2{color:var(--teal-strong);display:block}
-.subline{font-family:var(--serif);font-size:clamp(17px,2.4vw,21px);color:var(--ink-2);margin-top:18px;font-style:italic}
+.subline{font-family:var(--sans);font-size:clamp(18px,2.4vw,22px);color:var(--ink);margin-top:18px;font-style:normal;font-weight:700;letter-spacing:-.01em}
 .hero-cta{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
 /* Consequence reveal */
@@ -1414,6 +1414,36 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 
 /* Dossier photo ring in NHS blue */
 .dossier-photo::after{box-shadow:0 0 0 2px var(--teal),0 0 0 5px var(--teal-tint)}
+
+/* ---- v7 fixes ---- */
+/* Reviewed record: readable dark text on the pale-green card (was white) */
+.src.opened h4{color:var(--ink)}
+.src.opened .s-src{color:var(--ink-3)}
+.src.opened .s-teaser{color:var(--ink-2)}
+.src.opened .muted{color:var(--ink-3) !important}
+.src.opened .s-reviewed{color:var(--good)}
+.src.opened .r-media::after{display:none}
+
+/* Consistent, larger icons across content tiles */
+.src .r-ic-box,.src .r-chip,.act .a-ico{width:46px;height:46px;border-radius:9px}
+.src .r-ic-box svg,.src .r-chip svg,.act .a-ico svg{width:25px;height:25px}
+.care-h svg{width:18px;height:18px}
+.sec-title-ico svg{width:22px;height:22px}
+.work-col .tab svg{width:19px;height:19px}
+
+/* How-to-play tiles: prominent icon chip + larger, clearer text */
+.htp-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+.info-tile{gap:14px;padding:16px;align-items:center}
+.info-tile>svg{width:26px;height:26px;padding:11px;box-sizing:content-box;border-radius:10px;background:var(--teal-tint);color:var(--teal);flex:none;margin-top:0}
+.info-tile h5{font-size:15.5px;font-weight:700;color:var(--ink)}
+.info-tile p{font-size:13.5px;color:var(--ink-2);margin-top:3px;line-height:1.45}
+
+/* Duration card (landing) */
+.dur-card{display:inline-flex;align-items:center;gap:12px;margin-top:18px;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.dur-card .dur-ic{width:42px;height:42px;border-radius:9px;background:var(--teal-tint);color:var(--teal);display:grid;place-items:center;flex:none}
+.dur-card .dur-ic svg{width:24px;height:24px}
+.dur-card .dur-t{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.dur-card .dur-v{font-size:14.5px;font-weight:700;color:var(--ink);margin-top:1px}
 </style>
 </head>
 <body>
@@ -2208,12 +2238,16 @@ function viewLanding(){
         <p class="lead mt-22" style="max-width:56ch">You are the management team of Meadow View Supported Living. A new resident, Michael Turner, is arriving with incomplete and contradictory information about his eating and drinking. Over three rounds you will decide what to investigate, what to control, and where to spend your limited time, then watch the consequences unfold.</p>
         <div class="hero-cta">
           <button class="btn btn-lg" data-act="goto-intro">Begin the simulation ${svg(I.arrowR)}</button>
-          <span class="muted" style="font-size:13.5px">About 15 to 20 minutes · 3 playable rounds</span>
+        </div>
+        <div class="dur-card">
+          <span class="dur-ic">${svg(I.clock)}</span>
+          <div><div class="dur-t">Duration</div><div class="dur-v">15–20 minutes · 3 playable rounds</div></div>
         </div>
       </div>
       <div class="media-ph" style="min-height:280px"><span class="mp-badge">Media slot</span>${svg(I.play)}<span class="mp-label">Opening film</span><span class="mp-sub">A short, calm establishing film introducing Meadow View and Michael could open the experience here.</span></div>
     </section>
     <section class="card card-pad" style="margin-bottom:40px">
+      <div class="htp-title">How to play</div>
       <div class="preview-grid">
         <div class="info-tile">${svg(I.eye)}<div><h5>Read the situation</h5><p>Realistic records, messages and alerts, some reliable, some outdated or contradictory.</p></div></div>
         <div class="info-tile">${svg(I.clock)}<div><h5>Manage your time</h5><p>There is only so much you can review and act on each round. You cannot do everything, so choose.</p></div></div>
