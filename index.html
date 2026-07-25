@@ -367,7 +367,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .lead{font-size:18px;color:var(--ink);line-height:1.5}
 .hero{padding:54px 0 40px}
 .hero .kick{margin-bottom:18px}
-.display{font-size:clamp(34px,4.4vw,50px);font-weight:700;letter-spacing:-.025em;line-height:1.05}
+.display{font-size:clamp(34px,4vw,46px);font-weight:700;letter-spacing:-.022em;line-height:1.06}
 .display .l2{color:var(--teal-strong);display:block}
 .subline{font-family:var(--sans);font-size:clamp(18px,2.4vw,22px);color:var(--ink);margin-top:18px;font-style:normal;font-weight:700;letter-spacing:-.01em}
 .hero-cta{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
@@ -583,7 +583,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .media-ph.strip svg{width:26px;height:26px}
 .media-ph.strip>div{display:flex;flex-direction:column;gap:2px}
 .media-ph.strip .mp-sub{max-width:none;font-size:11.5px}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:52px;align-items:center}
+.wrap-wide{max-width:1440px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:44px;align-items:center}
 @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:28px}.hero-grid .media-ph{aspect-ratio:16/10 !important;max-width:480px}}
 .media-ph.portrait{aspect-ratio:3/4;min-height:0}
 .media-ph .mp-badge{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--navy);color:var(--navy-ink);padding:3px 8px;border-radius:6px;opacity:.85}
@@ -2229,7 +2230,7 @@ function footer(){
 
 /* ---------- Landing ---------- */
 function viewLanding(){
-  return `<main class="wrap">
+  return `<main class="wrap wrap-wide">
     <section class="hero hero-grid">
       <div class="prose">
         <div class="kick"><span class="chip chip-teal">${svg(I.route)} Team-based operational simulation</span></div>
