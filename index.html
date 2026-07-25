@@ -1174,6 +1174,99 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .btn:hover{background:var(--teal-deep);border-color:var(--teal-deep);filter:brightness(1.13)}
 .btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line);filter:none}
 .btn-secondary:hover{background:var(--surface-2);filter:none}
+
+/* ============================================================
+   v6.1 POLISH — premium finish
+   ============================================================ */
+/* No visible scrollbars anywhere (wheel / trackpad still scroll) */
+*{scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{width:0;height:0;display:none}
+
+/* ---- Clear zone hierarchy: recessed GUIDE vs raised WORK ---- */
+/* Work cards sit ABOVE the page (light surface + real shadow). */
+.work-col .card,.src,.act{box-shadow:0 4px 14px rgba(10,20,35,.16),0 18px 40px rgba(10,20,35,.22)}
+:root[data-theme="light"] .work-col .card,:root[data-theme="light"] .src,:root[data-theme="light"] .act{box-shadow:0 3px 10px rgba(20,40,70,.08),0 16px 34px rgba(20,40,70,.12)}
+@media(prefers-color-scheme:light){.work-col .card,.src,.act{box-shadow:0 3px 10px rgba(20,40,70,.08),0 16px 34px rgba(20,40,70,.12)}}
+/* Guide blocks are FLAT reference panels, recessed toward the page tone. */
+.g-block{box-shadow:none;border:1px solid rgba(255,255,255,.07);border-radius:14px}
+:root[data-theme="dark"] .g-block{background:#26394f}
+@media(prefers-color-scheme:dark){.g-block{background:#26394f}}
+:root[data-theme="light"] .g-block{background:#e7edf4;border-color:#d5dfea}
+@media(prefers-color-scheme:light){.g-block{background:#e7edf4;border-color:#d5dfea}}
+@media(prefers-color-scheme:dark){
+  .g-task{background:linear-gradient(180deg,rgba(238,171,62,.15),#26394f 60%)}
+  .g-info{background:linear-gradient(180deg,rgba(95,142,240,.18),#26394f 60%)}
+  .g-alert{background:linear-gradient(180deg,rgba(239,106,77,.2),#26394f 60%)}
+}
+:root[data-theme="dark"] .g-task{background:linear-gradient(180deg,rgba(238,171,62,.15),#26394f 60%)}
+:root[data-theme="dark"] .g-info{background:linear-gradient(180deg,rgba(95,142,240,.18),#26394f 60%)}
+:root[data-theme="dark"] .g-alert{background:linear-gradient(180deg,rgba(239,106,77,.2),#26394f 60%)}
+:root[data-theme="light"] .g-task{background:linear-gradient(180deg,rgba(201,135,28,.14),#e7edf4 60%)}
+:root[data-theme="light"] .g-info{background:linear-gradient(180deg,rgba(63,127,224,.14),#e7edf4 60%)}
+:root[data-theme="light"] .g-alert{background:linear-gradient(180deg,rgba(209,73,46,.13),#e7edf4 60%)}
+.guide-title{opacity:.85}
+
+/* ---- PREMIUM METERS — clean single-hue bars (colour = health) ---- */
+.kpi{gap:4px 12px}
+.kpi .k-bar{height:8px;border-radius:100px;overflow:hidden;background:rgba(120,145,175,.22);background-image:none;container-type:normal}
+.kpi .k-fill{border-radius:100px;-webkit-mask:none;mask:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.kpi .k-fill::before{content:none;display:none}
+.kpi .k-fill.f-good{background:linear-gradient(90deg,#1ba85d,#37d47f)}
+.kpi .k-fill.f-warn{background:linear-gradient(90deg,#d3941f,#f4ba45)}
+.kpi .k-fill.f-bad{background:linear-gradient(90deg,#cf3f2c,#f0674a)}
+.kpi .k-fill.f-teal{background:linear-gradient(90deg,#1a8f8a,#2fc7c2)}
+.hud .kpi .k-bar{background:rgba(255,255,255,.09)}
+.hud .timebar{background:rgba(255,255,255,.09) !important;height:8px;border-radius:100px}
+.timecard .tc-note,.hud .tc-note{margin-top:12px}
+/* time bar premium */
+.timebar{height:8px;border-radius:100px;overflow:hidden}
+.timebar .tb-fill{border-radius:100px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+
+/* ---- HUD reads as an instrument panel ---- */
+.hud{box-shadow:0 22px 48px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(120,180,200,.06)}
+.hud-live{animation:hudpulse 2.4s ease-in-out infinite}
+@keyframes hudpulse{0%,100%{opacity:1}50%{opacity:.45}}
+.hud .prev-ring svg circle:first-child{stroke:rgba(255,255,255,.1)}
+
+/* ---- Prominent submit dock ---- */
+.rail-submit{padding-top:6px}
+.rail-submit .btn{width:100%;padding:16px 18px;font-size:16px;border-radius:14px}
+.rail-submit .btn:not([disabled]){box-shadow:0 10px 26px rgba(23,116,131,.45),0 0 0 1px rgba(47,199,194,.4)}
+.rail-submit .btn[disabled]{opacity:1;background:var(--surface-2);color:var(--ink-3);border-color:var(--line);box-shadow:none;font-weight:700}
+.submit-status{padding:0 2px}
+
+/* ---- Status pills that match the theme (no muddy dark chips) ---- */
+.dossier-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:100px;font-size:12px;font-weight:750;border:1px solid;letter-spacing:.01em}
+.dossier-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
+.dossier-chip.chip-incomplete{background:rgba(238,171,62,.16);color:#f0b559;border-color:rgba(238,171,62,.42)}
+.dossier-chip.chip-contradictory{background:rgba(239,106,77,.16);color:#ff8a70;border-color:rgba(239,106,77,.42)}
+.dossier-chip.chip-teal{background:rgba(47,199,194,.16);color:#4fd8d2;border-color:rgba(47,199,194,.42)}
+:root[data-theme="light"] .dossier-chip.chip-incomplete{background:rgba(201,135,28,.12);color:#a06a12;border-color:rgba(201,135,28,.4)}
+:root[data-theme="light"] .dossier-chip.chip-contradictory{background:rgba(209,73,46,.1);color:#b23a22;border-color:rgba(209,73,46,.36)}
+:root[data-theme="light"] .dossier-chip.chip-teal{background:rgba(21,154,149,.12);color:#0f7f7a;border-color:rgba(21,154,149,.36)}
+
+/* ---- DECISIONS: cleaner, tighter, less busy ---- */
+.acts{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.act{padding:15px 46px 15px 15px;gap:13px;align-items:center}
+.act .a-ico{width:48px;height:48px;border-radius:13px}
+.act .a-ico svg{width:26px;height:26px}
+.act .a-blurb{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px}
+
+/* ---- TOUR popover: premium dark card, high contrast ---- */
+.tour-pop{background:linear-gradient(180deg,#1d2a3a,#141d28);border:1px solid rgba(255,255,255,.1);box-shadow:0 0 0 1px rgba(0,0,0,.4),0 30px 70px rgba(0,0,0,.6);color:#eef4fb;width:330px}
+.tour-pop .tp-num{color:var(--teal)}
+.tour-pop h4{color:#fff;align-items:center;gap:11px}
+.tour-pop .tp-ico{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;background:linear-gradient(145deg,#2fc7c2,#177a83);box-shadow:0 5px 12px rgba(23,116,131,.5)}
+.tour-pop .tp-ico svg{width:19px;height:19px;color:#fff}
+.tour-pop p{color:#b7c6d6}
+.tour-pop .tp-dot{width:7px;height:7px;background:rgba(255,255,255,.22)}
+.tour-pop .tp-dot.on{background:var(--teal);width:20px;border-radius:100px;box-shadow:0 0 8px rgba(47,199,194,.6)}
+.tour-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:#eef4fb}
+.tour-btn:hover{background:rgba(255,255,255,.14)}
+.tour-btn.primary{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff}
+.tour-btn.primary:hover{background:var(--teal-deep);filter:brightness(1.15)}
+.tour-skip{color:#8aa0b5}.tour-skip:hover{color:#eef4fb}
+.tour-pop .tp-arrow{background:#1b2836;border-color:rgba(255,255,255,.1)}
 </style>
 </head>
 <body>
@@ -2256,7 +2349,6 @@ function actCard(a,round,remaining,selected){
   }
   const foot = (evTag||dis)?`<span class="a-foot">${evTag}${dis?`<span class="a-ev ev-off">${svg(I.clock)} No time, deselect another</span>`:''}</span>`:'';
   return `<button class="act ${selected?'sel':''} ${dis?'disabled':''}" data-act="toggle-action" data-action-id="${a.id}" aria-pressed="${selected}" ${dis?'disabled':''}>
-    <span class="a-wm" aria-hidden="true">${svg(I[cm.ico])}</span>
     <span class="a-select" aria-hidden="true">${selected?svg(I.checkSmall):''}</span>
     <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}</span>
     <span class="a-main">
@@ -2848,8 +2940,8 @@ function showTourStep(i){
     <div class="tour-spot" style="top:${spot.t}px;left:${spot.l}px;width:${spot.w}px;height:${spot.h}px"></div>
     <div class="tour-pop ${plClass}" style="top:${Math.round(popT)}px;left:${Math.round(popL)}px" role="dialog" aria-label="${step.h}">
       <div class="tp-arrow"></div>
-      <span class="tp-num">${svg(I.route)} Step ${i+1} of ${TOUR.length}</span>
-      <h4>${svg(I[step.ico])} ${step.h}</h4>
+      <span class="tp-num">Step ${i+1} of ${TOUR.length}</span>
+      <h4><span class="tp-ico">${svg(I[step.ico])}</span> ${step.h}</h4>
       <p>${step.p}</p>
       <div class="tp-foot">
         <div class="tp-dots">${TOUR.map((_,j)=>`<span class="tp-dot ${j===i?'on':''}"></span>`).join('')}</div>
