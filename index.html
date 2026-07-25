@@ -13,64 +13,83 @@
    human voice (residents, families) to hold the tension between
    operational control and the person behind the record.
    ============================================================ */
+/* ============================================================
+   v6 palette — "bright & airy" friendly console.
+   Light = soft cloud; Dark = lifted blue-slate (not near-black).
+   The HUD/navy stays a dark console in BOTH themes.
+   Accent roles: teal = act/primary · gold = records/objective ·
+   green = good/done · coral = alert · indigo = info.
+   ============================================================ */
 :root{
-  --ground:#e9edf0; --surface:#fdfefe; --surface-2:#f2f6f7; --surface-3:#e7eef0;
-  --ink:#15212e; --ink-2:#3a4b5a; --ink-3:#5a6b78; --ink-4:#6f7d88;
-  --line:#d6dee3; --line-2:#e6ecef;
-  --navy:#14324a; --navy-2:#1c4462; --navy-ink:#e8eef2;
-  --teal:#2c7f8c; --teal-strong:#22656f; --teal-tint:#e3f0f1;
-  --good:#3c8f63; --good-tint:#e6f2ea; --good-line:#bcdcc8;
-  --warn:#bb8420; --warn-tint:#f8efd9; --warn-line:#e8d3a1;
-  --bad:#b3453b; --bad-tint:#f7e6e3; --bad-line:#e6c0ba;
-  --info:#3a6ea5; --info-tint:#e6eef7;
-  --shadow:0 1px 2px rgba(20,40,60,.06),0 8px 24px rgba(20,40,60,.07);
-  --shadow-lg:0 4px 12px rgba(20,40,60,.10),0 24px 48px rgba(20,40,60,.12);
-  --r:10px; --r-sm:7px; --r-lg:16px;
+  --ground:#eef2f7; --surface:#ffffff; --surface-2:#f4f7fb; --surface-3:#e6edf4;
+  --ink:#182430; --ink-2:#45566a; --ink-3:#5c6b7a; --ink-4:#8494a3;
+  --line:#dbe3ec; --line-2:#e8eef4;
+  --navy:#1c2838; --navy-2:#131c28; --navy-ink:#eef4fb;
+  --teal:#159a95; --teal-strong:#127f7a; --teal-tint:#d7f0ee; --teal-deep:#0f6f6b;
+  --good:#1ea45c; --good-tint:#e2f6ea; --good-line:#bfe6cf;
+  --warn:#c9871c; --warn-tint:#fbefd8; --warn-line:#ecd39f;
+  --bad:#d1492e; --bad-tint:#fce9e3; --bad-line:#f2c3b6;
+  --info:#3f7fe0; --info-tint:#e7effc;
+  --gold:#c9871c; --coral:#d1492e; --indigo:#3f7fe0;
+  --accent:#c9871c; --accent-tint:#fbefd8;
+  --g-red:#d32020; --g-amber:#f2a005; --g-green:#12a150;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 10px 26px rgba(20,40,60,.10);
+  --shadow-lg:0 6px 16px rgba(20,40,60,.12),0 26px 52px rgba(20,40,60,.16);
+  --r:14px; --r-sm:10px; --r-lg:20px;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
   --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
   --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,monospace;
-  --maxw:1180px;
+  --maxw:1240px;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --ground:#0c141c; --surface:#141f2a; --surface-2:#1a2836; --surface-3:#213141;
-    --ink:#eef4f7; --ink-2:#c2ced7; --ink-3:#b0bec8; --ink-4:#93a2ad;
-    --line:#28394a; --line-2:#20303f;
-    --navy:#0a1822; --navy-2:#123049; --navy-ink:#e8eef2;
-    --teal:#4db4c2; --teal-strong:#3d9aa7; --teal-tint:#123138;
-    --good:#5cb185; --good-tint:#12291f; --good-line:#25503a;
-    --warn:#d6a544; --warn-tint:#2c2410; --warn-line:#524316;
-    --bad:#d5695d; --bad-tint:#2c1613; --bad-line:#552b25;
-    --info:#6ea0d6; --info-tint:#122031;
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.36);
-    --shadow-lg:0 6px 18px rgba(0,0,0,.4),0 28px 56px rgba(0,0,0,.5);
+    --ground:#233448; --surface:#31455f; --surface-2:#3a5271; --surface-3:#2a3d54;
+    --ink:#f2f7fd; --ink-2:#c6d4e3; --ink-3:#9db0c3; --ink-4:#6b8299;
+    --line:#405878; --line-2:#33475f;
+    --navy:#18232f; --navy-2:#111926; --navy-ink:#eef4fb;
+    --teal:#2fc7c2; --teal-strong:#22a7a2; --teal-tint:#1c4a50; --teal-deep:#177483;
+    --good:#2fbf6e; --good-tint:#153a2a; --good-line:#1f5c3d;
+    --warn:#eeab3e; --warn-tint:#3b2f1a; --warn-line:#5a4520;
+    --bad:#ef6a4d; --bad-tint:#3a2620; --bad-line:#5a3025;
+    --info:#5f8ef0; --info-tint:#233150;
+    --gold:#eeab3e; --coral:#ef6a4d; --indigo:#5f8ef0;
+    --accent:#eeab3e; --accent-tint:#3b2f1a;
+    --g-red:#ff5a4d; --g-amber:#ffb02e; --g-green:#3ad07d;
+    --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
+    --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
   }
 }
 :root[data-theme="light"]{
-  --ground:#e9edf0; --surface:#fdfefe; --surface-2:#f2f6f7; --surface-3:#e7eef0;
-  --ink:#15212e; --ink-2:#3a4b5a; --ink-3:#5a6b78; --ink-4:#6f7d88;
-  --line:#d6dee3; --line-2:#e6ecef;
-  --navy:#14324a; --navy-2:#1c4462; --navy-ink:#e8eef2;
-  --teal:#2c7f8c; --teal-strong:#22656f; --teal-tint:#e3f0f1;
-  --good:#3c8f63; --good-tint:#e6f2ea; --good-line:#bcdcc8;
-  --warn:#bb8420; --warn-tint:#f8efd9; --warn-line:#e8d3a1;
-  --bad:#b3453b; --bad-tint:#f7e6e3; --bad-line:#e6c0ba;
-  --info:#3a6ea5; --info-tint:#e6eef7;
-  --shadow:0 1px 2px rgba(20,40,60,.06),0 8px 24px rgba(20,40,60,.07);
-  --shadow-lg:0 4px 12px rgba(20,40,60,.10),0 24px 48px rgba(20,40,60,.12);
+  --ground:#eef2f7; --surface:#ffffff; --surface-2:#f4f7fb; --surface-3:#e6edf4;
+  --ink:#182430; --ink-2:#45566a; --ink-3:#5c6b7a; --ink-4:#8494a3;
+  --line:#dbe3ec; --line-2:#e8eef4;
+  --navy:#1c2838; --navy-2:#131c28; --navy-ink:#eef4fb;
+  --teal:#159a95; --teal-strong:#127f7a; --teal-tint:#d7f0ee; --teal-deep:#0f6f6b;
+  --good:#1ea45c; --good-tint:#e2f6ea; --good-line:#bfe6cf;
+  --warn:#c9871c; --warn-tint:#fbefd8; --warn-line:#ecd39f;
+  --bad:#d1492e; --bad-tint:#fce9e3; --bad-line:#f2c3b6;
+  --info:#3f7fe0; --info-tint:#e7effc;
+  --gold:#c9871c; --coral:#d1492e; --indigo:#3f7fe0;
+  --accent:#c9871c; --accent-tint:#fbefd8;
+  --g-red:#d32020; --g-amber:#f2a005; --g-green:#12a150;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 10px 26px rgba(20,40,60,.10);
+  --shadow-lg:0 6px 16px rgba(20,40,60,.12),0 26px 52px rgba(20,40,60,.16);
 }
 :root[data-theme="dark"]{
-  --ground:#0c141c; --surface:#141f2a; --surface-2:#1a2836; --surface-3:#213141;
-  --ink:#e9f0f4; --ink-2:#b3c2cd; --ink-3:#8494a1; --ink-4:#5f6f7c;
-  --line:#28394a; --line-2:#20303f;
-  --navy:#0a1822; --navy-2:#123049; --navy-ink:#e8eef2;
-  --teal:#4db4c2; --teal-strong:#3d9aa7; --teal-tint:#123138;
-  --good:#5cb185; --good-tint:#12291f; --good-line:#25503a;
-  --warn:#d6a544; --warn-tint:#2c2410; --warn-line:#524316;
-  --bad:#d5695d; --bad-tint:#2c1613; --bad-line:#552b25;
-  --info:#6ea0d6; --info-tint:#122031;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.36);
-  --shadow-lg:0 6px 18px rgba(0,0,0,.4),0 28px 56px rgba(0,0,0,.5);
+  --ground:#233448; --surface:#31455f; --surface-2:#3a5271; --surface-3:#2a3d54;
+  --ink:#f2f7fd; --ink-2:#c6d4e3; --ink-3:#9db0c3; --ink-4:#6b8299;
+  --line:#405878; --line-2:#33475f;
+  --navy:#18232f; --navy-2:#111926; --navy-ink:#eef4fb;
+  --teal:#2fc7c2; --teal-strong:#22a7a2; --teal-tint:#1c4a50; --teal-deep:#177483;
+  --good:#2fbf6e; --good-tint:#153a2a; --good-line:#1f5c3d;
+  --warn:#eeab3e; --warn-tint:#3b2f1a; --warn-line:#5a4520;
+  --bad:#ef6a4d; --bad-tint:#3a2620; --bad-line:#5a3025;
+  --info:#5f8ef0; --info-tint:#233150;
+  --gold:#eeab3e; --coral:#ef6a4d; --indigo:#5f8ef0;
+  --accent:#eeab3e; --accent-tint:#3b2f1a;
+  --g-red:#ff5a4d; --g-amber:#ffb02e; --g-green:#3ad07d;
+  --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
 }
 
 *{box-sizing:border-box}
@@ -1010,6 +1029,151 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .btn{border-radius:12px;font-weight:750}
 .btn-lg{padding:16px 32px;font-size:16.5px}
 @media(prefers-reduced-motion:reduce){.src,.act{transition:box-shadow .18s}.src:hover,.act:hover,.src:focus-visible,.act:focus-visible{transform:none}}
+
+/* ============================================================
+   v6 RESTYLE — bright & airy console, three zones
+   GUIDE (left) · WORK (centre) · HUD (right, dark)
+   ============================================================ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+
+/* ---- 3-zone layout ---- */
+.console3{flex:1;min-height:0;width:100%;max-width:1500px;margin:0 auto;padding:14px 22px 16px;
+  display:grid;grid-template-columns:290px minmax(0,1fr) 338px;gap:20px;align-items:stretch}
+.guide-col{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto;padding-right:4px}
+.work-col{display:flex;flex-direction:column;min-height:0}
+.work-col .tabpanel{flex:1;min-height:0;overflow-y:auto;padding-right:6px}
+.hud-col{display:flex;flex-direction:column;min-height:0;gap:12px}
+@media (max-width:1200px){
+  #app.is-console{height:auto;overflow:visible}
+  .console3{grid-template-columns:1fr;overflow:visible}
+  .guide-col,.work-col .tabpanel,.hud{overflow:visible;min-height:auto}
+}
+
+/* ---- GUIDE PANEL ---- */
+.guide-title{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);padding:2px 2px}
+.g-block{position:relative;background:var(--surface-2);border:1px solid rgba(255,255,255,.09);border-radius:15px;padding:16px;box-shadow:var(--shadow)}
+.g-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.g-med{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;box-shadow:0 5px 12px rgba(0,0,0,.28)}
+.g-med svg{width:21px;height:21px;color:#fff}
+.g-label{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.g-block h4{font-size:14.5px;margin:0 0 4px;color:var(--ink);font-weight:750;line-height:1.28}
+.g-block p{font-size:13px;line-height:1.5;color:var(--ink-2);margin:0}
+.g-block p b{color:var(--ink);font-weight:750}
+.g-task{background:linear-gradient(180deg,rgba(238,171,62,.17),var(--surface-2) 58%)}
+.g-task .g-med{background:linear-gradient(145deg,#f7c25a,#e79a2f)} .g-task .g-med svg{color:#3a2a08}
+.g-task .g-label{color:var(--gold)}
+.g-info{background:linear-gradient(180deg,rgba(95,142,240,.2),var(--surface-2) 58%)}
+.g-info .g-med{background:linear-gradient(145deg,#6aa0f5,#3f6cd6)} .g-info .g-label{color:var(--indigo)}
+.g-alert{background:linear-gradient(180deg,rgba(239,106,77,.22),var(--surface-2) 58%)}
+.g-alert .g-med{background:linear-gradient(145deg,#ff8a5c,#e5533b)} .g-alert .g-label{color:var(--coral)}
+
+/* ---- TABS connected to the work content ---- */
+.work-col .tabbar{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:0 0 16px;background:none;padding:0;border-radius:0;box-shadow:none;flex:none}
+.work-col .tab{padding:11px 18px;font-weight:750;font-size:14.5px;color:var(--ink-3);border:0;border-radius:11px 11px 0 0;margin-bottom:-2px;position:relative;display:flex;align-items:center;gap:9px;background:none}
+.work-col .tab:hover{color:var(--ink);background:none}
+.work-col .tab .tcount{font-size:11px;font-weight:800;background:var(--surface-3);color:var(--ink-2);border-radius:100px;padding:1px 8px}
+.work-col .tab.active{color:var(--ink);background:var(--surface-2)}
+.work-col .tab.active .tcount{background:var(--teal);color:#04302e}
+.work-col .tab.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--teal);border-radius:3px 3px 0 0}
+
+/* ---- RECORDS: document cover tiles ---- */
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.src{display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);text-align:left;width:100%;color:inherit;position:relative;transition:transform .16s,box-shadow .16s}
+.src:hover,.src:focus-visible{outline:none;transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.src .r-cover{height:80px;position:relative;overflow:hidden;background:linear-gradient(135deg,#ffe1a0,#f3ad4f);display:flex;align-items:flex-end;padding:0 16px 12px}
+.src .r-cover::before{content:"";position:absolute;left:76px;right:16px;top:16px;height:32px;background:repeating-linear-gradient(0deg,transparent 0 8px,rgba(120,78,18,.24) 8px 9px)}
+.src .r-badge{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.72);display:grid;place-items:center;box-shadow:0 5px 12px rgba(150,100,20,.3)}
+.src .r-badge svg{width:26px;height:26px;color:#7a5312}
+.src .s-open-cost{position:absolute;top:12px;right:14px;z-index:2}
+.src .r-cover .tcost,.src .r-cover .tcost svg{color:#7a5312}
+.src .r-cover .tseg{background:rgba(120,80,20,.28)} .src .r-cover .tseg.on{background:#8a5f18}
+.src .r-body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+.src h4{font-size:16.5px;margin:0 0 3px;font-weight:750;letter-spacing:-.01em;color:var(--ink);line-height:1.2}
+.src .s-src{font-size:12.5px;color:var(--ink-3);margin-bottom:9px}
+.src .s-teaser{font-size:13.5px;line-height:1.5;color:var(--ink-2);margin-bottom:14px;display:block;-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}
+.src .s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.src .s-review-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;font-size:13px;font-weight:750;background:var(--teal-deep);color:#fff}
+.src .s-review-btn svg{width:15px;height:15px}
+.src:hover .s-review-btn{filter:brightness(1.14)}
+.src .s-reviewed{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:800;color:#fff}
+.src .s-reviewed svg{width:16px;height:16px}
+.src.opened{background:linear-gradient(160deg,#0f7c44,#0a5c34);border-color:transparent}
+.src.opened .r-cover{background:linear-gradient(135deg,#37c877,#159a52)}
+.src.opened .r-cover::before{background:repeating-linear-gradient(0deg,transparent 0 8px,rgba(255,255,255,.3) 8px 9px)}
+.src.opened .r-badge{background:rgba(255,255,255,.9)} .src.opened .r-badge svg{color:#0d7a44}
+.src.opened h4{color:#fff} .src.opened .s-src{color:#bfeed3} .src.opened .s-teaser{color:#e6fff1}
+.src.opened .muted{color:#bfeed3 !important}
+.src.capped{opacity:.55}
+.src.capped:hover{transform:none;box-shadow:var(--shadow)}
+
+/* ---- DECISIONS: action tiles ---- */
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-content:start}
+.act{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 50px 16px 16px;box-shadow:var(--shadow);position:relative;display:flex;gap:14px;overflow:hidden;text-align:left;width:100%;color:inherit;align-items:flex-start;transition:transform .16s,box-shadow .16s}
+.act:hover,.act:focus-visible{outline:none;transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.act .a-wm{position:absolute;right:-16px;bottom:-24px;opacity:.07;color:var(--ink);pointer-events:none}
+.act .a-wm svg{width:118px;height:118px}
+.act .a-ico{width:54px;height:54px;border-radius:15px;flex:none;display:grid;place-items:center;box-shadow:0 6px 15px rgba(0,0,0,.28);z-index:1}
+.act .a-ico svg{width:29px;height:29px;color:#fff}
+.act .a-main{z-index:1;flex:1;min-width:0}
+.act .a-cat{display:block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.act .a-title{font-size:15px;font-weight:750;letter-spacing:-.01em;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.25}
+.act .a-blurb{font-size:12.5px;color:var(--ink-2);margin-top:4px;line-height:1.4;display:block;overflow:visible;-webkit-line-clamp:unset;line-clamp:unset}
+.act .a-select{position:absolute;top:14px;right:14px;width:27px;height:27px;border-radius:8px;border:2px solid var(--ink-4);display:grid;place-items:center;z-index:2;background:transparent}
+.act .a-select svg{width:16px;height:16px;color:#fff}
+.act:hover .a-select{border-color:var(--teal)}
+.a-ico.cat-decision{background:linear-gradient(145deg,#738596,#465268)}
+.a-ico.cat-control{background:linear-gradient(145deg,#3fd0cb,#1f8f8b)}
+.a-ico.cat-escalation{background:linear-gradient(145deg,#ffb64d,#e08a1e)}
+.a-ico.cat-communication{background:linear-gradient(145deg,#6aa8f5,#3a6ed0)}
+.a-ico.cat-practical{background:linear-gradient(145deg,#57d08a,#2b9a5b)}
+.a-ico.cat-risk{background:linear-gradient(145deg,#9179e6,#5a45a5)}
+.act.sel{background:linear-gradient(160deg,#157f79,#0c5d58);border-color:transparent}
+.act.sel .a-wm{opacity:.14;color:#fff}
+.act.sel .a-title,.act.sel .a-blurb{color:#eafffe}
+.act.sel .a-cat{color:#9be6e2}
+.act.sel .a-ico{background:rgba(255,255,255,.16);box-shadow:none}
+.act.sel .a-select{background:#fff;border-color:#fff}
+.act.sel .a-select svg{color:#0c5d58}
+.act.sel .tseg{background:rgba(255,255,255,.35)} .act.sel .tseg.on{background:#eafffe} .act.sel .tcost,.act.sel .tcost svg{color:#c9f2f0}
+.act.disabled{opacity:.5}
+.act.disabled:hover{transform:none;box-shadow:var(--shadow)}
+.act .a-foot{display:flex;gap:12px;margin-top:9px;z-index:1;position:relative}
+.act .a-ev{font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+.act .a-ev.ev-on{color:var(--good)} .act .a-ev.ev-off{color:var(--ink-3)}
+.act.sel .a-ev.ev-on{color:#c9f7de}
+
+/* ---- HUD console (right, always dark) ---- */
+.hud{flex:1;min-height:0;overflow-y:auto;background:linear-gradient(180deg,var(--navy),var(--navy-2));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:2px 18px 16px;box-shadow:var(--shadow-lg)}
+.hud-head{display:flex;align-items:center;gap:9px;padding:15px 0 2px;font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#8194a9}
+.hud-live{width:7px;height:7px;border-radius:50%;background:#3ad07d;box-shadow:0 0 9px #3ad07d}
+.hud .prev-cap,.hud .card{background:transparent;border:0;box-shadow:none;border-radius:0;transform:none !important;padding:16px 0;margin:0}
+.hud>.prev-cap,.hud>.card{border-top:1px solid rgba(255,255,255,.08)}
+.hud .prev-cap::after{display:none}
+.hud .prev-cap .pc-txt small{color:var(--gold)}
+.hud .prev-cap .pc-txt h4{color:#f3f8fd}
+.hud .prev-cap .pc-txt p{color:#a6b8c9}
+.hud .kpi-panel h3,.hud .timecard .tc-top h3,.hud .attn .a-top h3{color:#8194a9}
+.hud .timecard .tc-top h3 svg,.hud .attn .a-top h3 svg{color:var(--teal)}
+.hud .timecard .tc-pct{color:#f3f8fd}
+.hud .tc-note,.hud .attn .a-note{color:#a6b8c9}
+.hud .kpi .k-name{color:#b3c4d4}
+.hud .kpi .k-val{color:#f3f8fd}
+.hud .tag-legend,.hud .tag-legend span{color:#9fb2c4}
+.hud .kpi .k-bar{background-color:#101c28;background-image:repeating-linear-gradient(90deg,transparent 0 13px,rgba(0,0,0,.4) 13px 17px)}
+.hud .kpi .k-fill .cover,.hud .timebar{background:#101c28}
+.hud .timebar{background:#101c28}
+
+/* ---- Submit dock ---- */
+.rail-submit{flex:none;display:flex;flex-direction:column;gap:11px}
+.submit-status{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-2);font-weight:600}
+.submit-status .ss-count{font-weight:800;color:var(--teal-strong)}
+.submit-status .ss-over{color:var(--coral);font-weight:800}
+
+/* ---- Buttons: accessible deep-teal ---- */
+.btn{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff;border-radius:12px;font-weight:750}
+.btn:hover{background:var(--teal-deep);border-color:var(--teal-deep);filter:brightness(1.13)}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--line);filter:none}
+.btn-secondary:hover{background:var(--surface-2);filter:none}
 </style>
 </head>
 <body>
@@ -1958,12 +2122,6 @@ function viewDashboard(){
       </div>
       <blockquote class="dossier-brief">${d.brief}</blockquote>
     </section>
-    ${alertCount?`<section>
-      <div class="sec-head"><div class="sec-title-ico">${svg(I.bell)}<h3>New alerts</h3></div></div>
-      <div class="stack gap-12" style="margin-top:8px">
-        ${d.alerts.map(a=>{const tn=a.tone==='red'?'red':a.tone==='info'?'info':'amber';return `<div class="alert alert-${tn}"><span class="al-ico">${svg(I[a.ico])}</span><div class="al-body">${a.text}</div></div>`;}).join('')}
-      </div>
-    </section>`:''}
     ${round===3?round3Notifs():''}`;
 
   const revd=reviewedCount(round);
@@ -1971,8 +2129,7 @@ function viewDashboard(){
     <section>
       <div class="sec-head"><div class="sec-title-ico">${svg(I.eye)}<h3>Information sources</h3></div>
         <span class="chip chip-teal" style="font-size:12px">Reviewed ${revd} of ${d.docs.length}</span></div>
-      <div class="link-note" style="margin:10px 0 4px">${svg(I.info)}<div>Reviewing a record uses some of your time, the same time you need for actions, so you cannot read everything. Choose the ones most likely to matter; you can still act on the rest, just with less certainty.</div></div>
-      <div class="src-grid" style="margin-top:10px">
+      <div class="src-grid" style="margin-top:14px">
         ${d.docs.map(doc=>srcCard(doc,round)).join('')}
       </div>
     </section>`;
@@ -1986,10 +2143,11 @@ function viewDashboard(){
       </div>
     </section>`;
 
-  return `<main class="console-main">
-    <div class="console-col">
+  return `<main class="console3">
+    <aside class="guide-col">${guideBlocks(tab,round,d)}</aside>
+
+    <div class="work-col">
       ${round===3?`<div class="clock-strip">${round3ClockBar()}</div>`:''}
-      <div class="tab-guide">${svg(tab==='decisions'?I.check:tab==='information'?I.eye:I.route)}<div>${tabGuide(tab,round)}</div></div>
       <div class="tabbar" role="tablist">
         ${tabBtn('situation','Situation',I.clipboard,alertCount||'')}
         ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
@@ -2000,8 +2158,9 @@ function viewDashboard(){
       </div>
     </div>
 
-    <aside class="console-rail">
-      <div class="rail-scroll">
+    <aside class="hud-col">
+      <div class="hud">
+        <div class="hud-head"><span class="hud-live"></span> Live status</div>
         ${preventionCard()}
         ${attentionCard(round)}
         ${kpiCard()}
@@ -2014,10 +2173,32 @@ function viewDashboard(){
         <button class="btn btn-lg" style="width:100%" data-act="submit-round" ${canSubmit?'':'disabled'}>
           ${anySel?'Review &amp; submit':'Choose an action to continue'} ${anySel?svg(I.arrowR):''}
         </button>
-        ${over?`<div class="alert alert-red">${svg(I.alertT)}<div>You have taken on more than there is time for. Deselect an action or leave a record unread.</div></div>`:''}
+        ${over?`<div class="alert alert-red"><span class="al-ico">${svg(I.alertT)}</span><div class="al-body">You have taken on more than there is time for. Deselect an action or leave a record unread.</div></div>`:''}
       </div>
     </aside>
   </main>`;
+}
+
+/* Guide panel — task + good-to-know + alerts, grouped on the left */
+function guideBlocks(tab,round,d){
+  const T={
+    situation:['Your task · Step 1 of 3','Read the situation','Get to know Michael and the alerts before you decide anything.'],
+    information:['Your task · Step 2 of 3','Review the records that matter most','Each one uses some of your time, and acting without the evidence is riskier.'],
+    decisions:['Your task · Step 3 of 3','Choose your actions, then submit','Change your mind freely until you commit.'],
+  }[tab]||[];
+  const P={
+    situation:['Nothing here is confirmed','The records are incomplete and sometimes contradict one another. Deciding what is reliable enough to act on is part of your task.'],
+    information:["You can't read everything",'Reviewing a record uses time you also need for actions. Choose what is most likely to matter; you can still act on the rest, with less certainty.'],
+    decisions:['Time is limited','There is more you could do than there is time for. Spend it where it changes the outcome.'],
+  }[tab]||[];
+  let h=`<div class="guide-title">Guide</div>`;
+  h+=`<div class="g-block g-task"><div class="g-top"><span class="g-med">${svg(I.route)}</span><span class="g-label">${T[0]}</span></div><h4>${T[1]}</h4><p>${T[2]}</p></div>`;
+  h+=`<div class="g-block g-info"><div class="g-top"><span class="g-med">${svg(I.info)}</span><span class="g-label">Good to know</span></div><h4>${P[0]}</h4><p>${P[1]}</p></div>`;
+  (d.alerts||[]).forEach(a=>{
+    const isInfo=a.tone==='info';
+    h+=`<div class="g-block ${isInfo?'g-info':'g-alert'}"><div class="g-top"><span class="g-med">${svg(I[a.ico]||I.alertT)}</span><span class="g-label">${isInfo?'Heads up':'Alert'}</span></div><p>${a.text}</p></div>`;
+  });
+  return h;
 }
 
 function docTitle(round,id){const doc=(DATA[round].docs||[]).find(d=>d.id===id);return doc?doc.title.toLowerCase().replace(/^the /,''):'record';}
@@ -2032,16 +2213,18 @@ function srcCard(doc,round){
   const opened=(S.opened[round]||{})[doc.id];
   const noTime = !opened && attentionRemaining(round)<doc.cost;   // not enough time left to review
   return `<button class="src ${opened?'opened':''} ${noTime?'capped':''}" data-act="open-doc" data-doc="${doc.id}" ${noTime?'disabled title="Not enough time left this round to review this"':''}>
-    <div class="s-h">
-      <div class="s-ico">${svg(I[doc.ico])}</div>
+    <div class="r-cover">
       ${opened?'':`<span class="s-open-cost">${timeCost(doc.cost)}</span>`}
+      <div class="r-badge">${svg(I[doc.ico])}</div>
     </div>
-    <div><h4>${doc.title}</h4><div class="s-src">${doc.source}</div></div>
-    <div class="s-teaser">${doc.teaser}</div>
-    <div class="s-foot">
-      ${opened
-        ? `<span class="s-reviewed">${svg(I.checkSmall)} Reviewed</span><span class="muted" style="font-size:12px">Reopen · free</span>`
-        : `<span class="s-review-btn">${svg(I.eye)} Review record</span>`}
+    <div class="r-body">
+      <h4>${doc.title}</h4><div class="s-src">${doc.source}</div>
+      <div class="s-teaser">${doc.teaser}</div>
+      <div class="s-foot">
+        ${opened
+          ? `<span class="s-reviewed">${svg(I.checkSmall)} Reviewed</span><span class="muted" style="font-size:12px">Reopen · free</span>`
+          : `<span class="s-review-btn">${svg(I.eye)} Review record</span>`}
+      </div>
     </div>
   </button>`;
 }
@@ -2073,6 +2256,7 @@ function actCard(a,round,remaining,selected){
   }
   const foot = (evTag||dis)?`<span class="a-foot">${evTag}${dis?`<span class="a-ev ev-off">${svg(I.clock)} No time, deselect another</span>`:''}</span>`:'';
   return `<button class="act ${selected?'sel':''} ${dis?'disabled':''}" data-act="toggle-action" data-action-id="${a.id}" aria-pressed="${selected}" ${dis?'disabled':''}>
+    <span class="a-wm" aria-hidden="true">${svg(I[cm.ico])}</span>
     <span class="a-select" aria-hidden="true">${selected?svg(I.checkSmall):''}</span>
     <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}</span>
     <span class="a-main">
