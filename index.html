@@ -1282,7 +1282,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 
 /* Layout: top HUD + (guide | work) + action bar */
 #app.is-console{background:var(--ground)}
-.hudstrip{flex:none;display:grid;grid-template-columns:1.3fr .8fr 1.6fr;background:var(--surface);border-bottom:1px solid var(--line);width:100%;max-width:1440px;margin:0 auto}
+.hudstrip{flex:none;display:grid;grid-template-columns:1fr .8fr 1.95fr;background:var(--surface);border-bottom:1px solid var(--line);width:100%;max-width:1440px;margin:0 auto}
 .hs-cell{padding:13px 22px;border-right:1px solid var(--line);min-width:0}
 .hs-cell:last-child{border-right:0}
 .hs-label{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:8px}
@@ -1293,7 +1293,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .hs-tag{font-size:14px;font-weight:700;color:var(--teal)}
 .hs-sub{font-size:11px;color:var(--ink-3);margin-left:auto}
 .hs-note{font-size:11px;color:var(--ink-3);margin-top:8px}
-.spark{width:100%;height:50px;display:block;margin-top:4px;overflow:visible}
+.spark{width:100%;max-width:200px;height:46px;display:block;margin-top:6px;overflow:visible}
 .spark .ln{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:620;stroke-dashoffset:620;animation:spdraw 1.3s cubic-bezier(.3,.7,.3,1) .1s forwards}
 .spark .ar{opacity:0;animation:spfade 1s ease-out .55s forwards}
 .spark .dt{opacity:0;fill:var(--surface);stroke:var(--teal);stroke-width:2.5;animation:spfade .4s ease-out 1.25s forwards}
@@ -1302,11 +1302,12 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .hbar.big{margin-top:8px}
 .hbar i{display:block;height:100%;border-radius:100px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
 .hbar i.f-good{background:var(--g-green)} .hbar i.f-warn{background:var(--g-amber)} .hbar i.f-bad{background:var(--g-red)} .hbar i.f-teal{background:var(--teal)}
-.hs-kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px 22px}
-.hk .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;gap:6px}
-.hk .t span{font-size:11.5px;color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hk .t b{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-.hk .t i{font-size:9px;color:var(--ink-3);font-style:normal}
+.hs-kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px 24px}
+.hk .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:6px}
+.hk .t span{font-size:13px;color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hk .t b{font-size:16px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.hk .t i{font-size:10px;color:var(--ink-3);font-style:normal}
+.hbar{height:9px}
 @media(max-width:1020px){.hudstrip{grid-template-columns:1fr}.hs-cell{border-right:0;border-bottom:1px solid var(--line)}}
 
 .console2{flex:1;min-height:0;display:grid;grid-template-columns:266px 1fr;width:100%;max-width:1440px;margin:0 auto}
@@ -1322,6 +1323,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .care-h svg{width:16px;height:16px}
 .care-b{padding:11px 13px}
 .care-b h5{font-size:14px;font-weight:700;margin:0;line-height:1.35;color:var(--ink)}
+.care-b p{font-size:13px;font-weight:400;color:var(--ink-2);line-height:1.45;margin:5px 0 0}
 .care-b b{color:var(--ink);font-weight:700}
 .care-task .care-h{background:var(--teal)}
 .care-info .care-h{background:#0072ce}
@@ -2505,13 +2507,13 @@ function guideBlocks(tab,round,d){
     decisions:['Your task · 3 of 3','Choose your actions, then submit'],
   }[tab]||['Your task',''];
   const P={
-    situation:'Nothing here is confirmed — decide what is reliable enough to act on.',
-    information:"You can't read everything — choose what is most likely to matter.",
-    decisions:'Time is limited — spend it where it changes the outcome.',
-  }[tab]||'';
+    situation:['Nothing here is confirmed.','Decide what is reliable enough to act on.'],
+    information:["You can't read everything.",'Choose what is most likely to matter.'],
+    decisions:['Time is limited.','Spend it where it changes the outcome.'],
+  }[tab]||['',''];
   let h=`<div class="guide-title">Guide</div>`;
   h+=care('task',I.route,T[0],`<h5>${T[1]}</h5>`);
-  h+=care('info',I.info,'Good to know',`<h5>${P}</h5>`);
+  h+=care('info',I.info,'Good to know',`<h5>${P[0]}</h5><p>${P[1]}</p>`);
   (d.alerts||[]).forEach(a=>{
     const isInfo=a.tone==='info';
     h+=care(isInfo?'info':'alert', I[a.ico]||I.alertT, isInfo?'Heads up':'Alert', a.text);
@@ -2960,7 +2962,7 @@ function viewReport(){
   const scoreRows=KPIS.map(k=>{
     const v=S.kpi[k.key], st=START_KPI[k.key], ch=v-st;
     const good=k.invert?ch<0:ch>0; const cls=ch===0?'rs-flat':good?'rs-up':'rs-down';
-    const arrow=ch>0?'▲':ch<0?'▼':'—';
+    const arrow=ch>0?'▲':ch<0?'▼':'·';
     return `<div class="r-score"><span class="rs-name">${k.name}${k.invert?' (exposure)':''}</span><span class="rs-val">${v}</span><span class="rs-chg ${cls}">${ch===0?'no change':arrow+' '+(ch>0?'+':'')+ch}</span></div>`;
   }).join('');
   const rounds=[1,2,3].map(r=>{
