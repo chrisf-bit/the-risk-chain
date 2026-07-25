@@ -2065,11 +2065,11 @@ function actCard(a,round,remaining,selected){
   const inf=(INFORMED_BY[round]||{})[a.id];
   const opened=S.opened[round]||{};
   let evTag='';
-  if(inf&&inf.length){
-    const informed=inf.some(id=>opened[id]);
-    evTag=informed
-      ? `<span class="a-ev ev-on" title="You have reviewed the relevant record">${svg(I.checkSmall)} Evidence reviewed</span>`
-      : `<span class="a-ev ev-off" title="Relevant record not yet reviewed">${svg(I.eye)} Acting on assumption</span>`;
+  // Show a quiet positive when the relevant record has been reviewed, but
+  // never flag "acting on assumption" — the player shouldn't be told which
+  // decisions are under-evidenced; that's for them to judge.
+  if(inf&&inf.length && inf.some(id=>opened[id])){
+    evTag=`<span class="a-ev ev-on" title="You have reviewed the relevant record">${svg(I.checkSmall)} Evidence reviewed</span>`;
   }
   const foot = (evTag||dis)?`<span class="a-foot">${evTag}${dis?`<span class="a-ev ev-off">${svg(I.clock)} No time, deselect another</span>`:''}</span>`:'';
   return `<button class="act ${selected?'sel':''} ${dis?'disabled':''}" data-act="toggle-action" data-action-id="${a.id}" aria-pressed="${selected}" ${dis?'disabled':''}>
