@@ -1439,7 +1439,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .info-tile p{font-size:13.5px;color:var(--ink-2);margin-top:3px;line-height:1.45}
 
 /* Duration card (landing) */
-.dur-card{display:inline-flex;align-items:center;gap:12px;margin-top:18px;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.dur-card{display:inline-flex;align-items:center;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 .dur-card .dur-ic{width:42px;height:42px;border-radius:9px;background:var(--teal-tint);color:var(--teal);display:grid;place-items:center;flex:none}
 .dur-card .dur-ic svg{width:24px;height:24px}
 .dur-card .dur-t{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
@@ -2237,11 +2237,11 @@ function viewLanding(){
         <p class="subline">Spot the signs. Connect the decisions. Prevent the consequence.</p>
         <p class="lead mt-22" style="max-width:56ch">You are the management team of Meadow View Supported Living. A new resident, Michael Turner, is arriving with incomplete and contradictory information about his eating and drinking. Over three rounds you will decide what to investigate, what to control, and where to spend your limited time, then watch the consequences unfold.</p>
         <div class="hero-cta">
+          <div class="dur-card">
+            <span class="dur-ic">${svg(I.clock)}</span>
+            <div><div class="dur-t">Duration</div><div class="dur-v">15–20 min · 3 rounds</div></div>
+          </div>
           <button class="btn btn-lg" data-act="goto-intro">Begin the simulation ${svg(I.arrowR)}</button>
-        </div>
-        <div class="dur-card">
-          <span class="dur-ic">${svg(I.clock)}</span>
-          <div><div class="dur-t">Duration</div><div class="dur-v">15–20 minutes · 3 playable rounds</div></div>
         </div>
       </div>
       <div class="media-ph" style="min-height:280px"><span class="mp-badge">Media slot</span>${svg(I.play)}<span class="mp-label">Opening film</span><span class="mp-sub">A short, calm establishing film introducing Meadow View and Michael could open the experience here.</span></div>
