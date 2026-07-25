@@ -585,6 +585,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .media-ph.strip .mp-sub{max-width:none;font-size:11.5px}
 .wrap-wide{max-width:1440px}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:44px;align-items:center}
+.hero-grid .prose{max-width:none}
+.hero-grid .prose .lead{max-width:none !important}
 @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:28px}.hero-grid .media-ph{aspect-ratio:16/10 !important;max-width:480px}}
 .media-ph.portrait{aspect-ratio:3/4;min-height:0}
 .media-ph .mp-badge{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--navy);color:var(--navy-ink);padding:3px 8px;border-radius:6px;opacity:.85}
@@ -1434,10 +1436,11 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 
 /* How-to-play tiles: prominent icon chip + larger, clearer text */
 .htp-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
-.info-tile{gap:14px;padding:16px;align-items:center}
-.info-tile>svg{width:26px;height:26px;padding:11px;box-sizing:content-box;border-radius:10px;background:var(--teal-tint);color:var(--teal);flex:none;margin-top:0}
-.info-tile h5{font-size:15.5px;font-weight:700;color:var(--ink)}
-.info-tile p{font-size:13.5px;color:var(--ink-2);margin-top:3px;line-height:1.45}
+.preview-grid{align-items:start}
+.info-tile{gap:15px;padding:20px;align-items:flex-start}
+.info-tile>svg{width:26px;height:26px;padding:11px;box-sizing:content-box;border-radius:10px;background:var(--teal-tint);color:var(--teal);flex:none;margin-top:2px}
+.info-tile h5{font-size:17px;font-weight:700;color:var(--ink)}
+.info-tile p{font-size:14.5px;color:var(--ink-2);margin-top:5px;line-height:1.5}
 
 /* Duration card (landing) */
 .dur-card{display:inline-flex;align-items:center;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
