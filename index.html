@@ -14,80 +14,78 @@
    operational control and the person behind the record.
    ============================================================ */
 /* ============================================================
-   v6 palette — "bright & airy" friendly console.
-   Light = soft cloud; Dark = lifted blue-slate (not near-black).
-   The HUD/navy stays a dark console in BOTH themes.
-   Accent roles: teal = act/primary · gold = records/objective ·
-   green = good/done · coral = alert · indigo = info.
+   v7 — NHS clinical palette. Light = primary (NHS blue on white,
+   NHS green actions, semantic red/amber/green). Dark = clinical
+   dark variant for the theme toggle.
    ============================================================ */
 :root{
-  --ground:#eef2f7; --surface:#ffffff; --surface-2:#f4f7fb; --surface-3:#e6edf4;
-  --ink:#182430; --ink-2:#45566a; --ink-3:#5c6b7a; --ink-4:#8494a3;
-  --line:#dbe3ec; --line-2:#e8eef4;
-  --navy:#1c2838; --navy-2:#131c28; --navy-ink:#eef4fb;
-  --teal:#159a95; --teal-strong:#127f7a; --teal-tint:#d7f0ee; --teal-deep:#0f6f6b;
-  --good:#1ea45c; --good-tint:#e2f6ea; --good-line:#bfe6cf;
-  --warn:#c9871c; --warn-tint:#fbefd8; --warn-line:#ecd39f;
-  --bad:#d1492e; --bad-tint:#fce9e3; --bad-line:#f2c3b6;
-  --info:#3f7fe0; --info-tint:#e7effc;
-  --gold:#c9871c; --coral:#d1492e; --indigo:#3f7fe0;
-  --accent:#c9871c; --accent-tint:#fbefd8;
-  --g-red:#d32020; --g-amber:#f2a005; --g-green:#12a150;
-  --shadow:0 1px 2px rgba(20,40,60,.06),0 10px 26px rgba(20,40,60,.10);
-  --shadow-lg:0 6px 16px rgba(20,40,60,.12),0 26px 52px rgba(20,40,60,.16);
-  --r:14px; --r-sm:10px; --r-lg:20px;
+  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f4f7f8; --surface-3:#e2e8ea;
+  --ink:#212b32; --ink-2:#425563; --ink-3:#4c5f6c; --ink-4:#66788a;
+  --line:#d8dde0; --line-2:#e8edee;
+  --navy:#003087; --navy-2:#002766; --navy-ink:#ffffff;
+  --teal:#005eb8; --teal-strong:#004a94; --teal-tint:#e6eff6; --teal-deep:#00437f;
+  --good:#007f3b; --good-tint:#e4f2ea; --good-line:#b3ddc4;
+  --warn:#a35c00; --warn-tint:#fbeeda; --warn-line:#f0d9a8;
+  --bad:#d5281b; --bad-tint:#fbe9e7; --bad-line:#f4c3bd;
+  --info:#005eb8; --info-tint:#e6eff6;
+  --gold:#a35c00; --coral:#d5281b; --indigo:#005eb8;
+  --accent:#005eb8; --accent-tint:#e6eff6;
+  --g-red:#d5281b; --g-amber:#ffb81c; --g-green:#009639;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 4px 14px rgba(20,40,60,.08);
+  --shadow-lg:0 4px 12px rgba(20,40,60,.1),0 18px 40px rgba(20,40,60,.14);
+  --r:8px; --r-sm:5px; --r-lg:12px;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
-  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --sans:Arial,"Helvetica Neue",Helvetica,"Segoe UI",system-ui,-apple-system,sans-serif;
   --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,monospace;
-  --maxw:1240px;
+  --maxw:1280px;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --ground:#233448; --surface:#31455f; --surface-2:#3a5271; --surface-3:#2a3d54;
-    --ink:#f2f7fd; --ink-2:#c6d4e3; --ink-3:#9db0c3; --ink-4:#6b8299;
-    --line:#405878; --line-2:#33475f;
-    --navy:#18232f; --navy-2:#111926; --navy-ink:#eef4fb;
-    --teal:#2fc7c2; --teal-strong:#22a7a2; --teal-tint:#1c4a50; --teal-deep:#177483;
-    --good:#2fbf6e; --good-tint:#153a2a; --good-line:#1f5c3d;
-    --warn:#eeab3e; --warn-tint:#3b2f1a; --warn-line:#5a4520;
-    --bad:#ef6a4d; --bad-tint:#3a2620; --bad-line:#5a3025;
-    --info:#5f8ef0; --info-tint:#233150;
-    --gold:#eeab3e; --coral:#ef6a4d; --indigo:#5f8ef0;
-    --accent:#eeab3e; --accent-tint:#3b2f1a;
-    --g-red:#ff5a4d; --g-amber:#ffb02e; --g-green:#3ad07d;
+    --ground:#0e1a24; --surface:#17242f; --surface-2:#1e2d3a; --surface-3:#26333e;
+    --ink:#eef4f7; --ink-2:#b8c6d0; --ink-3:#93a4b0; --ink-4:#71838f;
+    --line:#2b3b47; --line-2:#233039;
+    --navy:#0a2a5c; --navy-2:#06274f; --navy-ink:#ffffff;
+    --teal:#41b6e6; --teal-strong:#2f9fd0; --teal-tint:#0f2c3f; --teal-deep:#1c72a8;
+    --good:#45c26e; --good-tint:#12301f; --good-line:#1f5c37;
+    --warn:#ffb81c; --warn-tint:#332a10; --warn-line:#5a4a1a;
+    --bad:#f0574a; --bad-tint:#331a17; --bad-line:#5a2b26;
+    --info:#41b6e6; --info-tint:#0f2c3f;
+    --gold:#ffb81c; --coral:#f0574a; --indigo:#41b6e6;
+    --accent:#41b6e6; --accent-tint:#0f2c3f;
+    --g-red:#f0574a; --g-amber:#ffb81c; --g-green:#45c26e;
     --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
     --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
   }
 }
 :root[data-theme="light"]{
-  --ground:#eef2f7; --surface:#ffffff; --surface-2:#f4f7fb; --surface-3:#e6edf4;
-  --ink:#182430; --ink-2:#45566a; --ink-3:#5c6b7a; --ink-4:#8494a3;
-  --line:#dbe3ec; --line-2:#e8eef4;
-  --navy:#1c2838; --navy-2:#131c28; --navy-ink:#eef4fb;
-  --teal:#159a95; --teal-strong:#127f7a; --teal-tint:#d7f0ee; --teal-deep:#0f6f6b;
-  --good:#1ea45c; --good-tint:#e2f6ea; --good-line:#bfe6cf;
-  --warn:#c9871c; --warn-tint:#fbefd8; --warn-line:#ecd39f;
-  --bad:#d1492e; --bad-tint:#fce9e3; --bad-line:#f2c3b6;
-  --info:#3f7fe0; --info-tint:#e7effc;
-  --gold:#c9871c; --coral:#d1492e; --indigo:#3f7fe0;
-  --accent:#c9871c; --accent-tint:#fbefd8;
-  --g-red:#d32020; --g-amber:#f2a005; --g-green:#12a150;
-  --shadow:0 1px 2px rgba(20,40,60,.06),0 10px 26px rgba(20,40,60,.10);
-  --shadow-lg:0 6px 16px rgba(20,40,60,.12),0 26px 52px rgba(20,40,60,.16);
+  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f4f7f8; --surface-3:#e2e8ea;
+  --ink:#212b32; --ink-2:#425563; --ink-3:#4c5f6c; --ink-4:#66788a;
+  --line:#d8dde0; --line-2:#e8edee;
+  --navy:#003087; --navy-2:#002766; --navy-ink:#ffffff;
+  --teal:#005eb8; --teal-strong:#004a94; --teal-tint:#e6eff6; --teal-deep:#00437f;
+  --good:#007f3b; --good-tint:#e4f2ea; --good-line:#b3ddc4;
+  --warn:#a35c00; --warn-tint:#fbeeda; --warn-line:#f0d9a8;
+  --bad:#d5281b; --bad-tint:#fbe9e7; --bad-line:#f4c3bd;
+  --info:#005eb8; --info-tint:#e6eff6;
+  --gold:#a35c00; --coral:#d5281b; --indigo:#005eb8;
+  --accent:#005eb8; --accent-tint:#e6eff6;
+  --g-red:#d5281b; --g-amber:#ffb81c; --g-green:#009639;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 4px 14px rgba(20,40,60,.08);
+  --shadow-lg:0 4px 12px rgba(20,40,60,.1),0 18px 40px rgba(20,40,60,.14);
 }
 :root[data-theme="dark"]{
-  --ground:#233448; --surface:#31455f; --surface-2:#3a5271; --surface-3:#2a3d54;
-  --ink:#f2f7fd; --ink-2:#c6d4e3; --ink-3:#9db0c3; --ink-4:#6b8299;
-  --line:#405878; --line-2:#33475f;
-  --navy:#18232f; --navy-2:#111926; --navy-ink:#eef4fb;
-  --teal:#2fc7c2; --teal-strong:#22a7a2; --teal-tint:#1c4a50; --teal-deep:#177483;
-  --good:#2fbf6e; --good-tint:#153a2a; --good-line:#1f5c3d;
-  --warn:#eeab3e; --warn-tint:#3b2f1a; --warn-line:#5a4520;
-  --bad:#ef6a4d; --bad-tint:#3a2620; --bad-line:#5a3025;
-  --info:#5f8ef0; --info-tint:#233150;
-  --gold:#eeab3e; --coral:#ef6a4d; --indigo:#5f8ef0;
-  --accent:#eeab3e; --accent-tint:#3b2f1a;
-  --g-red:#ff5a4d; --g-amber:#ffb02e; --g-green:#3ad07d;
+  --ground:#0e1a24; --surface:#17242f; --surface-2:#1e2d3a; --surface-3:#26333e;
+  --ink:#eef4f7; --ink-2:#b8c6d0; --ink-3:#93a4b0; --ink-4:#71838f;
+  --line:#2b3b47; --line-2:#233039;
+  --navy:#0a2a5c; --navy-2:#06274f; --navy-ink:#ffffff;
+  --teal:#41b6e6; --teal-strong:#2f9fd0; --teal-tint:#0f2c3f; --teal-deep:#1c72a8;
+  --good:#45c26e; --good-tint:#12301f; --good-line:#1f5c37;
+  --warn:#ffb81c; --warn-tint:#332a10; --warn-line:#5a4a1a;
+  --bad:#f0574a; --bad-tint:#331a17; --bad-line:#5a2b26;
+  --info:#41b6e6; --info-tint:#0f2c3f;
+  --gold:#ffb81c; --coral:#f0574a; --indigo:#41b6e6;
+  --accent:#41b6e6; --accent-tint:#0f2c3f;
+  --g-red:#f0574a; --g-amber:#ffb81c; --g-green:#45c26e;
   --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
   --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
 }
@@ -1267,6 +1265,155 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .tour-btn.primary:hover{background:var(--teal-deep);filter:brightness(1.15)}
 .tour-skip{color:#8aa0b5}.tour-skip:hover{color:#eef4fb}
 .tour-pop .tp-arrow{background:#1b2836;border-color:rgba(255,255,255,.1)}
+
+/* ============================================================
+   v7 NHS THEME — clinical, light, minimal.  Overrides above.
+   ============================================================ */
+body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
+
+/* Header — clean white, subtle border (minimal/clinical) */
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);box-shadow:none}
+.topbar .brand{color:var(--ink)} .topbar .brand small{color:var(--ink-3)} .topbar .brand .mark{color:var(--teal)}
+.ghost-btn{background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
+.ghost-btn:hover{background:var(--surface-2);color:var(--ink)}
+
+/* Layout: top HUD + (guide | work) + action bar */
+#app.is-console{background:var(--ground)}
+.hudstrip{flex:none;display:grid;grid-template-columns:1.3fr .8fr 1.6fr;background:var(--surface);border-bottom:1px solid var(--line);width:100%;max-width:1440px;margin:0 auto}
+.hs-cell{padding:13px 22px;border-right:1px solid var(--line);min-width:0}
+.hs-cell:last-child{border-right:0}
+.hs-label{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+.hud-live{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);animation:hudpulse 2.4s ease-in-out infinite}
+@keyframes hudpulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hs-prevrow{display:flex;align-items:baseline;gap:10px}
+.hs-num{font-size:32px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.hs-tag{font-size:14px;font-weight:700;color:var(--teal)}
+.hs-sub{font-size:11px;color:var(--ink-3);margin-left:auto}
+.hs-note{font-size:11px;color:var(--ink-3);margin-top:8px}
+.spark{width:100%;height:50px;display:block;margin-top:4px;overflow:visible}
+.spark .ln{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:620;stroke-dashoffset:620;animation:spdraw 1.3s cubic-bezier(.3,.7,.3,1) .1s forwards}
+.spark .ar{opacity:0;animation:spfade 1s ease-out .55s forwards}
+.spark .dt{opacity:0;fill:var(--surface);stroke:var(--teal);stroke-width:2.5;animation:spfade .4s ease-out 1.25s forwards}
+@keyframes spdraw{to{stroke-dashoffset:0}}@keyframes spfade{to{opacity:1}}
+.hbar{height:8px;border-radius:100px;background:var(--surface-3);overflow:hidden}
+.hbar.big{margin-top:8px}
+.hbar i{display:block;height:100%;border-radius:100px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.hbar i.f-good{background:var(--g-green)} .hbar i.f-warn{background:var(--g-amber)} .hbar i.f-bad{background:var(--g-red)} .hbar i.f-teal{background:var(--teal)}
+.hs-kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px 22px}
+.hk .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;gap:6px}
+.hk .t span{font-size:11.5px;color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hk .t b{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.hk .t i{font-size:9px;color:var(--ink-3);font-style:normal}
+@media(max-width:1020px){.hudstrip{grid-template-columns:1fr}.hs-cell{border-right:0;border-bottom:1px solid var(--line)}}
+
+.console2{flex:1;min-height:0;display:grid;grid-template-columns:266px 1fr;width:100%;max-width:1440px;margin:0 auto}
+.guide-col{padding:18px 16px;background:var(--surface-2);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
+.work-col{min-height:0;display:flex;flex-direction:column;padding:18px 22px}
+.work-col .tabpanel{flex:1;min-height:0;overflow-y:auto}
+@media(max-width:1020px){#app.is-console{height:auto;overflow:visible}.console2{grid-template-columns:1fr}.guide-col{border-right:0;border-bottom:1px solid var(--line)}.guide-col,.work-col .tabpanel{overflow:visible;min-height:auto}}
+
+/* Guide — NHS care cards (coloured headers draw the eye + differentiate) */
+.guide-title{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:2px 2px 2px}
+.care{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow)}
+.care-h{display:flex;align-items:center;gap:8px;padding:9px 13px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.care-h svg{width:16px;height:16px}
+.care-b{padding:11px 13px}
+.care-b h5{font-size:14px;font-weight:700;margin:0;line-height:1.35;color:var(--ink)}
+.care-b b{color:var(--ink);font-weight:700}
+.care-task .care-h{background:var(--teal)}
+.care-info .care-h{background:#0072ce}
+.care-alert .care-h{background:var(--bad)}
+.care-alert{border-color:var(--bad)}
+:root[data-theme="dark"] .care-info .care-h{background:#2f9fd0}
+
+/* Tabs — NHS underline, connected to content */
+.work-col .tabbar{display:flex;gap:0;border-bottom:1px solid var(--line);margin:0 0 18px;background:none;padding:0;box-shadow:none;flex:none}
+.work-col .tab{padding:12px 18px;font-size:14.5px;font-weight:700;color:var(--ink-3);border:0;border-radius:0;margin-bottom:-1px;position:relative;display:flex;gap:8px;align-items:center;background:none}
+.work-col .tab:hover{color:var(--ink)}
+.work-col .tab .tcount{font-size:12px;font-weight:700;background:var(--surface-3);color:var(--ink-2);border-radius:3px;padding:1px 7px}
+.work-col .tab.active{color:var(--teal)}
+.work-col .tab.active .tcount{background:var(--teal);color:#fff}
+.work-col .tab.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--teal)}
+.sec-head h3,.sec-title-ico h3{color:var(--ink)}
+
+/* RECORDS — clean NHS cards with optional photo banner */
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.src{display:flex;flex-direction:column;padding:0;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);text-align:left;width:100%;color:inherit;transition:.15s}
+.src:hover,.src:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),var(--shadow-lg);transform:translateY(-2px)}
+.src .r-media{height:104px;position:relative;overflow:hidden;background:var(--teal-tint);border-bottom:1px solid var(--line)}
+.src .r-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.src .r-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,48,135,.06),rgba(0,48,135,.34))}
+.src .r-media.noimg::after{display:none}
+.src .r-chip{position:absolute;left:12px;bottom:10px;width:40px;height:40px;border-radius:8px;background:#fff;color:var(--teal);display:grid;place-items:center;z-index:1;box-shadow:0 2px 6px rgba(0,0,0,.22)}
+.src .r-chip svg{width:22px;height:22px}
+.src .r-cost-o{position:absolute;top:10px;right:12px;z-index:2}
+.src .r-cost-o .tcost,.src .r-cost-o .tcost svg{color:#fff}
+.src .r-cost-o .tseg{background:rgba(255,255,255,.4)} .src .r-cost-o .tseg.on{background:#fff}
+.src .r-body{padding:15px 16px 16px;display:flex;flex-direction:column;flex:1}
+.src .r-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.src .r-ic-box{width:42px;height:42px;border-radius:8px;background:var(--teal-tint);color:var(--teal);display:grid;place-items:center}
+.src .r-ic-box svg{width:23px;height:23px}
+.src h4{font-size:16px;font-weight:700;letter-spacing:-.01em;margin:0 0 4px;color:var(--ink)}
+.src .s-src{font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;color:var(--ink-3);margin-bottom:11px}
+.src .s-teaser{font-size:13.5px;line-height:1.55;color:var(--ink-2);margin:0 0 16px;flex:1;display:block;overflow:visible}
+.src .s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.src .s-review-btn{background:none;padding:0;color:var(--teal);font-weight:700;font-size:13.5px;display:inline-flex;align-items:center;gap:7px}
+.src .s-review-btn svg{width:15px;height:15px}
+.src .s-reviewed{color:var(--good);font-weight:700;font-size:13.5px;display:inline-flex;align-items:center;gap:7px}
+.src .s-reviewed svg{width:16px;height:16px}
+.src.opened{background:var(--good-tint);border-color:var(--good-line)}
+.src.opened .r-ic-box{background:var(--good);color:#fff}
+.src.opened .r-chip{color:var(--good)}
+.src.capped{opacity:.5}.src.capped:hover{transform:none;box-shadow:var(--shadow);border-color:var(--line)}
+
+/* DECISIONS — clean cards; category-colour icon; pale-blue selected */
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-content:start}
+.act{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 46px 15px 15px;display:flex;gap:13px;align-items:center;position:relative;text-align:left;width:100%;color:inherit;transition:.15s;overflow:visible}
+.act:hover,.act:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),var(--shadow-lg);transform:translateY(-2px)}
+.act .a-ico{width:46px;height:46px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff;box-shadow:none}
+.act .a-ico svg{width:24px;height:24px;color:#fff}
+.a-ico.cat-decision{background:#4c6272}
+.a-ico.cat-control{background:#005eb8}
+.a-ico.cat-escalation{background:#c9791a}
+.a-ico.cat-communication{background:#330072}
+.a-ico.cat-practical{background:#007f3b}
+.a-ico.cat-risk{background:#ae2573}
+.act .a-cat{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+.act .a-title{font-size:15px;font-weight:700;color:var(--ink);display:flex;gap:8px;align-items:center;flex-wrap:wrap;line-height:1.25}
+.act .a-blurb{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.act .a-select{position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:5px;border:2px solid var(--line-2);background:var(--surface);display:grid;place-items:center}
+.act .a-select svg{width:15px;height:15px;color:#fff;opacity:0}
+.act:hover .a-select{border-color:var(--teal)}
+.act.sel{background:var(--teal-tint);border-color:var(--teal)}
+.act.sel .a-select{background:var(--teal);border-color:var(--teal)}
+.act.sel .a-select svg{opacity:1}
+.act.disabled{opacity:.5}.act.disabled:hover{transform:none;box-shadow:var(--shadow);border-color:var(--line)}
+.act .a-foot{margin-top:8px;display:flex;gap:12px}
+.act .a-ev.ev-on{color:var(--good);font-size:11px;font-weight:700;display:inline-flex;gap:5px;align-items:center}
+.act .a-ev.ev-off{color:var(--ink-3);font-size:11px;font-weight:700;display:inline-flex;gap:5px;align-items:center}
+
+/* Primary buttons — NHS green with the classic drop */
+.btn{background:#007f3b;border:0;color:#fff;border-radius:var(--r-sm);font-weight:700;box-shadow:0 3px 0 #00602c;transition:filter .15s}
+.btn:hover{background:#007f3b;filter:brightness(1.08);box-shadow:0 3px 0 #00602c}
+.btn:active{transform:translateY(1px);box-shadow:0 2px 0 #00602c}
+.btn[disabled]{background:var(--surface-3);color:var(--ink-3);box-shadow:none;opacity:1}
+.btn-secondary{background:var(--surface);color:var(--teal);border:1px solid var(--line);box-shadow:none}
+.btn-secondary:hover{background:var(--surface-2);filter:none}
+.btn-navy{background:var(--teal);color:#fff;box-shadow:0 3px 0 var(--teal-strong)}
+.btn-navy:hover{background:var(--teal);filter:brightness(1.06)}
+
+/* Action bar */
+.action-bar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--surface);border-top:1px solid var(--line);padding:13px 24px}
+.ab-status{font-size:13.5px;color:var(--ink-2)} .ab-status b{color:var(--ink);font-weight:700}
+.ab-sep{color:var(--ink-4);margin:0 6px} .ab-over{color:var(--bad);font-weight:700}
+.btn-go{background:#007f3b;color:#fff;border:0;border-radius:var(--r-sm);padding:13px 28px;font-size:16px;font-weight:700;box-shadow:0 3px 0 #00602c;display:inline-flex;gap:9px;align-items:center;cursor:pointer;transition:filter .15s}
+.btn-go:hover{filter:brightness(1.08)}
+.btn-go:active{transform:translateY(1px);box-shadow:0 2px 0 #00602c}
+.btn-go[disabled]{background:var(--surface-3);color:var(--ink-3);box-shadow:none;cursor:not-allowed}
+.btn-go svg{width:17px;height:17px}
+
+/* Dossier photo ring in NHS blue */
+.dossier-photo::after{box-shadow:0 0 0 2px var(--teal),0 0 0 5px var(--teal-tint)}
 </style>
 </head>
 <body>
@@ -1364,6 +1511,7 @@ function freshState(){
     tab:'situation',
     kpi:{...START_KPI},
     prevention:START_PREVENTION,
+    prevHistory:[START_PREVENTION],   // prevention capability trend across rounds
     flags:{},
     opened:{1:{},2:{},3:{}},      // investigations opened per round
     selected:{1:{},2:{},3:{}},    // actions selected per round
@@ -1373,7 +1521,7 @@ function freshState(){
     chain:[],                     // risk chain events
     stats:{identified:0,missed:0},
     dismissed:{},                 // round 3 dismissed notifications
-    theme:null,
+    theme:'light',
     outcome:null,
   };
 }
@@ -1765,6 +1913,7 @@ function commitRound(round){
   const idCats=['Risk identification','Escalation','Control'];
   chosen.forEach(a=>{if(['pattern','salt','salt2','saltContacted','interimplan','medreview','texture','supervise'].includes(a.id)||idCats.includes(a.cat))S.stats.identified++;});
   S.committed[round]={chosen:chosen.map(a=>a.id),delta,before,blind,conf};
+  (S.prevHistory=S.prevHistory||[START_PREVENTION]).push(S.prevention);
   buildChainForRound(round,chosen);
   save();
   return {chosen,delta,before};
@@ -2058,7 +2207,7 @@ function viewLanding(){
         <p class="subline">Spot the signs. Connect the decisions. Prevent the consequence.</p>
         <p class="lead mt-22" style="max-width:56ch">You are the management team of Meadow View Supported Living. A new resident, Michael Turner, is arriving with incomplete and contradictory information about his eating and drinking. Over three rounds you will decide what to investigate, what to control, and where to spend your limited time, then watch the consequences unfold.</p>
         <div class="hero-cta">
-          <button class="btn btn-lg" data-act="goto-briefing">Begin the simulation ${svg(I.arrowR)}</button>
+          <button class="btn btn-lg" data-act="goto-intro">Begin the simulation ${svg(I.arrowR)}</button>
           <span class="muted" style="font-size:13.5px">About 15 to 20 minutes · 3 playable rounds</span>
         </div>
       </div>
@@ -2236,62 +2385,102 @@ function viewDashboard(){
       </div>
     </section>`;
 
-  return `<main class="console3">
-    <aside class="guide-col">${guideBlocks(tab,round,d)}</aside>
-
-    <div class="work-col">
-      ${round===3?`<div class="clock-strip">${round3ClockBar()}</div>`:''}
-      <div class="tabbar" role="tablist">
-        ${tabBtn('situation','Situation',I.clipboard,alertCount||'')}
-        ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
-        ${tabBtn('decisions','Decisions',I.check,selCount||'')}
-      </div>
-      <div class="tabpanel" role="tabpanel">
-        ${tab==='situation'?situationPanel:tab==='information'?informationPanel:decisionsPanel}
-      </div>
-    </div>
-
-    <aside class="hud-col">
-      <div class="hud">
-        <div class="hud-head"><span class="hud-live"></span> Live status</div>
-        ${preventionCard()}
-        ${attentionCard(round)}
-        ${kpiCard()}
-      </div>
-      <div class="rail-submit">
-        <div class="submit-status">
-          <span><span class="ss-count">${selCount}</span> action${selCount===1?'':'s'} selected</span>
-          <span class="${over?'ss-over':''}">${over?'Over time':`${Math.max(0,Math.round((ROUND_TIME-used)/ROUND_TIME*100))}% time left`}</span>
+  return `
+    ${hudStrip(round)}
+    <main class="console2">
+      <aside class="guide-col">${guideBlocks(tab,round,d)}</aside>
+      <div class="work-col">
+        ${round===3?`<div class="clock-strip">${round3ClockBar()}</div>`:''}
+        <div class="tabbar" role="tablist">
+          ${tabBtn('situation','Situation',I.clipboard,alertCount||'')}
+          ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
+          ${tabBtn('decisions','Decisions',I.check,selCount||'')}
         </div>
-        <button class="btn btn-lg" style="width:100%" data-act="submit-round" ${canSubmit?'':'disabled'}>
-          ${anySel?'Review &amp; submit':'Choose an action to continue'} ${anySel?svg(I.arrowR):''}
-        </button>
-        ${over?`<div class="alert alert-red"><span class="al-ico">${svg(I.alertT)}</span><div class="al-body">You have taken on more than there is time for. Deselect an action or leave a record unread.</div></div>`:''}
+        <div class="tabpanel" role="tabpanel">
+          ${tab==='situation'?situationPanel:tab==='information'?informationPanel:decisionsPanel}
+        </div>
       </div>
-    </aside>
-  </main>`;
+    </main>
+    <div class="action-bar">
+      <div class="ab-status">
+        <span><b>${selCount}</b> action${selCount===1?'':'s'} selected</span>
+        <span class="ab-sep">·</span>
+        <span class="${over?'ab-over':''}"><b>${over?'0%':Math.max(0,Math.round((ROUND_TIME-used)/ROUND_TIME*100))+'%'}</b> time ${over?'over budget':'remaining'}</span>
+      </div>
+      <button class="btn btn-go" data-act="submit-round" ${canSubmit?'':'disabled'}>
+        ${anySel?'Review &amp; submit':'Choose an action to continue'} ${anySel?svg(I.arrowR):''}
+      </button>
+    </div>`;
 }
 
-/* Guide panel — task + good-to-know + alerts, grouped on the left */
+/* Top HUD strip — leads with an animated Prevention trend chart */
+function hudStrip(round){
+  const v=S.prevention;
+  const used=attentionUsed(round);
+  const tpct=Math.max(0,Math.round((ROUND_TIME-used)/ROUND_TIME*100));
+  const hist=(S.prevHistory&&S.prevHistory.length?S.prevHistory.slice():[START_PREVENTION]);
+  if(hist[hist.length-1]!==v) hist.push(v);
+  const sp=sparkPath(hist,280,52,20,100);
+  const kpis=KPIS.map(k=>{
+    const val=S.kpi[k.key];const zone=zoneClass(k,val);
+    return `<div class="hk"><div class="t"><span>${k.name}</span><b>${val}${k.invert?' <i>exp</i>':''}</b></div>
+      <div class="hbar"><i class="${zone}" style="width:${val}%"></i></div></div>`;
+  }).join('');
+  return `<div class="hudstrip">
+    <div class="hs-cell hs-prev">
+      <div class="hs-label"><span class="hud-live"></span> Prevention capability</div>
+      <div class="hs-prevrow"><span class="hs-num" data-count="${v}" data-from="0">${v}</span><span class="hs-tag">${prevLabel(v)}</span><span class="hs-sub">trend over rounds</span></div>
+      <svg class="spark" viewBox="0 0 280 52" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="pgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--teal)" stop-opacity=".28"/><stop offset="1" stop-color="var(--teal)" stop-opacity="0"/></linearGradient></defs>
+        <path class="ar" d="${sp.area}" fill="url(#pgrad)"/>
+        <path class="ln" d="${sp.line}"/>
+        <circle class="dt" cx="${sp.cx.toFixed(1)}" cy="${sp.cy.toFixed(1)}" r="4.5"/>
+      </svg>
+    </div>
+    <div class="hs-cell hs-time">
+      <div class="hs-label">Time available</div>
+      <div class="hs-prevrow"><span class="hs-num">${tpct}%</span><span class="hs-sub">remaining</span></div>
+      <div class="hbar big"><i class="f-teal" style="width:${tpct}%"></i></div>
+      <div class="hs-note">Spent on reviewing records and taking actions.</div>
+    </div>
+    <div class="hs-cell hs-kpis">
+      <div class="hs-label">Performance indicators</div>
+      <div class="hs-kgrid">${kpis}</div>
+    </div>
+  </div>`;
+}
+function sparkPath(vals,w,h,min,max){
+  const pad=5,n=vals.length;
+  const x=i=> n<=1? (w-pad) : pad+(w-2*pad)*(i/(n-1));
+  const y=val=>pad+(h-2*pad)*(1-(Math.max(min,Math.min(max,val))-min)/(max-min));
+  let d='';vals.forEach((val,i)=>{d+=(i?'L':'M')+x(i).toFixed(1)+','+y(val).toFixed(1)+' ';});
+  const area=d+`L${x(n-1).toFixed(1)},${h} L${x(0).toFixed(1)},${h} Z`;
+  return {line:d.trim(),area,cx:x(n-1),cy:y(vals[n-1])};
+}
+
+/* Guide — NHS care cards (coloured headers) */
 function guideBlocks(tab,round,d){
   const T={
-    situation:['Your task · Step 1 of 3','Read the situation','Get to know Michael and the alerts before you decide anything.'],
-    information:['Your task · Step 2 of 3','Review the records that matter most','Each one uses some of your time, and acting without the evidence is riskier.'],
-    decisions:['Your task · Step 3 of 3','Choose your actions, then submit','Change your mind freely until you commit.'],
-  }[tab]||[];
+    situation:['Your task · 1 of 3','Read the situation'],
+    information:['Your task · 2 of 3','Review the records that matter'],
+    decisions:['Your task · 3 of 3','Choose your actions, then submit'],
+  }[tab]||['Your task',''];
   const P={
-    situation:['Nothing here is confirmed','The records are incomplete and sometimes contradict one another. Deciding what is reliable enough to act on is part of your task.'],
-    information:["You can't read everything",'Reviewing a record uses time you also need for actions. Choose what is most likely to matter; you can still act on the rest, with less certainty.'],
-    decisions:['Time is limited','There is more you could do than there is time for. Spend it where it changes the outcome.'],
-  }[tab]||[];
+    situation:'Nothing here is confirmed — decide what is reliable enough to act on.',
+    information:"You can't read everything — choose what is most likely to matter.",
+    decisions:'Time is limited — spend it where it changes the outcome.',
+  }[tab]||'';
   let h=`<div class="guide-title">Guide</div>`;
-  h+=`<div class="g-block g-task"><div class="g-top"><span class="g-med">${svg(I.route)}</span><span class="g-label">${T[0]}</span></div><h4>${T[1]}</h4><p>${T[2]}</p></div>`;
-  h+=`<div class="g-block g-info"><div class="g-top"><span class="g-med">${svg(I.info)}</span><span class="g-label">Good to know</span></div><h4>${P[0]}</h4><p>${P[1]}</p></div>`;
+  h+=care('task',I.route,T[0],`<h5>${T[1]}</h5>`);
+  h+=care('info',I.info,'Good to know',`<h5>${P}</h5>`);
   (d.alerts||[]).forEach(a=>{
     const isInfo=a.tone==='info';
-    h+=`<div class="g-block ${isInfo?'g-info':'g-alert'}"><div class="g-top"><span class="g-med">${svg(I[a.ico]||I.alertT)}</span><span class="g-label">${isInfo?'Heads up':'Alert'}</span></div><p>${a.text}</p></div>`;
+    h+=care(isInfo?'info':'alert', I[a.ico]||I.alertT, isInfo?'Heads up':'Alert', a.text);
   });
   return h;
+}
+function care(kind,ico,label,bodyHtml){
+  return `<div class="care care-${kind}"><div class="care-h">${svg(ico)} ${label}</div><div class="care-b">${bodyHtml}</div></div>`;
 }
 
 function docTitle(round,id){const doc=(DATA[round].docs||[]).find(d=>d.id===id);return doc?doc.title.toLowerCase().replace(/^the /,''):'record';}
@@ -2305,12 +2494,17 @@ function decisionPrompt(round){
 function srcCard(doc,round){
   const opened=(S.opened[round]||{})[doc.id];
   const noTime = !opened && attentionRemaining(round)<doc.cost;   // not enough time left to review
-  return `<button class="src ${opened?'opened':''} ${noTime?'capped':''}" data-act="open-doc" data-doc="${doc.id}" ${noTime?'disabled title="Not enough time left this round to review this"':''}>
-    <div class="r-cover">
-      ${opened?'':`<span class="s-open-cost">${timeCost(doc.cost)}</span>`}
-      <div class="r-badge">${svg(I[doc.ico])}</div>
-    </div>
+  const hasImg=!!doc.img;
+  const cost = opened?'':`<span class="s-open-cost">${timeCost(doc.cost)}</span>`;
+  // Optional photo banner (cohesive overlay); falls back to an icon chip when no image.
+  const media = hasImg
+    ? `<div class="r-media"><img src="${doc.img}" alt="" loading="lazy" onerror="this.remove();this.parentNode.classList.add('noimg')"><span class="r-chip">${svg(I[doc.ico])}</span>${cost?`<span class="r-cost-o">${cost}</span>`:''}</div>`
+    : '';
+  const iconRow = hasImg?'':`<div class="r-top"><span class="r-ic-box">${svg(I[doc.ico])}</span>${cost}</div>`;
+  return `<button class="src ${opened?'opened':''}${hasImg?' has-img':''} ${noTime?'capped':''}" data-act="open-doc" data-doc="${doc.id}" ${noTime?'disabled title="Not enough time left this round to review this"':''}>
+    ${media}
     <div class="r-body">
+      ${iconRow}
       <h4>${doc.title}</h4><div class="s-src">${doc.source}</div>
       <div class="s-teaser">${doc.teaser}</div>
       <div class="s-foot">
