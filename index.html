@@ -2726,7 +2726,7 @@ function viewReveal(){
       <span class="eyebrow">Round ${round} · consequences</span>
       <h2>${d.title}: what your decisions set in motion</h2>
       <p>This is what your decisions have set in motion. Some effects show now; others will surface later. A full account of what worked and where to focus comes in your report at the end.</p>
-      <div style="margin-top:14px"><span class="conf-note" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:rgba(232,238,242,.9)">${svg(conf==='confident'?I.bolt:conf==='cautious'?I.scale:I.gauge2)} ${confText}</span></div>
+      <div style="margin-top:14px"><span class="conf-note" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16);color:rgba(232,238,242,.9)">${svg(conf==='confident'?I.bolt:conf==='cautious'?I.scale:I.gauge2)}<span>${confText}</span></span></div>
     </div>
 
     <div class="two-col" style="margin-top:22px;align-items:start">
