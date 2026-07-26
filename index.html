@@ -1128,20 +1128,29 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .a-ico.cat-communication{background:linear-gradient(145deg,#6aa8f5,#3a6ed0)}
 .a-ico.cat-practical{background:linear-gradient(145deg,#57d08a,#2b9a5b)}
 .a-ico.cat-risk{background:linear-gradient(145deg,#9179e6,#5a45a5)}
-.act.sel{background:linear-gradient(160deg,#157f79,#0c5d58);border-color:transparent}
-.act.sel .a-wm{opacity:.14;color:#fff}
-.act.sel .a-title,.act.sel .a-blurb{color:#eafffe}
-.act.sel .a-cat{color:#9be6e2}
-.act.sel .a-ico{background:rgba(255,255,255,.16);box-shadow:none}
-.act.sel .a-select{background:#fff;border-color:#fff}
-.act.sel .a-select svg{color:#0c5d58}
-.act.sel .tseg{background:rgba(255,255,255,.35)} .act.sel .tseg.on{background:#eafffe} .act.sel .tcost,.act.sel .tcost svg{color:#c9f2f0}
+.act.sel .a-wm{opacity:.14}
+/* v7: selected action cards use a PALE teal-tint fill (see .act.sel in the v7 block below).
+   The old v6 dark-gradient selected state is dead, but its descendant text/icon overrides
+   (white title/blurb, washed-out icon, pale-cyan cat) leaked through on specificity and made
+   selected cards unreadable in light theme. Removed — v7's theme-aware colours apply instead. */
 .act.disabled{opacity:.5}
 .act.disabled:hover{transform:none;box-shadow:var(--shadow)}
 .act .a-foot{display:flex;gap:12px;margin-top:9px;z-index:1;position:relative}
 .act .a-ev{font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
 .act .a-ev.ev-on{color:var(--good)} .act .a-ev.ev-off{color:var(--ink-3)}
-.act.sel .a-ev.ev-on{color:#c9f7de}
+
+/* v7 record modal — reads like opening a real document, not a bigger card */
+.record-modal{max-width:600px}
+.record-head{align-items:center;gap:15px;padding:18px 22px}
+.record-head .rm-emblem{width:50px;height:50px;border-radius:11px;flex:none;display:grid;place-items:center;background:var(--teal-tint);color:var(--teal-strong);box-shadow:inset 0 0 0 1px var(--line)}
+.record-head .rm-emblem svg{width:27px;height:27px}
+.record-head .rm-id{flex:1;min-width:0}
+.record-head .rm-kicker{display:block;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong);margin-bottom:3px}
+.record-head .rm-id h3{font-size:18px;line-height:1.25;letter-spacing:-.01em;color:var(--ink)}
+.record-head .rm-src{font-size:12.5px;color:var(--ink-3);margin-top:4px}
+.record-modal .modal-body{padding:6px 22px 22px}
+.record-modal .record .field:first-child{padding-top:4px}
+.record-modal .record .field:last-child{border-bottom:0;padding-bottom:2px}
 
 /* ---- HUD console (right, always dark) ---- */
 .hud{flex:1;min-height:0;overflow-y:auto;background:linear-gradient(180deg,var(--navy),var(--navy-2));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:2px 18px 16px;box-shadow:var(--shadow-lg)}
@@ -1282,46 +1291,51 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 
 /* Layout: top HUD + (guide | work) + action bar */
 #app.is-console{background:var(--ground)}
-.hudstrip{flex:none;display:grid;grid-template-columns:1fr .8fr 1.95fr;background:var(--surface);border-bottom:1px solid var(--line);width:100%;max-width:1440px;margin:0 auto}
-.hs-cell{padding:13px 22px;border-right:1px solid var(--line);min-width:0}
+/* HUD = the important live-status panel. Distinct navy instrument treatment so it
+   reads as the command strip, clearly set apart from the white work area below.
+   --teal is re-scoped to a brighter sky cyan here so teal accents stay legible on navy. */
+.hudstrip{flex:none;display:grid;grid-template-columns:1fr .8fr 1.95fr;background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);width:100%;max-width:1440px;margin:0 auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 14px 30px rgba(0,20,60,.20);--teal:#6cc6ff}
+.hs-cell{padding:14px 22px;border-right:1px solid rgba(255,255,255,.13);min-width:0}
 .hs-cell:last-child{border-right:0}
-.hs-label{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+.hs-label{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:8px}
 .hud-live{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);animation:hudpulse 2.4s ease-in-out infinite}
 @keyframes hudpulse{0%,100%{opacity:1}50%{opacity:.4}}
 .hs-prevrow{display:flex;align-items:baseline;gap:10px}
-.hs-num{font-size:32px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.hs-num{font-size:32px;font-weight:700;line-height:1;letter-spacing:-.02em;color:#fff;font-variant-numeric:tabular-nums}
 .hs-tag{font-size:14px;font-weight:700;color:var(--teal)}
-.hs-sub{font-size:11px;color:var(--ink-3);margin-left:auto}
-.hs-note{font-size:11px;color:var(--ink-3);margin-top:8px}
+.hs-sub{font-size:11px;color:rgba(255,255,255,.55);margin-left:auto}
+.hs-note{font-size:11px;color:rgba(255,255,255,.55);margin-top:8px}
 .spark{width:100%;max-width:200px;height:46px;display:block;margin-top:6px;overflow:visible}
 .spark .ln{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:620;stroke-dashoffset:620;animation:spdraw 1.3s cubic-bezier(.3,.7,.3,1) .1s forwards}
 .spark .ar{opacity:0;animation:spfade 1s ease-out .55s forwards}
-.spark .dt{opacity:0;fill:var(--surface);stroke:var(--teal);stroke-width:2.5;animation:spfade .4s ease-out 1.25s forwards}
+.spark .dt{opacity:0;fill:#fff;stroke:var(--teal);stroke-width:2.5;animation:spfade .4s ease-out 1.25s forwards}
 @keyframes spdraw{to{stroke-dashoffset:0}}@keyframes spfade{to{opacity:1}}
-.hbar{height:8px;border-radius:100px;background:var(--surface-3);overflow:hidden}
+.hbar{height:8px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden}
 .hbar.big{margin-top:8px}
 .hbar i{display:block;height:100%;border-radius:100px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
 .hbar i.f-good{background:var(--g-green)} .hbar i.f-warn{background:var(--g-amber)} .hbar i.f-bad{background:var(--g-red)} .hbar i.f-teal{background:var(--teal)}
 .hs-kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px 24px}
 .hk .t{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:6px}
-.hk .t span{font-size:13px;color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hk .t b{font-size:16px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-.hk .t i{font-size:10px;color:var(--ink-3);font-style:normal}
+.hk .t span{font-size:13px;color:rgba(255,255,255,.82);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hk .t b{font-size:16px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.hk .t i{font-size:10px;color:rgba(255,255,255,.55);font-style:normal}
 .hbar{height:9px}
 @media(max-width:1020px){.hudstrip{grid-template-columns:1fr}.hs-cell{border-right:0;border-bottom:1px solid var(--line)}}
 
 .console2{flex:1;min-height:0;display:grid;grid-template-columns:266px 1fr;width:100%;max-width:1440px;margin:0 auto}
-.guide-col{padding:18px 16px;background:var(--surface-2);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
+/* Guide rail: same navy family as the HUD but a deeper, distinct shade, so it reads as
+   recessed app chrome with the white care cards floating on it. */
+.guide-col{padding:18px 16px;background:linear-gradient(180deg,#022354,#001d45);color:var(--navy-ink);border-right:1px solid rgba(255,255,255,.10);overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
 .work-col{min-height:0;display:flex;flex-direction:column;padding:18px 22px}
 .work-col .tabpanel{flex:1;min-height:0;overflow-y:auto}
 @media(max-width:1020px){#app.is-console{height:auto;overflow:visible}.console2{grid-template-columns:1fr}.guide-col{border-right:0;border-bottom:1px solid var(--line)}.guide-col,.work-col .tabpanel{overflow:visible;min-height:auto}}
 
 /* Guide — NHS care cards (coloured headers draw the eye + differentiate) */
-.guide-title{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:2px 2px 2px}
+.guide-title{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58);font-weight:700;margin:2px 2px 2px}
 .care{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow)}
 .care-h{display:flex;align-items:center;gap:8px;padding:9px 13px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
 .care-h svg{width:16px;height:16px}
-.care-b{padding:11px 13px}
+.care-b{padding:11px 13px;font-size:13px;font-weight:400;color:var(--ink-2);line-height:1.45}
 .care-b h5{font-size:14px;font-weight:700;margin:0;line-height:1.35;color:var(--ink)}
 .care-b p{font-size:13px;font-weight:400;color:var(--ink-2);line-height:1.45;margin:5px 0 0}
 .care-b b{color:var(--ink);font-weight:700}
@@ -1372,7 +1386,9 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 
 /* DECISIONS — clean cards; category-colour icon; pale-blue selected */
 .acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-content:start}
-.act{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 46px 15px 15px;display:flex;gap:13px;align-items:center;position:relative;text-align:left;width:100%;color:inherit;transition:.15s;overflow:visible}
+.act{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 46px 15px 15px;display:flex;gap:13px;align-items:flex-start;position:relative;text-align:left;width:100%;color:inherit;transition:.15s;overflow:visible}
+.act .a-left{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none;margin-top:16px}
+.act .a-left .tcost{color:var(--ink-3)}
 .act:hover,.act:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),var(--shadow-lg);transform:translateY(-2px)}
 .act .a-ico{width:46px;height:46px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff;box-shadow:none}
 .act .a-ico svg{width:24px;height:24px;color:#fff}
@@ -1382,7 +1398,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .a-ico.cat-communication{background:#330072}
 .a-ico.cat-practical{background:#007f3b}
 .a-ico.cat-risk{background:#ae2573}
-.act .a-cat{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+.act .a-cat{display:block;font-size:10px;line-height:1.4;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
 .act .a-title{font-size:15px;font-weight:700;color:var(--ink);display:flex;gap:8px;align-items:center;flex-wrap:wrap;line-height:1.25}
 .act .a-blurb{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .act .a-select{position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:5px;border:2px solid var(--line-2);background:var(--surface);display:grid;place-items:center}
@@ -1589,31 +1605,31 @@ const DATA = {
     ],
     docs:[
       {id:'discharge',ico:'hospital',title:'Hospital discharge summary',source:'St. Aldwyn’s Hospital · dated 2 days ago',cred:'incomplete',cost:1,
-       teaser:'Medically fit for discharge. Mentions a "soft diet" and a recent medication change.',
+       teaser:'Covers his diet, a recent medication change and what was assessed on the ward.',
        body:`<div class="field"><span class="fl">Status</span><span class="fv">Medically fit for discharge</span></div>
              <div class="field"><span class="fl">Diet</span><span class="fv">"Soft diet", no further detail or swallowing guidance recorded</span></div>
              <div class="field"><span class="fl">Medication</span><span class="fv">Recent change on the ward (see medication record). Reason not stated here.</span></div>
              <div class="field"><span class="fl">Swallowing</span><span class="fv">Not assessed on this admission</span></div>`,
        insight:'"Soft diet" and a texture-modified diet are different things. The summary is recent but silent on swallowing.'},
       {id:'prevplan',ico:'clipboard',title:'Previous provider care plan',source:'Oakfield House · last reviewed 8 months ago',cred:'outdated',cost:1,
-       teaser:'States Michael should be supervised while eating and eats quickly when distressed.',
+       teaser:'The previous provider’s notes on his mealtimes and behaviour.',
        body:`<div class="field"><span class="fl">Mealtimes</span><span class="fv">"Michael should be supervised while eating."</span></div>
              <div class="field"><span class="fl">Behaviour</span><span class="fv">"Eats quickly when distressed or rushed."</span></div>
              <div class="field"><span class="fl">Reviewed</span><span class="fv">8 months ago, predates the hospital admission</span></div>`,
        insight:'Two early risk signals: supervision at meals, and eating quickly when distressed. Both predate the admission.'},
       {id:'salt',ico:'stethoscope',title:'SALT letter',source:'Community SALT service · dated 6 months ago',cred:'incomplete',cost:2,
-       teaser:'Recommends a specific texture-modified diet. Notes reassessment may be needed after any significant change.',
+       teaser:'The speech and language team’s guidance on diet and swallowing.',
        body:`<div class="field"><span class="fl">Recommendation</span><span class="fv">Level 5 Minced &amp; Moist diet; Level 0 thin fluids. Small mouthfuls, upright, unhurried.</span></div>
              <div class="field"><span class="fl">Dated</span><span class="fv">6 months ago</span></div>
              <div class="field"><span class="fl">Caveat</span><span class="fv">"A reassessment may be needed following any significant change in health, medication or presentation."</span></div>`,
        insight:'The clearest guidance you hold, and it names its own trigger for reassessment: a significant change. Michael has just had one.'},
       {id:'family',ico:'home',title:'Message from family',source:'Michael’s sister, Angela · received yesterday',cred:'ambiguous',cost:1,
-       teaser:'Says Michael eats normal meals at home and asks staff not to make a fuss.',
+       teaser:'Angela’s views on Michael’s eating and how she wants him supported.',
        body:`<div class="msg"><div class="from"><span>From Angela Turner (sister)</span><span>${'yesterday'}</span></div>
              "Please don’t make a big fuss about Michael’s food. He eats normal meals when he comes to me and he’s fine. All these restrictions just make him miserable and he’s been through enough. He knows his own mind."</div>`,
        insight:'Angela’s view matters and cannot be dismissed. It also conflicts with the SALT guidance. Both need to be held at once.'},
       {id:'staff',ico:'users',title:'Staff competence & rota',source:'Meadow View team records · current',cred:'reliable',cost:1,
-       teaser:'Two staff trained in dysphagia awareness; one competency observation overdue; agency worker on this evening.',
+       teaser:'Training, competency and who is rostered for this evening.',
        body:`<div class="field"><span class="fl">Trained</span><span class="fv">2 permanent staff, dysphagia awareness &amp; safe swallowing, current</span></div>
              <div class="field"><span class="fl">Overdue</span><span class="fv">1 permanent staff member, competency observation lapsed</span></div>
              <div class="field"><span class="fl">This evening</span><span class="fv">1 agency worker on shift, no prior knowledge of Michael</span></div>`,
@@ -1635,11 +1651,6 @@ const DATA = {
        eff:{safety:+4,exposure:-8,reliability:+3},prev:+9,sets:['saltContacted'],delayed:'A SALT reassessment is requested but will not report before the first meal.',
        selNote:'The right clinical escalation. A reassessment is requested. Note this will not report before this evening, so the first meal still needs an interim plan.',
        missNote:'No one asked SALT to reconcile the six-month-old recommendation with the recent change. The clearest route to clarity was left unused.'},
-      {id:'hospital',title:'Contact the hospital ward',cost:1,cat:'Investigation',
-       blurb:'Clarify what "soft diet" meant and why the medication was changed.',
-       eff:{safety:+3,reliability:+3,exposure:-3},prev:+5,sets:['hospitalContacted'],
-       selNote:'You learn "soft diet" was a general catering note, not a swallowing decision, and the medication change may cause drowsiness and a dry mouth.',
-       missNote:'The meaning of "soft diet" and the reason for the medication change were a phone call away.'},
       {id:'speakfamily',title:'Speak with Michael and Angela',cost:1,cat:'Communication',
        blurb:'Explain the service’s approach, listen to their wishes, and agree how to work together.',
        eff:{family:+9,quality:+6,staff:+2},prev:+6,sets:['familyEngaged'],
@@ -1665,16 +1676,6 @@ const DATA = {
        eff:{reliability:+5,exposure:-4,staff:+2},prev:+5,sets:['competencyChecked'],
        selNote:'You confirm who is competent to support a mealtime risk and roster accordingly, rather than assuming the cover is adequate.',
        missNote:'Competency for the shift was not checked, leaving an overdue observation and an unbriefed agency worker unaddressed.'},
-      {id:'experienced',title:'Allocate an experienced worker to settle Michael',cost:1,cat:'Practical',
-       blurb:'Put a known, confident member of staff with Michael for his first meal.',
-       eff:{safety:+5,staff:+4,quality:+3},prev:+5,sets:['experiencedWorker'],
-       selNote:'An experienced worker settles Michael, reduces his anxiety, and is best placed to notice anything concerning at the first meal.',
-       missNote:'No experienced worker was allocated to Michael’s first, highest-uncertainty meal.'},
-      {id:'genericflag',title:'Add a generic choking-risk flag',cost:0,cat:'Practical',
-       blurb:'Place a standard risk marker on the system.',
-       eff:{exposure:-2,reliability:-1},prev:-1,sets:['genericFlag'],
-       selNote:'A marker appears on the system, but a generic flag with no named plan behind it tends to be noticed once and then ignored.',
-       missNote:''},
       {id:'interimplan',title:'Create a named interim support plan',cost:3,cat:'Control',
        blurb:'Write a specific, person-centred plan covering diet, supervision, positioning and what to do if Michael struggles.',
        eff:{safety:+10,reliability:+8,exposure:-7,quality:+2},prev:+11,sets:['interimControls','interimPlan'],
@@ -1688,38 +1689,38 @@ const DATA = {
     status:{state:'Settling in, mixed signals',tone:'amber',line:'Day 5 at Meadow View. Eating and drinking are mostly unremarkable, with occasional coughing and a few small changes noticed by different staff.'},
     docs:[
       {id:'shiftnote',ico:'clipboard',title:'Shift note, tea round',source:'Late shift, yesterday',cred:'ambiguous',cost:1,
-       teaser:'Michael coughed several times while drinking tea but seemed fine afterwards.',
+       teaser:'An observation from last night’s tea round.',
        body:`<div class="msg"><div class="from"><span>Evening shift note</span><span>yesterday</span></div>
              "Michael coughed a few times on his tea this evening, went a bit red, but was fine after and finished his cup. Nothing else to report."</div>`,
        insight:'Coughing on thin fluids is a classic aspiration sign. On its own it looks minor; alongside the medication’s dry-mouth effect, it is a pattern.'},
       {id:'quickmsg',ico:'message',title:'Message from a support worker',source:'Day shift, today',cred:'reliable',cost:1,
-       teaser:'Michael has been eating more quickly than usual.',
+       teaser:'A support worker’s note about how Michael is eating.',
        body:`<div class="msg"><div class="from"><span>From Priya (support worker)</span><span>today, 10:20</span></div>
              "Just flagging, Michael’s been wolfing his food down the last couple of days, quicker than when he arrived. Not sure if it’s anything but thought I’d mention it."</div>`,
        insight:'"Eats quickly when distressed" was in the old care plan. This is the same signal reappearing. Why is he distressed?'},
       {id:'medupdate',ico:'pill',title:'Medication information',source:'Pharmacy reconciliation',cred:'incomplete',cost:2,
-       teaser:'The medication changed before discharge can cause drowsiness and a dry mouth.',
+       teaser:'The reconciled medication list and its likely effects.',
        body:`<div class="field"><span class="fl">Change</span><span class="fv">New medication started on the ward shortly before discharge</span></div>
              <div class="field"><span class="fl">Side effects</span><span class="fv">Drowsiness; dry mouth (reduced saliva)</span></div>
              <div class="field"><span class="fl">Relevance</span><span class="fv">Both drowsiness and dry mouth increase swallowing risk</span></div>`,
        insight:'This is the thread connecting the coughing, the tiredness and the quick eating. It is also the reassessment trigger SALT named.'},
       {id:'sistermsg',ico:'home',title:'Message from Angela',source:'Michael’s sister',cred:'ambiguous',cost:1,
-       teaser:'Says Michael sounds tired and unsettled on the phone.',
+       teaser:'A phone message from Angela about how Michael seems.',
        body:`<div class="msg"><div class="from"><span>From Angela Turner (sister)</span><span>today</span></div>
              "Spoke to Michael last night. He sounded really tired, not himself, a bit down. Is everything alright there? He didn’t say much."</div>`,
        insight:'Angela is describing the medication’s effect without knowing it. Family observation is data, if the relationship is open enough to share it.'},
       {id:'daily',ico:'utensils',title:'Daily record, breakfast',source:'Kitchen / care notes',cred:'incomplete',cost:1,
-       teaser:'Michael ate less than usual at breakfast.',
+       teaser:'Today’s breakfast entry in the daily record.',
        body:`<div class="field"><span class="fl">Breakfast</span><span class="fv">Ate approximately half; left the toast</span></div>
              <div class="field"><span class="fl">Fluids</span><span class="fv">Small amounts only</span></div>`,
        insight:'Reduced intake is often the first quiet sign that eating has become hard work. It rarely arrives with a label attached.'},
       {id:'staffleave',ico:'users',title:'Staffing note',source:'Rota',cred:'reliable',cost:1,
-       teaser:'The worker who knows Michael best is on leave this week.',
+       teaser:'This week’s staffing and who is available.',
        body:`<div class="field"><span class="fl">On leave</span><span class="fv">Michael’s keyworker, the person who knows his baseline best</span></div>
              <div class="field"><span class="fl">Effect</span><span class="fv">Changes are harder to notice when the people around Michael keep changing</span></div>`,
        insight:'The person most likely to join these dots is away. Continuity is not a nicety here; it is how patterns get seen.'},
       {id:'audit',ico:'file',title:'Care-plan audit',source:'Compliance check',cred:'reliable',cost:1,
-       teaser:'The interim support plan has not been signed by two members of staff.',
+       teaser:'A compliance check on the interim support plan.',
        body:`<div class="field"><span class="fl">Finding</span><span class="fv">Interim support plan present but unsigned by 2 staff</span></div>
              <div class="field"><span class="fl">Means</span><span class="fv">Those staff may not have read or be following it</span></div>`,
        insight:'A written plan and a followed plan are different things. Unsigned means some staff may be supporting Michael without it.'},
@@ -1777,28 +1778,28 @@ const DATA = {
     status:{state:'Lunchtime, under pressure',tone:'red',line:'One permanent staff member off sick, agency covering. Another resident needs urgent help. Michael’s texture meal is delayed in the kitchen.'},
     docs:[
       {id:'board',ico:'users',title:'Staffing board, right now',source:'Live',cred:'reliable',cost:1,
-       teaser:'Who is actually on the floor, and who is competent to support Michael.',
+       teaser:'Who is on the floor right now and who is competent.',
        body:`<div class="field"><span class="fl">On shift</span><span class="fv">1 permanent worker (currently with another resident), 1 agency worker</span></div>
              <div class="field"><span class="fl">Off sick</span><span class="fv">1 permanent worker, no replacement until 14:00</span></div>
              <div class="field"><span class="fl">Agency worker</span><span class="fv">Competent generally; briefed on Michael only if your team arranged it earlier</span></div>`,
        insight:'Who can safely support Michael right now was largely decided in Rounds 1 and 2, not at 12:40.'},
       {id:'foodfromhome',ico:'home',title:'The food Angela brought',source:'At reception now',cred:'contradictory',cost:1,
-       teaser:'A shop-bought sandwich and a packet of crisps, normal texture.',
+       teaser:'What Angela has just brought in for Michael to eat.',
        body:`<div class="msg"><div class="from"><span>Angela Turner (sister), at reception</span><span>12:41</span></div>
              "His lunch clearly isn’t ready and he’s starving and upset. I’ve brought his favourite, a chicken sandwich and some crisps. He has this with me all the time. Can he just have it? Look at the state of him."</div>`,
        insight:'This is the collision the whole scenario has been building toward: autonomy and affection on one side, swallowing risk on the other.'},
       {id:'michaelstate',ico:'person',title:'Michael right now',source:'Direct observation',cred:'reliable',cost:1,
-       teaser:'Hungry, agitated, and starting to eat quickly, the distress pattern.',
+       teaser:'How Michael is presenting at this moment.',
        body:`<div class="field"><span class="fl">Presentation</span><span class="fv">Hungry, restless, upset that lunch is late and that "everyone is busy"</span></div>
              <div class="field"><span class="fl">Risk behaviour</span><span class="fv">This is exactly the "eats quickly when distressed" state noted since admission</span></div>`,
        insight:'Distress is the accelerant. Calm Michael first and the eating risk drops; escalate the tension and it climbs.'},
       {id:'kitchen',ico:'clock',title:'Kitchen, the prescribed meal',source:'Catering',cred:'reliable',cost:1,
-       teaser:'Michael’s texture-modified meal is about 12 minutes away.',
+       teaser:'Where his prescribed meal has got to.',
        body:`<div class="field"><span class="fl">Status</span><span class="fv">Being prepared, roughly 12 minutes to ready</span></div>
              <div class="field"><span class="fl">Options now</span><span class="fv">A safe texture-appropriate snack could bridge the gap if one is available</span></div>`,
        insight:'You are managing twelve minutes, not a crisis, unless the twelve minutes are handled badly.'},
       {id:'otherres',ico:'bell',title:'The other resident',source:'Live',cred:'reliable',cost:1,
-       teaser:'Genuinely needs urgent help; ties up the one permanent worker.',
+       teaser:'What the other resident needs right now.',
        body:`<div class="field"><span class="fl">Situation</span><span class="fv">A second resident needs prompt, hands-on support, not something to defer</span></div>
              <div class="field"><span class="fl">Effect</span><span class="fv">Your most competent person is committed elsewhere</span></div>`,
        insight:'Two genuine needs, limited hands. Whether that is a dilemma or a disaster depends on earlier staffing decisions.'},
@@ -1869,8 +1870,8 @@ function canReviewMore(round){return reviewedCount(round)<reviewCap(round);}
    reviewed any of its informing records means acting on assumption:
    the effect is weaker and a risk goes unseen. */
 const INFORMED_BY = {
-  1:{ salt:['salt'], hospital:['discharge'], texture:['salt'], supervise:['prevplan','salt'],
-      competency:['staff'], experienced:['staff'], interimplan:['salt','prevplan','discharge'],
+  1:{ salt:['salt'], texture:['salt'], supervise:['prevplan','salt'],
+      competency:['staff'], interimplan:['salt','prevplan','discharge'],
       speakfamily:['family'], delay:['salt','discharge'] },
   2:{ pattern:['shiftnote','quickmsg','daily'], salt2:['medupdate'], medreview:['medupdate'],
       updateplan:['audit'], signplan:['audit'], contactfamily2:['sistermsg'], teambrief2:['staffleave'],
@@ -2385,7 +2386,6 @@ function viewDashboard(){
   const tab=S.tab||'situation';
   const openedCount=Object.keys(S.opened[round]||{}).filter(k=>(S.opened[round]||{})[k]).length;
   const selCount=Object.values(sel).filter(Boolean).length;
-  const alertCount=(d.alerts||[]).length;
 
   const tabBtn=(id,label,ico,count)=>`<button class="tab ${tab===id?'active':''}" role="tab" aria-selected="${tab===id}" data-act="set-tab" data-tab="${id}">${svg(ico)}<span>${label}</span>${count?`<span class="tcount">${count}</span>`:''}</button>`;
 
@@ -2433,7 +2433,7 @@ function viewDashboard(){
       <div class="work-col">
         ${round===3?`<div class="clock-strip">${round3ClockBar()}</div>`:''}
         <div class="tabbar" role="tablist">
-          ${tabBtn('situation','Situation',I.clipboard,alertCount||'')}
+          ${tabBtn('situation','Situation',I.clipboard,'')}
           ${tabBtn('information','Information',I.eye,`${openedCount}/${d.docs.length}`)}
           ${tabBtn('decisions','Decisions',I.check,selCount||'')}
         </div>
@@ -2585,10 +2585,13 @@ function actCard(a,round,remaining,selected){
   const foot = (evTag||dis)?`<span class="a-foot">${evTag}${dis?`<span class="a-ev ev-off">${svg(I.clock)} No time, deselect another</span>`:''}</span>`:'';
   return `<button class="act ${selected?'sel':''} ${dis?'disabled':''}" data-act="toggle-action" data-action-id="${a.id}" aria-pressed="${selected}" ${dis?'disabled':''}>
     <span class="a-select" aria-hidden="true">${selected?svg(I.checkSmall):''}</span>
-    <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}</span>
+    <span class="a-left">
+      <span class="a-ico ${cm.cls}" aria-label="${a.cat}">${svg(I[cm.ico])}</span>
+      ${timeCost(cost)}
+    </span>
     <span class="a-main">
       <span class="a-cat">${a.cat}</span>
-      <span class="a-title">${a.title} ${timeCost(cost)}</span>
+      <span class="a-title">${a.title}</span>
       <span class="a-blurb">${a.blurb}</span>
       ${foot}
     </span>
@@ -2621,12 +2624,11 @@ function attentionCard(round){
   </div>`;
 }
 
-/* per-item time cost as segments (0 = no extra time) */
+/* per-item time cost as a consistent clock + 3 segments (0 = no extra time = empty segments) */
 function timeCost(cost){
-  if(!cost) return `<span class="tcost tcost-free">${svg(I.clock)} No extra time</span>`;
   let seg='';for(let i=0;i<3;i++)seg+=`<i class="tseg ${i<cost?'on':''}"></i>`;
-  const lbl={1:'A little time',2:'Some time',3:'A lot of time'}[cost]||'';
-  return `<span class="tcost" title="${lbl}">${svg(I.clock)}<span class="tsegs">${seg}</span></span>`;
+  const lbl=cost?({1:'A little time',2:'Some time',3:'A lot of time'}[cost]||''):'No extra time';
+  return `<span class="tcost ${cost?'':'tcost-free'}" title="${lbl}">${svg(I.clock)}<span class="tsegs">${seg}</span></span>`;
 }
 
 function tabGuide(tab,round){
@@ -3114,12 +3116,15 @@ function renderDashboardBehind(){
   bindModal();
 }
 function showModal(doc){
-  const credLabel={reliable:'Reliable source',incomplete:'Incomplete',outdated:'Out of date',ambiguous:'Ambiguous',contradictory:'Contradictory'}[doc.cred];
   el('modal-root').innerHTML=`<div class="modal-scrim">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="${doc.title}" tabindex="-1">
-      <div class="modal-head">
-        <div><h3 style="font-size:18px">${doc.title}</h3>
-          <div class="mh-src">${doc.source} <span class="chip chip-${doc.cred}">${credLabel}</span></div></div>
+    <div class="modal record-modal" role="dialog" aria-modal="true" aria-label="${doc.title}" tabindex="-1">
+      <div class="modal-head record-head">
+        <span class="rm-emblem">${svg(I[doc.ico]||I.clipboard)}</span>
+        <div class="rm-id">
+          <span class="rm-kicker">Record on file</span>
+          <h3>${doc.title}</h3>
+          <div class="rm-src">${doc.source}</div>
+        </div>
         <button class="icon-x" data-act="close-modal" aria-label="Close record">${svg(I.x)}</button>
       </div>
       <div class="modal-body">
