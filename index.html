@@ -2736,6 +2736,15 @@ function viewReveal(){
           <div class="feed" style="margin-top:8px">${feed||`<div class="feed-item fi-warn"><div class="fi-ico">${svg(I.alertT)}</div><div><h4>No active decisions taken</h4><p>Inaction leaves the existing risks in place and unmanaged.</p></div></div>`}</div>
         </section>
 
+        ${blind.length?`<section class="rise rise-3">
+          <div class="blind-box">
+            <span class="eyebrow">Acting without the evidence</span>
+            <h3>${blind.length} decision${blind.length===1?'':'s'} taken without reading the relevant record</h3>
+            <ul>${blind.map(a=>`<li>${svg(I.alertT)}<div>${a.title}</div></li>`).join('')}</ul>
+            <p style="margin:12px 0 0;font-size:13px;color:var(--ink-2);line-height:1.5">Acting on assumption still commits the team, but the upside is reduced and a risk can go unseen. The effects above already reflect this.</p>
+          </div>
+        </section>`:''}
+
         ${links.length?`<section class="rise rise-3">
           <div class="sec-head"><div class="sec-title-ico">${svg(I.link)}<h3>How earlier rounds shaped this</h3></div></div>
           <div class="stack gap-12" style="margin-top:8px">
@@ -3221,11 +3230,8 @@ function showConfirmModal(round){
   const d=DATA[round];
   const sel=S.selected[round]||{};
   const chosen=d.actions.filter(a=>sel[a.id]);
-  const opened=S.opened[round]||{};
   const reviewed=reviewedCount(round), totalDocs=d.docs.length;
   const usedPct=Math.round(attentionUsed(round)/ROUND_TIME*100);
-  // actions being taken without their evidence read
-  const blind=chosen.filter(a=>{const inf=(INFORMED_BY[round]||{})[a.id];return inf&&inf.length&&!inf.some(id=>opened[id]);});
   const conf=S.confidence[round]||'measured';
   const confOpt=(id,ico,name,desc)=>`<button class="conf-opt ${conf===id?'sel':''}" data-act="set-confidence" data-conf="${id}"><h5>${svg(ico)}${name}</h5><p>${desc}</p></button>`;
   el('modal-root').innerHTML=`<div class="modal-scrim">
@@ -3244,8 +3250,6 @@ function showConfirmModal(round){
         <div class="confirm-list">
           ${chosen.map(a=>`<div class="confirm-line ok">${svg(I.checkSmall)}<div>${a.title}</div></div>`).join('')}
         </div>
-        ${blind.length?`<div class="link-note" style="margin-top:14px;border-color:var(--warn-line);background:var(--warn-tint)">${svg(I.alertT)}<div><b>${blind.length} decision${blind.length===1?'':'s'} taken without the evidence.</b> ${blind.map(a=>a.title).join('; ')}. You can still proceed, but acting on assumption tends to work less well and can miss a risk.</div></div>`:''}
-        ${reviewed<totalDocs?`<div class="link-note" style="margin-top:10px">${svg(I.eye)}<div>You reviewed ${reviewed} of ${totalDocs} records. Holding one back can be the right call; sometimes it hides the thing that mattered.</div></div>`:''}
 
         <div style="margin-top:20px">
           <div class="sec-title-ico" style="margin-bottom:4px">${svg(I.gauge2)}<h3 style="font-size:15px">How confident is the team?</h3></div>
