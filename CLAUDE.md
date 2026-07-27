@@ -63,6 +63,14 @@ default; a clinical dark variant is on the theme toggle.
   Prevention‑capability trend chart** + Time + performance‑indicator bars; below, a
   2‑column body = **Guide rail (left)** + **Work area (centre)**; a **bottom action bar**
   with the green *Review & submit* button.
+- **App chrome is navy (as of 2026‑07):** the HUD strip is a **full‑size navy instrument
+  panel** (`--navy`→`--navy-2` gradient, light text; `--teal` re‑scoped to `#6cc6ff`
+  inside `.hudstrip` so accents stay legible). **Do not shrink the HUD.** The **guide rail
+  is a deeper navy** (`#022354`→`#001d45`) so it reads as recessed chrome with white care
+  cards floating on it. Topbar is also navy — the three navy bands are intentional.
+- **The dashboard must fit ONE screen — no scrolling anywhere** (firm user rule). Achieve
+  by limiting card count, NOT by shrinking the HUD. Round 1 was trimmed to **9 decisions**
+  (a clean 3×3). Watch decision/record counts in new rounds against this.
 - **Guide = NHS "care cards"** — coloured header strip (blue = task / good‑to‑know,
   red header = alert) + white body. They draw the eye and are clearly separate from work.
 - **Records** = clean white cards, optional photo banner, icon fallback; reviewed = pale
@@ -102,13 +110,39 @@ When something looks wrong, grep for competing rules on the same selector.
 
 ## Current state & possible next steps
 
-- **Done:** NHS theme across the app; dashboard fully rebuilt (top HUD, care‑card guide,
-  action bar, animated prevention trend); landing rebalanced (wide text column, square
-  media, clean "How to play" cards); record photo slot wired; intro trimmed to 2 screens;
-  em dashes removed; accessibility contrast fixes.
-- **Not yet bespoke‑polished to NHS level:** `viewReveal`, `viewRiskChain`, `viewSummary`,
-  `viewReport` currently **inherit** the palette/components but haven't been hand‑built to
-  match the dashboard. Likely next job.
+- **Done (earlier):** NHS theme across the app; dashboard rebuilt (top HUD, care‑card
+  guide, action bar, animated prevention trend); landing rebalanced; record photo slot
+  wired; intro trimmed to 2 screens; em dashes removed; accessibility contrast fixes.
+- **Done (2026‑07 session):**
+  - **Dashboard chrome → navy:** HUD strip is a full‑size navy instrument panel; guide
+    rail a deeper navy (see design‑system section). Single‑screen, no‑scroll rule enforced.
+  - **Round 1 trimmed 12→9 decisions** (removed `hospital`, `experienced`, `genericflag`;
+    also removed from `INFORMED_BY`). Scoring uses OR‑conditions/optional bonuses, so this
+    was dependency‑safe and did not change difficulty.
+  - **Decision cards:** time‑cost moved into a left column UNDER the icon tile as a uniform
+    clock + 3 pips widget (`timeCost()`, 0 = empty pips, never prose); tiles top‑aligned to
+    the title (`.act{align-items:flex-start}`, `.a-left{margin-top:16px}`).
+  - **Records:** modal rebuilt to read like a document (emblem + "Record on file" kicker +
+    source provenance); **dropped the reliability/credibility chip** (led the player, rule
+    6). Card teasers trimmed to short orienting lines (topic only; finding lives in the
+    record). Fixed reviewed/selected‑card text being unreadable in light theme (dead v6
+    rule forcing near‑white text on the v7 pale‑tint selected state). Fixed the
+    "Review record" pill (leaked border + zero padding → now a padded teal‑tint pill).
+  - **Guide‑card bodies** now share the task/info card typography (`.care-b` base type).
+  - **Situation tab:** removed the unlabelled alert‑count badge.
+  - **Confirm modal ("Before you commit") = neutral summary** (stats + chosen list +
+    confidence chooser). The "acting on assumption / decisions without the evidence" and
+    "reviewed X of Y" nudges were **moved to the round reveal** (`viewReveal` `.blind-box`)
+    as post‑commit feedback, not pre‑commit leading (rule 6). Fixed a flex‑gap bug that put
+    rogue spaces around bold words in the reveal confidence note (`.conf-note`).
+  - **`viewReveal` partly hand‑built:** header is now a 2‑col grid (text left, **Prevention
+    dial in the header's right side**, blended into the navy, enlarged to 110px with solid
+    white number and no arc glow — `viewBox` added to the ring svg so it scales). KPI card +
+    Continue button sit in the right column below.
+- **Not yet bespoke‑polished to NHS level:** `viewReveal` is partway there (header done, the
+  KPI/performance card is still a single tall column — could go 3×3 to balance);
+  `viewRiskChain`, `viewSummary`, `viewReport` still just **inherit** components. Likely
+  next job. Full design‑rule detail is also in the user's auto‑memory `risk-chain-design-rules`.
 - **Photography:** records can take real images via `img:`. The user is sourcing assets.
   Suggested subjects (small banner accents, cohesive desaturated/blue‑overlay treatment):
   discharge → hospital exterior; previous provider → a different care home; SALT letter →
