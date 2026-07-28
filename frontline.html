@@ -200,6 +200,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .conf-wrap .eyebrow{margin-bottom:10px}
 .conf-wrap h3{font-size:22px;letter-spacing:-.02em}
 .conf-wrap p{color:var(--ink-3);font-size:14.5px;margin-top:8px}
+.conf-choice{display:flex;gap:9px;align-items:flex-start;margin-top:16px;padding:12px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);font-size:14.5px;color:var(--ink);font-family:var(--serif)}
+.conf-choice svg{width:18px;height:18px;color:var(--teal-strong);flex:none;margin-top:3px}
 .conf-opts{display:flex;gap:11px;margin-top:22px;flex-wrap:wrap}
 .conf-pill{display:flex;flex-direction:column;gap:5px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;box-shadow:var(--shadow);min-width:150px;flex:1}
 .conf-pill:hover{border-color:var(--teal);background:var(--teal-tint)}
@@ -621,7 +623,7 @@ const NODES = {
        tag:'warn', note:'You serve it as it arrived and stay beside him, watching closely as he begins to eat.',
        sup:''},
       {id:'c',kind:'failing',cc:'CC2',
-       text:'Get him started, and see to the housemate’s tray.',
+       text:'Get him started and see to the housemate’s plate.',
        tag:'bad', note:'The plate is in front of Daniel and your back is turned. He reaches for a large piece straight away.',
        sup:''},
     ]},
@@ -716,6 +718,8 @@ function initState(){
     supervisionOk:true,
     foodAccessible:true,        // housemate's food on the table
     plateVerified:false,
+    plateUnverified:false,      // served the plate without checking it
+    splits:0,                   // times attention was divided
     primed:false,               // UNSAFE_MOUTHFUL_POSSIBLE
     cc1:false, cc2:false,
     medFlagged:false,
@@ -843,14 +847,15 @@ function recogSceneText(){
 }
 
 function confPanel(node){
-  const before = node.order===1 ? 'before you serve' : 'before you act';
+  const o=chosenOpt(FLOW[S.nodeIdx]);
   return '<div class="moment"><div class="conf-wrap">'
-    +'<span class="eyebrow">'+node.time+' &middot; '+(node.order===1?'Preparation':'Emerging signs')+'</span>'
-    +'<h3>How confident do you feel, '+before+'?</h3>'
+    +'<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+    +'<h3>How confident are you in that decision?</h3>'
+    +(o?'<p class="conf-choice">'+svg(I.checkSmall)+'<span>'+o.text+'</span></p>':'')
     +'<div class="conf-opts">'
-    + confPill('cautious','scale','Cautious','Unsure; I want to check')
+    + confPill('cautious','scale','Cautious','Not sure it was right')
     + confPill('measured','gauge2','Measured','Reasonably sure')
-    + confPill('confident','bolt','Confident','Sure of this')
+    + confPill('confident','bolt','Confident','Sure it was right')
     +'</div></div></div>';
 }
 function confPill(v,ic,b,s){
@@ -858,7 +863,7 @@ function confPill(v,ic,b,s){
 }
 
 function microPanel(node){
-  const o=node.choicePicked;
+  const o=chosenOpt(FLOW[S.nodeIdx]);
   // In-the-moment observation only. No grade, no coaching: the instrument
   // cluster shows the situation change. Judgement is held for the debrief.
   const last = S.nodeIdx>=FLOW.length-1;
@@ -875,13 +880,13 @@ function microPanel(node){
 /* Live mealtime-risk score, 0..100, derived from the running mechanics.
    Rises as controls slip; stays low when the plan is held. */
 function riskScore(){
+  // Derived from applied state only, so the gauge does not move until a
+  // choice is committed (after the confidence rating on confidence nodes).
   let r=14;                         // baseline: new meds, "drowsy lately"
-  const c=S.choices;
   if(S.foodAccessible) r+=8;        // others' food within reach
-  if(c.N1==='b') r+=16;             // served unverified plate
-  if(c.N1==='c') r+=30;             // served oversized/uncut (CC2)
+  if(S.plateUnverified) r+=16;      // served the plate without checking
   if(!S.supervisionOk) r+=26;       // supervision currently broken
-  ['N2','N3','N4'].forEach(function(n){ if(c[n]==='b') r+=8; }); // attention split
+  r += (S.splits||0)*8;             // attention divided
   if(S.primed) r+=24;               // unsafe mouthful possible
   if(S.cc1) r+=6; if(S.cc2) r+=6;
   return clamp(r);
@@ -1116,29 +1121,23 @@ function readiness(){
 function beginShift(){ AUDIO.unlock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
-  const node=currentNode();
-  S.sub = node.confidence ? 'confidence' : 'decide';
+  S.sub='decide';               // decide first; confidence is asked after the choice
   save(); render();
-  if(S.sub==='decide'){ playNodeCue(FLOW[S.nodeIdx]); }
-}
-function setConfidence(val){
-  S.conf[FLOW[S.nodeIdx]] = val;
-  log('CONFIDENCE', {node:FLOW[S.nodeIdx], value:val});
-  S.sub='decide'; save(); render();
   playNodeCue(FLOW[S.nodeIdx]);
 }
-function chooseOption(optId){
-  const nodeId=FLOW[S.nodeIdx];
+function chosenOpt(nodeId){
   const node=NODES[nodeId];
-  const opt=node.options.find(function(o){return o.id===optId;});
-  S.choices[nodeId]=optId;
-
-  // Record whether the plan/IDDSI were consulted before the first serve
+  return node.options.find(function(o){return o.id===S.choices[nodeId];});
+}
+/* Apply the choice's state effects. Deferred until after the confidence
+   rating on confidence nodes, so the gauges do not hint the outcome. */
+function applyEffects(nodeId){
+  const node=NODES[nodeId]; const opt=chosenOpt(nodeId);
   if(nodeId==='N1'){
     S.openedBeforeServe = !!(S.opened.DOC_PLAN || S.opened.DOC_IDDSI);
     if(opt.verified){ S.plateVerified=true; log('PLATE_VERIFIED',{bool:true}); log('DOC_RELIED',{id:'DOC_PLAN'}); }
+    else if(opt.id==='b'){ S.plateUnverified=true; }   // served without checking
   }
-  // Supervision + priming mechanics
   if(opt.securesFood){ S.foodAccessible=false; }
   if(opt.cc==='CC2'){ S.cc2=true; S.primed=true; S.supervisionOk=false; }
   else if(opt.cc==='CC1'){
@@ -1147,19 +1146,35 @@ function chooseOption(optId){
     log('LEFT_TABLE',{node:nodeId,food_accessible:S.foodAccessible});
     if(S.foodAccessible){ S.cc1=true; S.primed=true; }
   } else if(opt.kind==='risky'){
-    // partial: brief lapse, flag only
     if(nodeId==='N2'){ log('SUPERVISION_BREAK',{node:nodeId,duration_ms:4000}); log('LEFT_TABLE',{node:nodeId,food_accessible:S.foodAccessible}); }
+    if(nodeId==='N2'||nodeId==='N3'||nodeId==='N4'){ S.splits=(S.splits||0)+1; }
     S.supervisionOk=true;
   } else {
     S.supervisionOk=true;
   }
   if(opt.escalation){ log('ESCALATION',{type:'shift_leader',latency_ms:0}); }
   if(node.recog){
-    const latency = optId==='a'?1500:optId==='b'?6000:12000;
+    const latency = opt.id==='a'?1500:opt.id==='b'?6000:12000;
     log('REDFLAG_RECOGNISED',{latency_ms:latency});
   }
-
-  node.choicePicked=opt;
+}
+function chooseOption(optId){
+  const nodeId=FLOW[S.nodeIdx];
+  const node=NODES[nodeId];
+  S.choices[nodeId]=optId;
+  if(node.confidence){
+    // ask confidence in the decision just made, then reveal the consequence
+    S.sub='confidence'; save(); render();
+  } else {
+    applyEffects(nodeId);
+    S.sub='micro'; save(); render();
+  }
+}
+function setConfidence(val){
+  const nodeId=FLOW[S.nodeIdx];
+  S.conf[nodeId]=val;
+  log('CONFIDENCE', {node:nodeId, value:val});
+  applyEffects(nodeId);
   S.sub='micro'; save(); render();
 }
 function nextNode(){
