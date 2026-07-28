@@ -173,7 +173,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .scene-illo.warn{background:radial-gradient(135% 160% at 22% -12%,var(--warn-tint),var(--surface-2))}
 .scene-illo svg{height:120px;width:auto;display:block}
 .scene-illo.has-img{flex:1 1 auto;min-height:96px;height:auto;padding:0;background:none;display:block;margin-bottom:16px}
-.scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
+.scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block;transform-origin:55% 42%;animation:kenburns 24s ease-in-out infinite alternate;will-change:transform}
+@keyframes kenburns{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.18) translate(-2.2%,-1.6%)}}
+@media (prefers-reduced-motion:reduce){.scene-illo img{animation:none}}
 .il{fill:none;stroke:var(--teal-strong);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
 .il-soft{fill:none;stroke:var(--teal-strong);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:.32}
 .il-fill{fill:var(--surface)}
