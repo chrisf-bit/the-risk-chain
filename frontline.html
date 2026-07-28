@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Teatime Shift, Frontline Care Simulation</title>
+<meta name="description" content="A first-person frontline simulation on preventing choking at a mealtime in adult social care. Fictional proof of concept.">
+<style>
+/* ============================================================
+   PracticE Ready, Frontline simulation, "The Teatime Shift".
+   Shares The Risk Chain v7 "NHS clinical" design tokens so the
+   two seats read as one product. Light is primary; a clinical
+   dark variant sits on the theme toggle.
+   ============================================================ */
+:root{
+  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f4f7f8; --surface-3:#e2e8ea;
+  --ink:#212b32; --ink-2:#425563; --ink-3:#4c5f6c; --ink-4:#66788a;
+  --line:#d8dde0; --line-2:#e8edee;
+  --navy:#003087; --navy-2:#002766; --navy-ink:#ffffff;
+  --teal:#005eb8; --teal-strong:#004a94; --teal-tint:#e6eff6; --teal-deep:#00437f;
+  --good:#007f3b; --good-tint:#e4f2ea; --good-line:#b3ddc4;
+  --warn:#a35c00; --warn-tint:#fbeeda; --warn-line:#f0d9a8;
+  --bad:#d5281b; --bad-tint:#fbe9e7; --bad-line:#f4c3bd;
+  --info:#005eb8; --info-tint:#e6eff6;
+  --g-red:#d5281b; --g-amber:#ffb81c; --g-green:#009639;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 4px 14px rgba(20,40,60,.08);
+  --shadow-lg:0 4px 12px rgba(20,40,60,.1),0 18px 40px rgba(20,40,60,.14);
+  --r:8px; --r-sm:5px; --r-lg:12px;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:Arial,"Helvetica Neue",Helvetica,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#0e1a24; --surface:#17242f; --surface-2:#1e2d3a; --surface-3:#26333e;
+    --ink:#eef4f7; --ink-2:#b8c6d0; --ink-3:#93a4b0; --ink-4:#71838f;
+    --line:#2b3b47; --line-2:#233039;
+    --navy:#0a2a5c; --navy-2:#06274f; --navy-ink:#ffffff;
+    --teal:#41b6e6; --teal-strong:#2f9fd0; --teal-tint:#0f2c3f; --teal-deep:#1c72a8;
+    --good:#45c26e; --good-tint:#12301f; --good-line:#1f5c37;
+    --warn:#ffb81c; --warn-tint:#332a10; --warn-line:#5a4a1a;
+    --bad:#f0574a; --bad-tint:#331a17; --bad-line:#5a2b26;
+    --info:#41b6e6; --info-tint:#0f2c3f;
+    --g-red:#f0574a; --g-amber:#ffb81c; --g-green:#45c26e;
+    --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
+    --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="light"]{
+  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f4f7f8; --surface-3:#e2e8ea;
+  --ink:#212b32; --ink-2:#425563; --ink-3:#4c5f6c; --ink-4:#66788a;
+  --line:#d8dde0; --line-2:#e8edee;
+  --navy:#003087; --navy-2:#002766;
+  --teal:#005eb8; --teal-strong:#004a94; --teal-tint:#e6eff6; --teal-deep:#00437f;
+  --good:#007f3b; --good-tint:#e4f2ea; --good-line:#b3ddc4;
+  --warn:#a35c00; --warn-tint:#fbeeda; --warn-line:#f0d9a8;
+  --bad:#d5281b; --bad-tint:#fbe9e7; --bad-line:#f4c3bd;
+  --info:#005eb8; --info-tint:#e6eff6;
+  --g-red:#d5281b; --g-amber:#ffb81c; --g-green:#009639;
+  --shadow:0 1px 2px rgba(20,40,60,.06),0 4px 14px rgba(20,40,60,.08);
+  --shadow-lg:0 4px 12px rgba(20,40,60,.1),0 18px 40px rgba(20,40,60,.14);
+}
+:root[data-theme="dark"]{
+  --ground:#0e1a24; --surface:#17242f; --surface-2:#1e2d3a; --surface-3:#26333e;
+  --ink:#eef4f7; --ink-2:#b8c6d0; --ink-3:#93a4b0; --ink-4:#71838f;
+  --line:#2b3b47; --line-2:#233039;
+  --navy:#0a2a5c; --navy-2:#06274f;
+  --teal:#41b6e6; --teal-strong:#2f9fd0; --teal-tint:#0f2c3f; --teal-deep:#1c72a8;
+  --good:#45c26e; --good-tint:#12301f; --good-line:#1f5c37;
+  --warn:#ffb81c; --warn-tint:#332a10; --warn-line:#5a4a1a;
+  --bad:#f0574a; --bad-tint:#331a17; --bad-line:#5a2b26;
+  --info:#41b6e6; --info-tint:#0f2c3f;
+  --g-red:#f0574a; --g-amber:#ffb81c; --g-green:#45c26e;
+  --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box}
+svg:not([width]){width:1.1em;height:1.1em;flex:none}
+html{-webkit-text-size-adjust:100%}
+html,body{height:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3,h4,h5{margin:0;font-weight:700;line-height:1.2;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2.5px solid var(--teal);outline-offset:2px;border-radius:4px}
+::selection{background:var(--teal);color:#fff}
+.serif{font-family:var(--serif)}
+/* Rule 3: hide scrollbars everywhere; wheel/trackpad still scroll */
+*{scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{width:0;height:0;display:none}
+
+#app{height:100%;display:flex;flex-direction:column;min-height:0}
+
+/* ---------- Top bar (navy chrome) ---------- */
+.topbar{flex:none;background:var(--navy);color:var(--navy-ink);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:14px;padding:0 20px;height:54px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.01em;font-size:15px}
+.brand .emblem{width:30px;height:30px;border-radius:7px;background:linear-gradient(160deg,#2f7fe0,#005eb8);display:grid;place-items:center;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.brand .emblem svg{width:18px;height:18px}
+.brand small{display:block;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.tb-spacer{margin-left:auto}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#eaf1fb;border-radius:100px;padding:7px 13px;font-size:12.5px;font-weight:650}
+.tb-btn:hover{background:rgba(255,255,255,.15)}
+.tb-btn svg{width:15px;height:15px}
+.tb-tag{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+
+/* ---------- Generic ---------- */
+.eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong)}
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--good);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:15px;box-shadow:0 3px 0 #00602c}
+.btn-go:hover{filter:brightness(1.05)}
+.btn-go:active{transform:translateY(2px);box-shadow:0 1px 0 #00602c}
+.btn-go svg{width:18px;height:18px}
+.btn-go[disabled]{background:var(--surface-3);color:var(--ink-4);box-shadow:none;cursor:not-allowed}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 18px;font-weight:700;font-size:14px}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-ghost svg{width:16px;height:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+
+/* ---------- Landing ---------- */
+.landing{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:36px 22px;background:
+  radial-gradient(1100px 460px at 82% -8%,rgba(0,94,184,.10),transparent 60%),var(--ground)}
+.land-card{max-width:760px;width:100%;text-align:left}
+.land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--teal-tint);color:var(--teal-strong);border:1px solid #cfe0f0;border-radius:100px;padding:6px 14px;font-size:12px;font-weight:750;letter-spacing:.04em}
+.land-kicker svg{width:15px;height:15px}
+.land-card h1{font-size:44px;letter-spacing:-.025em;margin:20px 0 0;line-height:1.02}
+.land-card .lead{font-family:var(--serif);font-size:19px;line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:60ch}
+.land-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}
+.land-facts .lf{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+.land-facts .lf .lf-ic{width:38px;height:38px;border-radius:9px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:10px}
+.land-facts .lf .lf-ic svg{width:21px;height:21px}
+.land-facts .lf h4{font-size:14px}
+.land-facts .lf p{font-size:12.5px;color:var(--ink-3);margin-top:3px;line-height:1.4}
+.land-actions{margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.land-note{font-size:12.5px;color:var(--ink-4);max-width:44ch}
+
+/* ---------- Scene shell ---------- */
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 20px 18px;max-width:1240px;width:100%;margin:0 auto}
+
+/* supervision strip */
+.superstrip{flex:none;display:flex;align-items:stretch;gap:10px;margin-bottom:13px}
+.sv-clock{flex:none;background:var(--navy);color:var(--navy-ink);border-radius:var(--r);padding:9px 16px;display:flex;flex-direction:column;justify-content:center;min-width:118px}
+.sv-clock .cl{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:1px}
+.sv-clock .cw{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
+.sv-stat{flex:1;display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:9px 15px;box-shadow:var(--shadow)}
+.sv-stat .si{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;flex:none}
+.sv-stat .si svg{width:19px;height:19px}
+.sv-stat .sl{font-size:11px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
+.sv-stat .sv{font-size:14px;font-weight:750;margin-top:1px}
+.sv-ok .si{background:var(--good-tint);color:var(--good)} .sv-ok .sv{color:var(--good)}
+.sv-warn .si{background:var(--warn-tint);color:var(--warn)} .sv-warn .sv{color:var(--warn)}
+.sv-bad .si{background:var(--bad-tint);color:var(--bad)} .sv-bad .sv{color:var(--bad)}
+
+/* scene grid: moment + evidence */
+.scene{flex:1;min-height:0;display:grid;grid-template-columns:1fr 322px;gap:16px}
+.moment{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:auto;padding:26px 30px}
+.m-scene-ic{width:52px;height:52px;border-radius:12px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:16px}
+.m-scene-ic svg{width:29px;height:29px}
+.moment .eyebrow{margin-bottom:2px}
+.scene-text{font-family:var(--serif);font-size:19.5px;line-height:1.55;color:var(--ink);margin-top:12px;max-width:52ch}
+.m-q{font-size:15px;font-weight:750;color:var(--ink-2);margin-top:22px}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.opt{text-align:left;display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);transition:background .12s,border-color .12s}
+.opt:hover{border-color:#b9c6cf;background:var(--surface-2)}
+.opt .ob{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;display:grid;place-items:center}
+.opt .ob svg{width:14px;height:14px;color:#fff;opacity:0}
+.opt .ot{font-size:14.5px;line-height:1.42;color:var(--ink)}
+.opt.sel{background:var(--teal-tint);border-color:var(--teal)}
+.opt.sel .ob{background:var(--teal);border-color:var(--teal)} .opt.sel .ob svg{opacity:1}
+
+/* confidence */
+.conf-wrap{margin:auto 0;max-width:46ch}
+.conf-wrap .eyebrow{margin-bottom:10px}
+.conf-wrap h3{font-size:22px;letter-spacing:-.02em}
+.conf-wrap p{color:var(--ink-3);font-size:14.5px;margin-top:8px}
+.conf-opts{display:flex;gap:11px;margin-top:22px;flex-wrap:wrap}
+.conf-pill{display:flex;flex-direction:column;gap:5px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;box-shadow:var(--shadow);min-width:150px;flex:1}
+.conf-pill:hover{border-color:var(--teal);background:var(--teal-tint)}
+.conf-pill .cp-ic{width:32px;height:32px;border-radius:8px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center}
+.conf-pill .cp-ic svg{width:19px;height:19px}
+.conf-pill b{font-size:15px}
+.conf-pill span{font-size:12px;color:var(--ink-4)}
+
+/* micro consequence */
+.micro{margin:auto 0;max-width:54ch}
+.micro .m-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:5px 12px;border-radius:100px}
+.micro .m-tag svg{width:15px;height:15px}
+.m-good{background:var(--good-tint);color:var(--good)}
+.m-warn{background:var(--warn-tint);color:var(--warn)}
+.m-bad{background:var(--bad-tint);color:var(--bad)}
+.micro .m-body{font-family:var(--serif);font-size:19px;line-height:1.55;margin-top:16px;color:var(--ink)}
+.micro .m-sup{margin-top:16px;font-size:13.5px;color:var(--ink-3);display:flex;align-items:center;gap:9px}
+.micro .m-sup svg{width:17px;height:17px;flex:none}
+.micro-actions{margin-top:26px}
+
+/* evidence rail */
+.evi{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
+.evi-head{flex:none;padding:14px 16px 10px;border-bottom:1px solid var(--line-2)}
+.evi-head h3{font-size:14.5px;display:flex;align-items:center;gap:8px}
+.evi-head h3 svg{width:17px;height:17px;color:var(--teal-strong)}
+.evi-head p{font-size:11.5px;color:var(--ink-4);margin-top:3px}
+.evi-scroll{flex:1;min-height:0;overflow:auto;padding:10px 12px}
+.evi-grp{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-4);padding:8px 4px 6px}
+.doc-row{width:100%;text-align:left;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);border:1px solid transparent;background:none}
+.doc-row:hover{background:var(--surface-2);border-color:var(--line)}
+.doc-row .di{width:32px;height:32px;border-radius:7px;background:var(--surface-3);color:var(--ink-2);display:grid;place-items:center;flex:none}
+.doc-row .di svg{width:17px;height:17px}
+.doc-row .dt{font-size:13px;font-weight:650;line-height:1.25;flex:1}
+.doc-row .dts{font-size:11px;color:var(--ink-4);margin-top:1px;font-weight:400}
+.doc-row .dv{flex:none;width:18px;height:18px;color:var(--good)}
+.doc-row.opened .di{background:var(--good-tint);color:var(--good)}
+
+/* modal */
+.backdrop{position:fixed;inset:0;background:rgba(10,22,36,.55);backdrop-filter:blur(2px);z-index:80;display:grid;place-items:center;padding:24px;animation:fade .15s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);max-width:560px;width:100%;max-height:86vh;overflow:auto;animation:pop .18s}
+@keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.doc-modal .dm-top{display:flex;align-items:flex-start;gap:14px;padding:22px 24px 16px;border-bottom:1px solid var(--line-2)}
+.doc-modal .dm-emblem{width:46px;height:46px;border-radius:10px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;flex:none}
+.doc-modal .dm-emblem svg{width:25px;height:25px}
+.doc-modal .dm-kick{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-4)}
+.doc-modal h3{font-size:19px;margin-top:3px}
+.doc-modal .dm-x{margin-left:auto;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;width:34px;height:34px;display:grid;place-items:center;flex:none;color:var(--ink-3)}
+.doc-modal .dm-x:hover{background:var(--surface-3)}
+.doc-modal .dm-x svg{width:17px;height:17px}
+.doc-body{padding:20px 24px 8px}
+.doc-body .dl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
+.doc-body .dl li{display:flex;gap:11px;font-size:14.5px;line-height:1.45;color:var(--ink)}
+.doc-body .dl li svg{width:17px;height:17px;color:var(--teal-strong);flex:none;margin-top:2px}
+.doc-note{font-family:var(--serif);font-size:15.5px;line-height:1.55;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-top:4px}
+.dm-prov{padding:14px 24px 22px;display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-4)}
+.dm-prov svg{width:15px;height:15px}
+.dm-flag{margin:8px 24px 22px;width:calc(100% - 48px);display:flex;align-items:center;gap:10px;justify-content:center;background:var(--warn-tint);border:1px solid var(--warn-line);color:var(--warn);border-radius:var(--r);padding:12px;font-weight:750;font-size:13.5px}
+.dm-flag:hover{filter:brightness(.97)}
+.dm-flag svg{width:17px;height:17px}
+.dm-flagged{background:var(--good-tint);border-color:var(--good-line);color:var(--good)}
+
+/* outcome */
+.outcome{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:34px 22px}
+.oc-card{max-width:680px;width:100%}
+.oc-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:100px;font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.oc-badge svg{width:18px;height:18px}
+.oc-good{background:var(--good-tint);color:var(--good)}
+.oc-warn{background:var(--warn-tint);color:var(--warn)}
+.oc-bad{background:var(--bad-tint);color:var(--bad)}
+.oc-card h1{font-size:34px;letter-spacing:-.025em;margin-top:20px;line-height:1.08}
+.oc-card .oc-body{font-family:var(--serif);font-size:18px;line-height:1.6;color:var(--ink-2);margin-top:16px}
+.oc-steps{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:6px 4px}
+.oc-steps .os{display:flex;gap:13px;align-items:flex-start;padding:10px 16px}
+.oc-steps .os .osn{width:26px;height:26px;border-radius:50%;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;font-size:12.5px;font-weight:800;flex:none}
+.oc-steps .os p{font-size:14px;color:var(--ink);line-height:1.4}
+.oc-actions{margin-top:26px}
+
+/* debrief */
+.debrief{flex:1;min-height:0;overflow:auto;padding:26px 22px 40px}
+.db-wrap{max-width:1080px;margin:0 auto}
+.db-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.db-head h1{font-size:30px;letter-spacing:-.02em;margin-top:6px}
+.db-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-top:22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px 22px}
+.panel h3{font-size:16px;display:flex;align-items:center;gap:9px}
+.panel h3 svg{width:19px;height:19px;color:var(--teal-strong)}
+.panel .ph-sub{font-size:12.5px;color:var(--ink-4);margin-top:3px}
+.dom{margin-top:16px;display:flex;flex-direction:column;gap:13px}
+.dom-row .dr-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px}
+.dom-row .dr-top b{font-weight:700}
+.dom-row .dr-top span{font-size:12px;color:var(--ink-4);font-variant-numeric:tabular-nums}
+.dom-bar{height:9px;border-radius:100px;background:var(--surface-3);margin-top:6px;overflow:hidden}
+.dom-bar i{display:block;height:100%;border-radius:100px;background:var(--teal)}
+.dom-bar i.lo{background:var(--g-red)} .dom-bar i.mid{background:var(--g-amber)} .dom-bar i.hi{background:var(--g-green)}
+.cc-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.cc-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);border:1px solid var(--line)}
+.cc-item .cci{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
+.cc-item .cci svg{width:18px;height:18px}
+.cc-hold{background:var(--good-tint);border-color:var(--good-line)} .cc-hold .cci{background:#fff;color:var(--good)}
+.cc-trip{background:var(--bad-tint);border-color:var(--bad-line)} .cc-trip .cci{background:#fff;color:var(--bad)}
+.cc-item h5{font-size:13.5px}
+.cc-item p{font-size:12.5px;color:var(--ink-3);margin-top:2px;line-height:1.4}
+.reveal-box{margin-top:14px;background:var(--warn-tint);border:1px solid var(--warn-line);border-radius:var(--r);padding:14px 16px}
+.reveal-box.ok{background:var(--good-tint);border-color:var(--good-line)}
+.reveal-box h5{font-size:13.5px;display:flex;align-items:center;gap:8px}
+.reveal-box h5 svg{width:16px;height:16px}
+.reveal-box p{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.45}
+.events{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.ev{display:flex;gap:11px;align-items:center;padding:8px 2px;border-top:1px solid var(--line-2);font-size:12.5px}
+.ev:first-child{border-top:0}
+.ev .evk{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal-strong);background:var(--teal-tint);border-radius:4px;padding:2px 7px;flex:none}
+.ev .evd{color:var(--ink-3)}
+.crosstrack{margin-top:18px;background:linear-gradient(150deg,var(--navy),var(--navy-2));color:#eaf1fb;border-radius:var(--r-lg);padding:22px 24px;position:relative;overflow:hidden}
+.crosstrack .ct-k{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8fbff0}
+.crosstrack h3{color:#fff;font-size:20px;margin-top:8px;letter-spacing:-.02em}
+.crosstrack p{font-size:14px;line-height:1.55;color:rgba(234,241,251,.85);margin-top:10px;max-width:64ch}
+.crosstrack .ct-chain{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.ct-node{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:7px 13px;font-size:12.5px;font-weight:650}
+.ct-node svg{width:15px;height:15px;color:#8fbff0}
+.ct-arr{color:#6f92c4}
+.ct-actions{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+.btn-navy{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:var(--r);padding:11px 18px;font-weight:700;font-size:14px}
+.btn-navy:hover{background:rgba(255,255,255,.2)}
+.btn-navy svg{width:16px;height:16px}
+
+@media(max-width:900px){
+  .scene{grid-template-columns:1fr;overflow:auto}
+  .db-grid{grid-template-columns:1fr}
+  .land-facts{grid-template-columns:1fr}
+  #app{height:auto;min-height:100%}
+  .stage,.landing,.outcome,.debrief{overflow:visible}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ============================================================
+   The Teatime Shift, F1 frontline prototype.
+   First-person, single lone-worked teatime. Person: Daniel.
+   Proves: realistic document search, branching whose timing
+   matters, two critical controls, three outcome paths,
+   evidence-use capture, scoring beyond right/wrong,
+   cross-track reveal. Fictional composite; clinical detail
+   to be confirmed against the source guidance.
+   ============================================================ */
+
+const I = {
+  shield:'<path d="M12 2 4 5v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V5z"/>',
+  heart:'<path d="M12 20s-7-4.6-9.2-9C1.3 8 2.6 4.5 6 4.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.4 0 4.7 3.5 3.2 6.5C19 15.4 12 20 12 20z"/>',
+  users:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.5A3 3 0 0 1 16 11M21 20c0-2.6-1.6-4.6-4-5.2"/>',
+  alertT:'<path d="M12 3 2 20h20z"/><path d="M12 10v5"/><circle cx="12" cy="17.6" r=".2"/>',
+  bell:'<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  clipboard:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6M9 14h4"/>',
+  pill:'<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/><path d="M8.5 8.5l7 7"/>',
+  message:'<path d="M4 5h16v11H9l-4 3z"/>',
+  home:'<path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5l3 2"/>',
+  check:'<path d="M4 12.5 9 17.5 20 6.5"/>',
+  checkSmall:'<path d="M5 12l4 4 10-11"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  eye:'<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/>',
+  eyeoff:'<path d="M3 3l18 18M10.6 10.7a2.6 2.6 0 0 0 3.7 3.6M9.9 5.2A9.7 9.7 0 0 1 12 5c6.5 0 10 6 10 6a16 16 0 0 1-3.3 3.9M6.2 6.3A16 16 0 0 0 2 11s3.5 6 10 6a9.6 9.6 0 0 0 2.9-.45"/>',
+  arrowR:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  restart:'<path d="M4 12a8 8 0 1 1 2.5 5.8"/><path d="M4 20v-5h5"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".3"/>',
+  utensils:'<path d="M7 3v8M5 3v6a2 2 0 0 0 4 0V3M7 11v10"/><path d="M16 3c-1.5 1-2 3-2 5s.5 3 2 3v10"/>',
+  phone:'<path d="M6 3h3l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2 4.5 1.5V18a2 2 0 0 1-2.2 2A16 16 0 0 1 4 6.2 2 2 0 0 1 6 3z"/>',
+  route:'<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
+  person:'<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20c0-3.8 3.1-6.5 7-6.5s7 2.7 7 6.5"/>',
+  play:'<circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/>',
+  gauge2:'<path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l5-5"/><circle cx="12" cy="18" r="1.3"/>',
+  scale:'<path d="M12 4v16M7 8h10M7 8l-3 6h6zM17 8l-3 6h6z"/><path d="M4 20h16"/>',
+  bolt:'<path d="M13 3 5 13h6l-1 8 8-10h-6z"/>',
+  door:'<path d="M5 21h14M8 21V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v17"/><circle cx="13.5" cy="12" r=".6"/>',
+  sun:'<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/>',
+  book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v16"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".4"/>',
+};
+function svg(p,cls){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'+(cls?' class="'+cls+'"':'')+' aria-hidden="true">'+p+'</svg>';}
+
+/* ---------- Content ---------- */
+const DANIEL = {
+  plan:[
+    {ic:'utensils',t:'Food: IDDSI Level 6, Soft & Bite-Sized. Every piece cut to 15mm or smaller.'},
+    {ic:'utensils',t:'Fluids: IDDSI Level 0, Thin.'},
+    {ic:'person',t:'1:1 support at every meal and snack. Small portions, presented one at a time.'},
+    {ic:'clock',t:'Verbal pacing prompts. Sit fully upright.'},
+    {ic:'shield',t:'Actively manage access to other people’s food.'},
+  ],
+};
+
+const DOCS = {
+  DOC_PLAN:{group:'daniel', title:'Mealtime plan', ref:'TK6.4', icon:'clipboard',
+    kicker:'Record on file', prov:'Daniel’s current support plan',
+    list:DANIEL.plan },
+  DOC_EDAR:{group:'daniel', title:'EDAR record', ref:'TK1.4b', icon:'file',
+    kicker:'Record on file', prov:'Eating & Drinking Risk Arrangements',
+    list:[
+      {ic:'check',t:'Agreed eating and drinking risk arrangements: L6 food, L0 fluids, 1:1 support, pacing.'},
+      {ic:'check',t:'Reviewed and agreed with the speech and language team at the last assessment.'},
+    ],
+    note:'The arrangements read as current and were properly agreed. Nothing in this record mentions a recent change to Daniel’s medication.' },
+  DOC_MEDS:{group:'daniel', title:'Medication record', ref:'', icon:'pill',
+    kicker:'Record on file', prov:'Medication administration record',
+    list:[
+      {ic:'pill',t:'A new medication was started about three weeks ago.'},
+      {ic:'alertT',t:'Listed effects include sedation and dry mouth.'},
+    ],
+    note:'This change was started after Daniel’s last eating and drinking assessment. The mealtime plan and EDAR do not yet reflect it, so today’s risk may be higher than the plan states.',
+    flag:true },
+  DOC_HANDOVER:{group:'daniel', title:'Shift handover note', ref:'', icon:'message',
+    kicker:'Record on file', prov:'Written at the start of the teatime shift',
+    list:[
+      {ic:'users',t:'Teatime colleague has called in sick. No cover until later.'},
+      {ic:'home',t:'Shift leader is upstairs on the medication round.'},
+      {ic:'info',t:'Free-text line: “Daniel a bit drowsy lately, keep an eye.”'},
+    ],
+    note:'The drowsiness line is easy to skim past. Read alongside the medication record, it points to the same thing.' },
+  DOC_IDDSI:{group:'ref', title:'IDDSI texture guide', ref:'TK2.4', icon:'book',
+    kicker:'Reference tool', prov:'IDDSI framework, texture standards',
+    list:[
+      {ic:'utensils',t:'Level 6, Soft & Bite-Sized: soft, tender, moist. No piece larger than 15mm.'},
+      {ic:'check',t:'Check by pressing with a fork: the piece should squash and hold together.'},
+    ] },
+  DOC_CHECK:{group:'ref', title:'Level 1 PoC checklist', ref:'TK2.1', icon:'clipboard',
+    kicker:'Reference tool', prov:'Prevention of Choking, safe mealtime controls',
+    list:[
+      {ic:'check',t:'Right texture, right position, right pace, one mouthful at a time.'},
+      {ic:'eye',t:'Constant supervision. Keep other people’s food out of reach.'},
+      {ic:'route',t:'Escalate early. Do not leave a supported person to manage a second demand.'},
+    ] },
+  DOC_REDFLAG:{group:'ref', title:'Choking red flags', ref:'TK7.1', icon:'alertT',
+    kicker:'Reference tool', prov:'Recognising deterioration',
+    list:[
+      {ic:'alertT',t:'Persistent cough, wet or gurgly voice, visible distress.'},
+      {ic:'alertT',t:'Silence and an inability to cough, speak or breathe: a red emergency.'},
+      {ic:'eye',t:'A quiet phase after coughing can mean the airway is blocking. Do not wait it out.'},
+    ] },
+  DOC_CALL:{group:'ref', title:'Who to call', ref:'TK7.2', icon:'phone',
+    kicker:'Reference tool', prov:'Emergency and escalation contacts',
+    list:[
+      {ic:'phone',t:'Choking emergency with an obstructed airway: call 999.'},
+      {ic:'users',t:'Shift leader and manager: escalate in person or by call system.'},
+    ] },
+};
+const DOC_ORDER = ['DOC_PLAN','DOC_EDAR','DOC_MEDS','DOC_HANDOVER','DOC_IDDSI','DOC_CHECK','DOC_REDFLAG','DOC_CALL'];
+
+/* Decision nodes. kind is internal only; never shown to the learner. */
+const NODES = {
+  N1:{ order:1, time:'17:41', label:'Preparation', icon:'utensils', confidence:true,
+    scene:'Daniel’s plate arrives from the kitchen. The portions are large and have not been cut down. A housemate’s regular toast sits on the table, within Daniel’s reach.',
+    q:'Daniel is waiting to eat. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',verified:true,securesFood:false,
+       text:'Check the plate against Daniel’s plan, cut it to bite-sized pieces of 15mm or less, and offer a small portion first.',
+       tag:'good', note:'You check it against the plan and cut it down. A small first portion goes on. Daniel settles and eats at a steady pace.',
+       sup:'Supervision held. The food in front of Daniel now meets his plan.'},
+      {id:'b',kind:'risky',
+       text:'Serve the plate as it came, but stay right beside him and watch closely.',
+       tag:'warn', note:'You serve it as it arrived and stay close. It holds together only for as long as your attention stays on him.',
+       sup:'Supervision held for now, but the plate does not meet Daniel’s plan.'},
+      {id:'c',kind:'failing',cc:'CC2',
+       text:'Put the plate down as it is and step over to sort the housemate’s tray.',
+       tag:'bad', note:'The oversized plate is in front of Daniel and your back is turned. He reaches for a large piece straight away.',
+       sup:'Critical control missed: an unsafe mouthful is now possible.'},
+    ]},
+  N2:{ order:2, time:'17:47', label:'The door', icon:'door', inject:true,
+    scene:'The door buzzer goes. A courier needs a signature for a delivery. Daniel is mid-meal, and the housemate’s toast is still on the table.',
+    q:'The buzzer is insistent. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',securesFood:true,
+       text:'Secure Daniel’s plate and use the call system to ask someone else to take the door. Keep your eyes on the table.',
+       tag:'good', note:'You move the plates out of reach and call for the door to be answered. Your line of sight never leaves Daniel.',
+       sup:'Supervision held. The table is safe.'},
+      {id:'b',kind:'risky',
+       text:'Step away for a few seconds to sign for it. It will be quick.',
+       tag:'warn', note:'You step away briefly. For a few seconds the table, and the food, are behind you.',
+       sup:'A short break in supervision. Food was left within reach.'},
+      {id:'c',kind:'failing',cc:'CC1',
+       text:'Leave the table to answer the door and sort the delivery.',
+       tag:'bad', note:'You leave the dining room. Daniel, and the food within his reach, are unsupervised.',
+       sup:'Critical control missed: supervision broken with food accessible.'},
+    ]},
+  N3:{ order:3, time:'17:51', label:'The phone', icon:'phone', inject:true,
+    scene:'The on-call phone rings. It is a GP callback about a different person on the floor. Daniel is still eating.',
+    q:'The phone keeps ringing. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',
+       text:'Let it go to voicemail, or only pick up once Daniel is safe and no food is accessible.',
+       tag:'good', note:'You let it ring out and stay with Daniel, keeping the pace steady. You can return the call in a moment.',
+       sup:'Supervision held.'},
+      {id:'b',kind:'risky',
+       text:'Answer at the table and talk while Daniel carries on eating.',
+       tag:'warn', note:'You take the call at the table. Your pacing prompts stop while you talk, and Daniel eats a little faster.',
+       sup:'Attention split. Pacing prompts lapsed.'},
+      {id:'c',kind:'failing',cc:'CC1',
+       text:'Turn away and take the call properly so you get the details right.',
+       tag:'bad', note:'You turn away to take the call. For a while, no one is watching Daniel eat.',
+       sup:'Critical control missed: supervision broken with food accessible.'},
+    ]},
+  N4:{ order:4, time:'17:54', label:'The housemate', icon:'users', inject:true,
+    scene:'A housemate becomes distressed and starts to get up and leave the table. Daniel is still mid-meal beside you.',
+    q:'Two people need you at once. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',escalation:true,
+       text:'Call up for the shift leader, and keep both people safe by pausing Daniel’s meal until there is a safe pair of hands.',
+       tag:'good', note:'You call for the shift leader and pause Daniel’s meal, staying between him and the food while you settle the housemate with a calm word.',
+       sup:'Supervision held. Help is on the way.'},
+      {id:'b',kind:'risky',
+       text:'Try to settle the housemate and mind Daniel at the same time, moving fast between them.',
+       tag:'warn', note:'You move quickly between the two of them. For seconds at a time, your attention is fully on the housemate.',
+       sup:'Attention split across two people.'},
+      {id:'c',kind:'failing',cc:'CC1',
+       text:'Leave Daniel to eat and go to deal with the distressed housemate.',
+       tag:'bad', note:'You leave Daniel’s side to manage the housemate. His meal carries on without you beside him.',
+       sup:'Critical control missed: Daniel left unsupervised with food.'},
+    ]},
+  N5:{ order:5, time:'17:57', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
+    q:'What do you do, right now?',
+    options:[
+      {id:'a',kind:'defensible',
+       text:'Stop the meal, keep Daniel upright, follow his plan, and shout for help while you check him.',
+       tag:'good'},
+      {id:'b',kind:'risky',
+       text:'Wait a moment to see whether he clears it himself before you act.',
+       tag:'warn'},
+      {id:'c',kind:'failing',
+       text:'Encourage him to take a drink or another mouthful to wash it down.',
+       tag:'bad'},
+    ]},
+};
+const FLOW = ['N1','N2','N3','N4','N5'];
+
+const EMERGENCY_STEPS = [
+  'Recognise a choking emergency: silence, distress, no effective cough.',
+  'Check the airway and breathing.',
+  'Call 999 for an obstructed airway.',
+  'Give emergency first aid and shout for help.',
+  'Inform the shift leader or manager immediately.',
+  'Complete the incident report, notify family and consider a safeguarding referral.',
+];
+
+/* ---------- State ---------- */
+const KEY='teatime_v1';
+function initState(){
+  return {
+    stage:'landing',            // landing | handover | node | outcome | debrief
+    sub:null,                   // within node: 'confidence' | 'decide' | 'micro'
+    nodeIdx:0,
+    opened:{},                  // doc id -> true
+    choices:{},                 // node id -> option id
+    conf:{},                    // node id -> value
+    events:[],                  // telemetry
+    // running mechanics
+    supervisionOk:true,
+    foodAccessible:true,        // housemate's food on the table
+    plateVerified:false,
+    primed:false,               // UNSAFE_MOUTHFUL_POSSIBLE
+    cc1:false, cc2:false,
+    medFlagged:false,
+    openedBeforeServe:false,
+    modal:null,                 // {id}
+    outcome:null,               // 'A' | 'B' | 'C'
+    theme:null,
+  };
+}
+let S;
+try{ S = JSON.parse(localStorage.getItem(KEY)) || initState(); }catch(e){ S = initState(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function log(t,payload){ S.events.push(Object.assign({t:t}, payload||{})); }
+
+/* ---------- Helpers ---------- */
+function clamp(n){ return Math.max(0, Math.min(100, Math.round(n))); }
+function currentNode(){ return NODES[FLOW[S.nodeIdx]]; }
+function currentTime(){
+  const stage = S.stage==='handover' ? '17:40'
+    : S.stage==='node' ? currentNode().time
+    : S.outcome ? '17:58' : '17:40';
+  return stage;
+}
+
+/* ---------- Render ---------- */
+const app=document.getElementById('app');
+function render(){
+  let view='';
+  if(S.stage==='landing') view=viewLanding();
+  else if(S.stage==='handover') view=viewHandover();
+  else if(S.stage==='node') view=viewScene();
+  else if(S.stage==='outcome') view=viewOutcome();
+  else if(S.stage==='debrief') view=viewDebrief();
+  app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
+  window.scrollTo(0,0);
+}
+
+function topbar(){
+  const showReset = S.stage!=='landing';
+  const themeIc = document.documentElement.getAttribute('data-theme')==='dark'?I.sun:I.moon;
+  return '<header class="topbar">'
+    +'<div class="brand"><span class="emblem">'+svg(I.heart)+'</span>'
+    +'<span>PracticE Ready<small>Frontline &middot; The Teatime Shift</small></span></div>'
+    +'<div class="tb-spacer"></div>'
+    +'<span class="tb-tag">Fictional proof of concept</span>'
+    +(showReset?'<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>':'')
+    +'<button class="tb-btn" data-act="theme">'+svg(themeIc)+'</button>'
+    +'</header>';
+}
+
+/* ---------- Landing ---------- */
+function viewLanding(){
+  return '<div class="landing"><div class="land-card">'
+    +'<span class="land-kicker">'+svg(I.person)+'You are the support worker on shift</span>'
+    +'<h1>The Teatime Shift</h1>'
+    +'<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
+    +'<div class="land-facts">'
+    +landFact('clipboard','Read the evidence','Daniel’s plan, records and the reference tools are yours to open. Some are current. One is quietly out of date.')
+    +landFact('eye','Hold the line','Two things keep Daniel safe: never break supervision, never allow an unsafe mouthful. The shift will test both.')
+    +landFact('route','Live with it','Your decisions play out in the moment. There is no single right answer, and the incident is never forced.')
+    +'</div>'
+    +'<div class="land-actions">'
+    +'<button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button>'
+    +'<span class="land-note">A fictional composite for training. Clinical detail to be confirmed against the source guidance.</span>'
+    +'</div>'
+    +'</div></div>';
+}
+function landFact(ic,h,p){
+  return '<div class="lf"><div class="lf-ic">'+svg(I[ic])+'</div><h4>'+h+'</h4><p>'+p+'</p></div>';
+}
+
+/* ---------- Handover (S0) ---------- */
+function viewHandover(){
+  return '<div class="stage">'
+    + superstrip()
+    + '<div class="scene">'
+    +   '<div class="moment">'
+    +     '<div class="m-scene-ic">'+svg(I.clipboard)+'</div>'
+    +     '<span class="eyebrow">17:40 &middot; Handover</span>'
+    +     '<p class="scene-text">You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.</p>'
+    +     '<p class="m-q">Open anything on the right. When you are ready, go to the table.</p>'
+    +     '<div class="opts"><div style="margin-top:8px"><button class="btn-go" data-act="to-table">'+svg(I.arrowR)+'Go to the table</button></div></div>'
+    +   '</div>'
+    +   eviRail()
+    + '</div>'
+    + '</div>';
+}
+
+/* ---------- Scene (nodes S1..S4, N1..N5) ---------- */
+function viewScene(){
+  const node=currentNode();
+  let left='';
+  if(S.sub==='confidence') left=confPanel(node);
+  else if(S.sub==='micro') left=microPanel(node);
+  else left=decidePanel(node);
+  return '<div class="stage">'
+    + superstrip()
+    + '<div class="scene">'+left+eviRail()+'</div>'
+    + '</div>';
+}
+
+function decidePanel(node){
+  const sceneText = node.recog ? recogSceneText() : node.scene;
+  const ecls = node.inject ? 'm-scene-ic" style="background:var(--warn-tint);color:var(--warn)' : 'm-scene-ic';
+  const eyebrow = (node.inject?'Interruption &middot; ':'')+node.time+' &middot; '+node.label;
+  const opts = node.options.map(function(o){
+    return '<button class="opt" data-act="choose" data-opt="'+o.id+'">'
+      +'<span class="ob">'+svg(I.checkSmall)+'</span>'
+      +'<span class="ot">'+o.text+'</span></button>';
+  }).join('');
+  return '<div class="moment">'
+    +'<div class="'+ecls+'">'+svg(I[node.icon])+'</div>'
+    +'<span class="eyebrow">'+eyebrow+'</span>'
+    +'<p class="scene-text">'+sceneText+'</p>'
+    +'<p class="m-q">'+node.q+'</p>'
+    +'<div class="opts">'+opts+'</div>'
+    +'</div>';
+}
+function recogSceneText(){
+  return S.primed
+    ? 'Daniel coughs, once, hard. Then he goes quiet. His lips are moving but no sound comes, and he is not clearing his throat.'
+    : 'Daniel gives a small cough and clears his throat himself. He is alright, but it is a moment that asks you to stay alert.';
+}
+
+function confPanel(node){
+  const before = node.order===1 ? 'before you serve' : 'before you act on this';
+  return '<div class="moment"><div class="conf-wrap">'
+    +'<span class="eyebrow">'+node.time+' &middot; A quick check-in</span>'
+    +'<h3>How confident are you, '+before+'?</h3>'
+    +'<p>There is no penalty either way. We compare how confident you felt with how it actually went, because certainty on thin evidence is worth noticing.</p>'
+    +'<div class="conf-opts">'
+    + confPill('cautious','scale','Cautious','Unsure; I want to check')
+    + confPill('measured','gauge2','Measured','Reasonably sure')
+    + confPill('confident','bolt','Confident','Sure of this')
+    +'</div></div></div>';
+}
+function confPill(v,ic,b,s){
+  return '<button class="conf-pill" data-act="confidence" data-val="'+v+'"><span class="cp-ic">'+svg(I[ic])+'</span><b>'+b+'</b><span>'+s+'</span></button>';
+}
+
+function microPanel(node){
+  const o=node.choicePicked;
+  const tagCls = o.tag==='good'?'m-good':o.tag==='warn'?'m-warn':'m-bad';
+  const tagIco = o.tag==='good'?I.check:o.tag==='warn'?I.info:I.alertT;
+  const tagTxt = o.tag==='good'?'Held':o.tag==='warn'?'On thin margins':'Control missed';
+  const supIco = o.tag==='good'?I.eye:o.tag==='warn'?I.info:I.eyeoff;
+  const last = S.nodeIdx>=FLOW.length-1;
+  const btn = last
+    ? '<button class="btn-go" data-act="resolve">'+svg(I.arrowR)+'See how the meal ends</button>'
+    : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
+  return '<div class="moment"><div class="micro">'
+    +'<span class="m-tag '+tagCls+'">'+svg(tagIco)+tagTxt+'</span>'
+    +'<p class="m-body">'+o.note+'</p>'
+    +'<p class="m-sup">'+svg(supIco)+'<span>'+o.sup+'</span></p>'
+    +'<div class="micro-actions">'+btn+'</div>'
+    +'</div></div>';
+}
+
+/* ---------- Supervision strip ---------- */
+function superstrip(){
+  const eyes = S.supervisionOk
+    ? {cls:'sv-ok',ic:I.eye,sv:'Eyes on Daniel'}
+    : {cls:'sv-bad',ic:I.eyeoff,sv:'Supervision broken'};
+  const food = S.foodAccessible
+    ? {cls:'sv-warn',ic:I.utensils,sv:'Others’ food in reach'}
+    : {cls:'sv-ok',ic:I.shield,sv:'Food secured'};
+  const risk = S.primed
+    ? {cls:'sv-bad',ic:I.alertT,sv:'Unsafe mouthful possible'}
+    : {cls:'sv-ok',ic:I.check,sv:'Within his plan'};
+  const t = currentTime();
+  return '<div class="superstrip">'
+    +'<div class="sv-clock"><div class="cw">Larkfield &middot; teatime</div><div class="cl">'+t+'</div></div>'
+    + svStat(eyes,'Supervision')
+    + svStat(food,'Access to food')
+    + svStat(risk,'Mealtime risk')
+    +'</div>';
+}
+function svStat(o,label){
+  return '<div class="sv-stat '+o.cls+'"><div class="si">'+svg(o.ic)+'</div>'
+    +'<div><div class="sl">'+label+'</div><div class="sv">'+o.sv+'</div></div></div>';
+}
+
+/* ---------- Evidence rail ---------- */
+function eviRail(){
+  const openedCount = DOC_ORDER.filter(function(id){return S.opened[id];}).length;
+  const rows = function(grp){
+    return DOC_ORDER.filter(function(id){return DOCS[id].group===grp;}).map(function(id){
+      const d=DOCS[id]; const op=S.opened[id];
+      return '<button class="doc-row'+(op?' opened':'')+'" data-act="open-doc" data-id="'+id+'">'
+        +'<span class="di">'+svg(I[d.icon])+'</span>'
+        +'<span class="dt">'+d.title+(d.ref?'<span class="dts">Toolkit '+d.ref+'</span>':'<span class="dts">Daniel’s file</span>')+'</span>'
+        +(op?'<span class="dv">'+svg(I.checkSmall)+'</span>':'')
+        +'</button>';
+    }).join('');
+  };
+  return '<div class="evi">'
+    +'<div class="evi-head"><h3>'+svg(I.eye)+'Records &amp; tools</h3>'
+    +'<p>Opened '+openedCount+' of '+DOC_ORDER.length+'. Open a document to read it and judge it yourself.</p></div>'
+    +'<div class="evi-scroll">'
+    +'<div class="evi-grp">Daniel’s records</div>'+rows('daniel')
+    +'<div class="evi-grp">Reference tools</div>'+rows('ref')
+    +'</div></div>';
+}
+
+/* ---------- Document modal ---------- */
+function docModal(id){
+  const d=DOCS[id];
+  const items=d.list.map(function(x){return '<li>'+svg(I[x.ic])+'<span>'+x.t+'</span></li>';}).join('');
+  let flag='';
+  if(d.flag){
+    flag = S.medFlagged
+      ? '<div class="dm-flag dm-flagged">'+svg(I.check)+'Flagged for reassessment and an Early Watch entry</div>'
+      : '<button class="dm-flag" data-act="flag-med">'+svg(I.flag)+'Flag: the plan may under-state today’s risk</button>';
+  }
+  return '<div class="backdrop" data-act="close-modal"><div class="modal doc-modal" data-stop="1">'
+    +'<div class="dm-top"><span class="dm-emblem">'+svg(I[d.icon])+'</span>'
+    +'<div><div class="dm-kick">'+d.kicker+(d.ref?' &middot; '+d.ref:'')+'</div><h3>'+d.title+'</h3></div>'
+    +'<button class="dm-x" data-act="close-modal">'+svg(I.x)+'</button></div>'
+    +'<div class="doc-body"><ul class="dl">'+items+'</ul>'
+    +(d.note?'<p class="doc-note" style="margin-top:16px">'+d.note+'</p>':'')
+    +'</div>'
+    + flag
+    +'<div class="dm-prov">'+svg(I.lock)+d.prov+'</div>'
+    +'</div></div>';
+}
+
+/* ---------- Outcome (S5) ---------- */
+function viewOutcome(){
+  const o=S.outcome;
+  let badge,badgeCls,h,body,steps='';
+  if(o==='A'){
+    const top = !S.primed && S.medFlagged;
+    badgeCls='oc-good'; badge='Prevention';
+    h = top ? 'A safe, unhurried meal, and you saw what the plan missed' : 'Daniel has a safe, unhurried meal';
+    body = 'Nothing dramatic happened, which is the whole point. The right texture, steady pacing and unbroken supervision meant the busy teatime was just fifteen ordinary minutes. '
+      + (top ? 'You also read the medication change against the drowsiness note and flagged that Daniel needs a reassessment. That is prevention working several days before any incident.'
+             : 'The incident was prevented by the ordinary controls holding, not by luck.');
+  } else if(o==='B'){
+    badgeCls='oc-warn'; badge='Near miss, recovered';
+    h='Daniel coughs hard on an unsafe mouthful, then recovers';
+    body='An unsafe mouthful was taken and Daniel coughed. You recognised it, stopped the meal, kept him upright and called for help, and he cleared it. You then record a near miss and add an Early Watch entry so it is reviewed. Recognising and learning from a near miss is success, not failure. The conditions for it, though, were set earlier in the shift.';
+  } else {
+    badgeCls='oc-bad'; badge='Emergency';
+    h='Daniel experiences a serious choking episode';
+    body='With an unsafe mouthful and a missed quiet phase, Daniel’s airway obstructs. This was not one mistake at teatime. It was a chain: a plate that did not meet his plan, supervision broken while food was in reach, and a medication change no one had connected. The response now follows the source escalation sequence.';
+    steps = '<div class="oc-steps">'+EMERGENCY_STEPS.map(function(s,i){
+      return '<div class="os"><span class="osn">'+(i+1)+'</span><p>'+s+'</p></div>';
+    }).join('')+'</div>';
+  }
+  return '<div class="outcome"><div class="oc-card">'
+    +'<span class="oc-badge '+badgeCls+'">'+svg(o==='A'?I.shield:I.alertT)+badge+'</span>'
+    +'<h1>'+h+'</h1>'
+    +'<p class="oc-body">'+body+'</p>'
+    + steps
+    +'<div class="oc-actions"><button class="btn-go" data-act="to-debrief">'+svg(I.arrowR)+'Go to the debrief</button></div>'
+    +'</div></div>';
+}
+
+/* ---------- Scoring ---------- */
+function scoreProfile(){
+  const c=S.choices; const m={a:100,b:55,c:15};
+  const info = clamp((S.openedBeforeServe?45:0) + (c.N1==='a'?25:0) + (S.medFlagged?30:0));
+  const prep = m[c.N1]||0;
+  const dyn  = Math.round(((m[c.N2]||0)+(m[c.N3]||0))/2);
+  const person = Math.round(((c.N1==='a'?72:c.N1==='b'?48:20) + (c.N4==='a'?100:c.N4==='b'?55:25))/2);
+  const team = m[c.N4]||0;
+  const resp = c.N5?(m[c.N5]||0):0;
+  return [
+    {k:'Information use', v:info, note:'Read the plan before serving; connected the medication clue.'},
+    {k:'Preparation', v:prep, note:'Verified and corrected the plate before the meal.'},
+    {k:'Dynamic judgement', v:dyn, note:'Held supervision across the door and the phone.'},
+    {k:'Person-centred practice', v:person, note:'Kept Daniel’s pace and dignity, no blanket restriction.'},
+    {k:'Team coordination', v:team, note:'Called for help rather than abandoning supervision.'},
+    {k:'Response & learning', v:resp, note:'Recognised the signs and acted; recorded the near miss.'},
+  ];
+}
+function barCls(v){ return v>=70?'hi':v>=40?'mid':'lo'; }
+
+/* ---------- Debrief (S6) ---------- */
+function viewDebrief(){
+  const doms=scoreProfile();
+  const domHtml=doms.map(function(d){
+    return '<div class="dom-row"><div class="dr-top"><b>'+d.k+'</b><span>'+d.v+' / 100</span></div>'
+      +'<div class="dom-bar"><i class="'+barCls(d.v)+'" style="width:'+d.v+'%"></i></div></div>';
+  }).join('');
+
+  const cc1 = ccItem('CC1', 'Supervision', S.cc1, 'You kept eyes on Daniel while food was in reach.', 'Supervision broke while food was accessible.');
+  const cc2 = ccItem('CC2', 'Unsafe mouthful', S.cc2, 'Food served always met Daniel’s plan.', 'Food that did not meet the plan was allowed.');
+
+  const sawMed = S.opened.DOC_MEDS && S.opened.DOC_HANDOVER;
+  const reveal = S.medFlagged
+    ? '<div class="reveal-box ok"><h5>'+svg(I.check)+'You saw what the plan did not say</h5><p>You read the new medication against the “drowsy lately” line and flagged that Daniel’s plan needs a reassessment. The plan alone would have under-stated today’s risk.</p></div>'
+    : '<div class="reveal-box"><h5>'+svg(I.alertT)+'What the evidence actually showed</h5><p>'
+      +(sawMed?'You opened the medication record and the handover note, but the connection was left unflagged. ':'A medication started three weeks ago, listing sedation and dry mouth, was recorded but never opened. ')
+      +'Daniel’s plan and EDAR do not reflect it, so the plan on its own under-states today’s risk.</p></div>';
+
+  const eventsHtml = summariseEvents().map(function(e){
+    return '<div class="ev"><span class="evk">'+e.k+'</span><span class="evd">'+e.d+'</span></div>';
+  }).join('');
+
+  const outLabel = S.outcome==='A'?'Prevention':S.outcome==='B'?'Near miss, recovered':'Emergency';
+
+  return '<div class="debrief"><div class="db-wrap">'
+    +'<div class="db-head"><div><span class="eyebrow">Debrief &middot; the teatime shift</span>'
+    +'<h1>How the shift went, and why</h1></div>'
+    +'<span class="oc-badge '+(S.outcome==='A'?'oc-good':S.outcome==='B'?'oc-warn':'oc-bad')+'">'+svg(S.outcome==='A'?I.shield:I.alertT)+outLabel+'</span></div>'
+
+    +'<div class="db-grid">'
+    +  '<div class="panel"><h3>'+svg(I.gauge2)+'Your practice profile</h3>'
+    +    '<p class="ph-sub">Weighted domains, not a single mark. Critical controls sit above the domains: a control missed is never offset by strong practice elsewhere.</p>'
+    +    '<div class="dom">'+domHtml+'</div></div>'
+
+    +  '<div class="panel"><h3>'+svg(I.shield)+'Critical controls</h3>'
+    +    '<p class="ph-sub">The two that keep Daniel safe.</p>'
+    +    '<div class="cc-list">'+cc1+cc2+'</div>'
+    +    reveal
+    +  '</div>'
+    +'</div>'
+
+    +'<div class="db-grid">'
+    +  '<div class="panel"><h3>'+svg(I.route)+'Captured this run</h3>'
+    +    '<p class="ph-sub">The platform records what you opened and relied on, not just the answer you chose.</p>'
+    +    '<div class="events">'+eventsHtml+'</div></div>'
+    +  '<div class="panel" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">'
+    +    '<h3>'+svg(I.restart)+'Run it again</h3>'
+    +    '<p class="ph-sub" style="margin-bottom:16px">The same choices early or late change the outcome. Try holding supervision through every interruption.</p>'
+    +    '<button class="btn-ghost" data-act="restart">'+svg(I.restart)+'Restart the shift</button></div>'
+    +'</div>'
+
+    + crosstrack()
+    +'</div></div>';
+}
+function ccItem(code,name,tripped,holdTxt,tripTxt){
+  return '<div class="cc-item '+(tripped?'cc-trip':'cc-hold')+'">'
+    +'<div class="cci">'+svg(tripped?I.alertT:I.check)+'</div>'
+    +'<div><h5>'+code+' &middot; '+name+'</h5><p>'+(tripped?tripTxt:holdTxt)+'</p></div></div>';
+}
+function summariseEvents(){
+  const out=[];
+  const opened=DOC_ORDER.filter(function(id){return S.opened[id];}).length;
+  out.push({k:'DOC_OPENED', d:opened+' of '+DOC_ORDER.length+' documents opened'});
+  out.push({k:'PLATE_VERIFIED', d:S.plateVerified?'Checked against IDDSI Level 6 before serving':'Not verified before serving'});
+  const breaks=S.events.filter(function(e){return e.t==='SUPERVISION_BREAK';}).length;
+  out.push({k:'SUPERVISION_BREAK', d:breaks===0?'None: supervision held all shift':breaks+' break'+(breaks>1?'s':'')+' logged'});
+  out.push({k:'MEDCLUE_FLAGGED', d:S.medFlagged?'Yes: reassessment flagged':'No'});
+  const esc=S.events.filter(function(e){return e.t==='ESCALATION';}).length;
+  out.push({k:'ESCALATION', d:esc?'Called for the shift leader':'Not escalated'});
+  out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(S.outcome==='A'?'prevention':S.outcome==='B'?'near miss':'emergency')+')'});
+  return out;
+}
+function crosstrack(){
+  // Standalone reflection close. The two sims are kept separate: the
+  // frontline shift is not driven by another seat's decisions.
+  const prompts = [
+    {ic:'eye', t:'Where did your attention move away from Daniel, and what pulled it?'},
+    {ic:'clipboard', t:'What did the records tell you that the plan alone did not?'},
+    {ic:'route', t:'When two people needed you at once, what kept both of them safe?'},
+  ];
+  const chips = prompts.map(function(p){
+    return '<span class="ct-node">'+svg(I[p.ic])+p.t+'</span>';
+  }).join('');
+  return '<div class="crosstrack">'
+    +'<div class="ct-k">After the shift &middot; reflect and take it back to practice</div>'
+    +'<h3>Prevention is built from ordinary moments</h3>'
+    +'<p>Daniel’s safety tonight came down to small, repeatable habits: the right texture, steady pacing, and never letting supervision lapse while food was in reach. Take a moment with these before you close.</p>'
+    +'<div class="ct-chain">'+chips+'</div>'
+    +'</div>';
+}
+
+/* ---------- Reducers / actions ---------- */
+function beginShift(){ S.stage='handover'; save(); render(); }
+function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
+function enterNode(){
+  const node=currentNode();
+  S.sub = node.confidence ? 'confidence' : 'decide';
+  save(); render();
+}
+function setConfidence(val){
+  S.conf[FLOW[S.nodeIdx]] = val;
+  log('CONFIDENCE', {node:FLOW[S.nodeIdx], value:val});
+  S.sub='decide'; save(); render();
+}
+function chooseOption(optId){
+  const nodeId=FLOW[S.nodeIdx];
+  const node=NODES[nodeId];
+  const opt=node.options.find(function(o){return o.id===optId;});
+  S.choices[nodeId]=optId;
+
+  // Record whether the plan/IDDSI were consulted before the first serve
+  if(nodeId==='N1'){
+    S.openedBeforeServe = !!(S.opened.DOC_PLAN || S.opened.DOC_IDDSI);
+    if(opt.verified){ S.plateVerified=true; log('PLATE_VERIFIED',{bool:true}); log('DOC_RELIED',{id:'DOC_PLAN'}); }
+  }
+  // Supervision + priming mechanics
+  if(opt.securesFood){ S.foodAccessible=false; }
+  if(opt.cc==='CC2'){ S.cc2=true; S.primed=true; S.supervisionOk=false; }
+  else if(opt.cc==='CC1'){
+    S.supervisionOk=false;
+    log('SUPERVISION_BREAK',{node:nodeId,duration_ms:12000});
+    log('LEFT_TABLE',{node:nodeId,food_accessible:S.foodAccessible});
+    if(S.foodAccessible){ S.cc1=true; S.primed=true; }
+  } else if(opt.kind==='risky'){
+    // partial: brief lapse, flag only
+    if(nodeId==='N2'){ log('SUPERVISION_BREAK',{node:nodeId,duration_ms:4000}); log('LEFT_TABLE',{node:nodeId,food_accessible:S.foodAccessible}); }
+    S.supervisionOk=true;
+  } else {
+    S.supervisionOk=true;
+  }
+  if(opt.escalation){ log('ESCALATION',{type:'shift_leader',latency_ms:0}); }
+  if(node.recog){
+    const latency = optId==='a'?1500:optId==='b'?6000:12000;
+    log('REDFLAG_RECOGNISED',{latency_ms:latency});
+  }
+
+  node.choicePicked=opt;
+  S.sub='micro'; save(); render();
+}
+function nextNode(){
+  if(S.nodeIdx < FLOW.length-1){ S.nodeIdx++; enterNode(); }
+  else { resolve(); }
+}
+function resolve(){
+  const n5=S.choices.N5;
+  if(!S.primed){ S.outcome='A'; }
+  else { S.outcome = (n5==='a'||n5==='b') ? 'B' : 'C'; }
+  if(S.outcome==='B'){ log('NEARMISS_RECORDED',{bool:true}); }
+  log('OUTCOME',{path:S.outcome});
+  S.stage='outcome'; save(); render();
+}
+function toDebrief(){ S.stage='debrief'; save(); render(); }
+
+function openDoc(id){
+  if(!S.opened[id]){
+    const order=DOC_ORDER.filter(function(x){return S.opened[x];}).length+1;
+    S.opened[id]=true; log('DOC_OPENED',{id:id,order:order,dwell_ms:0});
+  }
+  S.modal={id:id}; save(); render();
+}
+function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); save(); render(); }
+function closeModal(){ S.modal=null; save(); render(); }
+
+function restart(){ S=initState(); applyTheme(); save(); render(); }
+
+/* ---------- Theme ---------- */
+function applyTheme(){
+  if(S.theme){ document.documentElement.setAttribute('data-theme',S.theme); }
+  else{ document.documentElement.removeAttribute('data-theme'); }
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+  S.theme = isDark ? 'light' : 'dark';
+  applyTheme(); save(); render();
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click', function(e){
+  const el=e.target.closest('[data-act]');
+  if(!el){ return; }
+  const act=el.getAttribute('data-act');
+  switch(act){
+    case 'begin': beginShift(); break;
+    case 'to-table': toTable(); break;
+    case 'confidence': setConfidence(el.getAttribute('data-val')); break;
+    case 'choose': chooseOption(el.getAttribute('data-opt')); break;
+    case 'next-node': nextNode(); break;
+    case 'resolve': nextNode(); break;
+    case 'to-debrief': toDebrief(); break;
+    case 'open-doc': openDoc(el.getAttribute('data-id')); break;
+    case 'flag-med': flagMed(); break;
+    case 'close-modal':
+      // close only when the backdrop itself or the X is clicked, not the card body
+      if(el.classList.contains('backdrop') && e.target.closest('.modal')){ break; }
+      closeModal();
+      break;
+    case 'restart': restart(); break;
+    case 'theme': toggleTheme(); break;
+  }
+});
+
+/* ---------- Boot ---------- */
+applyTheme();
+render();
+</script>
+</body>
+</html>
