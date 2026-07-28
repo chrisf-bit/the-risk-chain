@@ -146,13 +146,13 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .sv-clock{flex:none;background:var(--navy);color:var(--navy-ink);border-radius:var(--r);padding:9px 16px;display:flex;flex-direction:column;justify-content:center;min-width:118px}
 .sv-clock .cl{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:1px}
 .sv-clock .cw{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
-.sv-gauge{flex:none;width:158px;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:8px 12px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.sv-gauge svg{width:104px;height:auto;display:block}
+.sv-gauge{flex:none;width:166px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.sv-gauge svg{width:120px;height:auto;display:block}
 .sv-gauge .gv{transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1),stroke .3s}
-.sv-gauge .g-read{position:absolute;top:33px;left:0;right:0;text-align:center;line-height:1}
-.sv-gauge .g-read b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
-.sv-gauge .g-read span{font-size:10px;font-weight:750;letter-spacing:.03em;color:var(--ink-4)}
-.sv-gauge .g-label{font-size:10px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-4);margin-top:1px}
+.sv-gauge .g-num{font-family:var(--sans);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.sv-gauge .g-cap{display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.sv-gauge .g-cap b{font-size:12.5px;font-weight:800}
+.sv-gauge .g-cap span{font-size:9.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-4);margin-top:1px}
 .sv-stat{flex:1;display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:9px 15px;box-shadow:var(--shadow)}
 .sv-stat .si{width:42px;height:42px;border-radius:9px;display:grid;place-items:center;flex:none}
 .sv-stat .si svg{width:24px;height:24px}
@@ -730,12 +730,12 @@ function riskGauge(){
   const r=riskScore(); const z=riskZone(r);
   const len=157.08; const off=(len*(1-r/100)).toFixed(2);
   return '<div class="sv-gauge">'
-    +'<svg viewBox="0 0 120 68" aria-hidden="true">'
+    +'<svg viewBox="0 0 120 66" aria-hidden="true">'
     +'<path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="var(--surface-3)" stroke-width="9" stroke-linecap="round"/>'
     +'<path class="gv" d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="'+z.c+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+len+'" stroke-dashoffset="'+off+'"/>'
+    +'<text x="60" y="55" text-anchor="middle" class="g-num" fill="'+z.c+'">'+r+'</text>'
     +'</svg>'
-    +'<div class="g-read"><b style="color:'+z.c+'">'+r+'</b><span>'+z.l+' risk</span></div>'
-    +'<div class="g-label">Mealtime risk</div>'
+    +'<div class="g-cap"><b style="color:'+z.c+'">'+z.l+'</b><span>Mealtime risk</span></div>'
     +'</div>';
 }
 function superstrip(){
