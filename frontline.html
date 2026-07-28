@@ -131,8 +131,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .land-card .lead{font-family:var(--serif);font-size:19px;line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:60ch}
 .land-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}
 .land-facts .lf{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
-.land-facts .lf .lf-ic{width:38px;height:38px;border-radius:9px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:10px}
-.land-facts .lf .lf-ic svg{width:21px;height:21px}
+.land-facts .lf .lf-ic{width:48px;height:48px;border-radius:11px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:12px}
+.land-facts .lf .lf-ic svg{width:27px;height:27px}
 .land-facts .lf h4{font-size:14px}
 .land-facts .lf p{font-size:12.5px;color:var(--ink-3);margin-top:3px;line-height:1.4}
 .land-actions{margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -141,14 +141,21 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 /* ---------- Scene shell ---------- */
 .stage{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 20px 18px;max-width:1240px;width:100%;margin:0 auto}
 
-/* supervision strip */
+/* instrument cluster */
 .superstrip{flex:none;display:flex;align-items:stretch;gap:10px;margin-bottom:13px}
 .sv-clock{flex:none;background:var(--navy);color:var(--navy-ink);border-radius:var(--r);padding:9px 16px;display:flex;flex-direction:column;justify-content:center;min-width:118px}
 .sv-clock .cl{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:1px}
 .sv-clock .cw{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
+.sv-gauge{flex:none;width:158px;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:8px 12px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sv-gauge svg{width:104px;height:auto;display:block}
+.sv-gauge .gv{transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1),stroke .3s}
+.sv-gauge .g-read{position:absolute;top:33px;left:0;right:0;text-align:center;line-height:1}
+.sv-gauge .g-read b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.sv-gauge .g-read span{font-size:10px;font-weight:750;letter-spacing:.03em;color:var(--ink-4)}
+.sv-gauge .g-label{font-size:10px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-4);margin-top:1px}
 .sv-stat{flex:1;display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:9px 15px;box-shadow:var(--shadow)}
-.sv-stat .si{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;flex:none}
-.sv-stat .si svg{width:19px;height:19px}
+.sv-stat .si{width:42px;height:42px;border-radius:9px;display:grid;place-items:center;flex:none}
+.sv-stat .si svg{width:24px;height:24px}
 .sv-stat .sl{font-size:11px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
 .sv-stat .sv{font-size:14px;font-weight:750;margin-top:1px}
 .sv-ok .si{background:var(--good-tint);color:var(--good)} .sv-ok .sv{color:var(--good)}
@@ -166,8 +173,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .opt{text-align:left;display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);transition:background .12s,border-color .12s}
 .opt:hover{border-color:#b9c6cf;background:var(--surface-2)}
-.opt .ob{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;display:grid;place-items:center}
-.opt .ob svg{width:14px;height:14px;color:#fff;opacity:0}
+.opt .ob{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;display:grid;place-items:center}
+.opt .ob svg{width:17px;height:17px;color:#fff;opacity:0}
 .opt .ot{font-size:14.5px;line-height:1.42;color:var(--ink)}
 .opt.sel{background:var(--teal-tint);border-color:var(--teal)}
 .opt.sel .ob{background:var(--teal);border-color:var(--teal)} .opt.sel .ob svg{opacity:1}
@@ -180,8 +187,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .conf-opts{display:flex;gap:11px;margin-top:22px;flex-wrap:wrap}
 .conf-pill{display:flex;flex-direction:column;gap:5px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;box-shadow:var(--shadow);min-width:150px;flex:1}
 .conf-pill:hover{border-color:var(--teal);background:var(--teal-tint)}
-.conf-pill .cp-ic{width:32px;height:32px;border-radius:8px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center}
-.conf-pill .cp-ic svg{width:19px;height:19px}
+.conf-pill .cp-ic{width:42px;height:42px;border-radius:9px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center}
+.conf-pill .cp-ic svg{width:24px;height:24px}
 .conf-pill b{font-size:15px}
 .conf-pill span{font-size:12px;color:var(--ink-4)}
 
@@ -201,14 +208,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .evi{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
 .evi-head{flex:none;padding:14px 16px 10px;border-bottom:1px solid var(--line-2)}
 .evi-head h3{font-size:14.5px;display:flex;align-items:center;gap:8px}
-.evi-head h3 svg{width:17px;height:17px;color:var(--teal-strong)}
+.evi-head h3 svg{width:20px;height:20px;color:var(--teal-strong)}
 .evi-head p{font-size:11.5px;color:var(--ink-4);margin-top:3px}
 .evi-scroll{flex:1;min-height:0;overflow:auto;padding:10px 12px}
 .evi-grp{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-4);padding:8px 4px 6px}
 .doc-row{width:100%;text-align:left;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);border:1px solid transparent;background:none}
 .doc-row:hover{background:var(--surface-2);border-color:var(--line)}
-.doc-row .di{width:32px;height:32px;border-radius:7px;background:var(--surface-3);color:var(--ink-2);display:grid;place-items:center;flex:none}
-.doc-row .di svg{width:17px;height:17px}
+.doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--surface-3);color:var(--ink-2);display:grid;place-items:center;flex:none}
+.doc-row .di svg{width:23px;height:23px}
 .doc-row .dt{font-size:13px;font-weight:650;line-height:1.25;flex:1}
 .doc-row .dts{font-size:11px;color:var(--ink-4);margin-top:1px;font-weight:400}
 .doc-row .dv{flex:none;width:18px;height:18px;color:var(--good)}
@@ -263,7 +270,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .db-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-top:22px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px 22px}
 .panel h3{font-size:16px;display:flex;align-items:center;gap:9px}
-.panel h3 svg{width:19px;height:19px;color:var(--teal-strong)}
+.panel h3 svg{width:22px;height:22px;color:var(--teal-strong)}
 .panel .ph-sub{font-size:12.5px;color:var(--ink-4);margin-top:3px}
 .dom{margin-top:16px;display:flex;flex-direction:column;gap:13px}
 .dom-row .dr-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px}
@@ -274,8 +281,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .dom-bar i.lo{background:var(--g-red)} .dom-bar i.mid{background:var(--g-amber)} .dom-bar i.hi{background:var(--g-green)}
 .cc-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
 .cc-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);border:1px solid var(--line)}
-.cc-item .cci{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
-.cc-item .cci svg{width:18px;height:18px}
+.cc-item .cci{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;flex:none}
+.cc-item .cci svg{width:22px;height:22px}
 .cc-hold{background:var(--good-tint);border-color:var(--good-line)} .cc-hold .cci{background:#fff;color:var(--good)}
 .cc-trip{background:var(--bad-tint);border-color:var(--bad-line)} .cc-trip .cci{background:#fff;color:var(--bad)}
 .cc-item h5{font-size:13.5px}
@@ -294,6 +301,12 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .crosstrack .ct-k{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8fbff0}
 .crosstrack h3{color:#fff;font-size:20px;margin-top:8px;letter-spacing:-.02em}
 .crosstrack p{font-size:14px;line-height:1.55;color:rgba(234,241,251,.85);margin-top:10px;max-width:64ch}
+.crosstrack .r-band{margin-top:12px}
+.r-chip{display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:100px;font-weight:800;font-size:15px;letter-spacing:.02em;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+.r-chip svg{width:21px;height:21px}
+.crosstrack.r-good .r-chip{color:#7ee0a0;border-color:rgba(126,224,160,.42)}
+.crosstrack.r-warn .r-chip{color:#ffd27a;border-color:rgba(255,210,122,.42)}
+.crosstrack.r-bad .r-chip{color:#ff9b8f;border-color:rgba(255,155,143,.46)}
 .crosstrack .ct-chain{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
 .ct-node{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:7px 13px;font-size:12.5px;font-weight:650}
 .ct-node svg{width:15px;height:15px;color:#8fbff0}
@@ -442,8 +455,8 @@ const NODES = {
        sup:'Supervision held. The food in front of Daniel now meets his plan.'},
       {id:'b',kind:'risky',
        text:'Serve the plate as it came, but stay right beside him and watch closely.',
-       tag:'warn', note:'You serve it as it arrived and stay close. It holds together only for as long as your attention stays on him.',
-       sup:'Supervision held for now, but the plate does not meet Daniel’s plan.'},
+       tag:'warn', note:'You serve it as it arrived and stay beside him, watching closely as he begins to eat.',
+       sup:''},
       {id:'c',kind:'failing',cc:'CC2',
        text:'Put the plate down as it is and step over to sort the housemate’s tray.',
        tag:'bad', note:'The oversized plate is in front of Daniel and your back is turned. He reaches for a large piece straight away.',
@@ -597,9 +610,9 @@ function viewLanding(){
     +'<h1>The Teatime Shift</h1>'
     +'<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
     +'<div class="land-facts">'
-    +landFact('clipboard','Read the evidence','Daniel’s plan, records and the reference tools are yours to open. Some are current. One is quietly out of date.')
-    +landFact('eye','Hold the line','Two things keep Daniel safe: never break supervision, never allow an unsafe mouthful. The shift will test both.')
-    +landFact('route','Live with it','Your decisions play out in the moment. There is no single right answer, and the incident is never forced.')
+    +landFact('person','You lead the shift','For fifteen minutes you support Daniel through his meal on your own. What you do is what happens.')
+    +landFact('clipboard','The evidence is open','Daniel’s plan, his records and the reference tools are all there to consult. Nothing flags which ones matter.')
+    +landFact('target','Readiness, not revision','No coaching, no hints, no single right answer. The shift shows how you would really practise.')
     +'</div>'
     +'<div class="land-actions">'
     +'<button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button>'
@@ -665,11 +678,10 @@ function recogSceneText(){
 }
 
 function confPanel(node){
-  const before = node.order===1 ? 'before you serve' : 'before you act on this';
+  const before = node.order===1 ? 'before you serve' : 'before you act';
   return '<div class="moment"><div class="conf-wrap">'
-    +'<span class="eyebrow">'+node.time+' &middot; A quick check-in</span>'
-    +'<h3>How confident are you, '+before+'?</h3>'
-    +'<p>There is no penalty either way. We compare how confident you felt with how it actually went, because certainty on thin evidence is worth noticing.</p>'
+    +'<span class="eyebrow">'+node.time+' &middot; '+(node.order===1?'Preparation':'Emerging signs')+'</span>'
+    +'<h3>How confident do you feel, '+before+'?</h3>'
     +'<div class="conf-opts">'
     + confPill('cautious','scale','Cautious','Unsure; I want to check')
     + confPill('measured','gauge2','Measured','Reasonably sure')
@@ -682,39 +694,67 @@ function confPill(v,ic,b,s){
 
 function microPanel(node){
   const o=node.choicePicked;
-  const tagCls = o.tag==='good'?'m-good':o.tag==='warn'?'m-warn':'m-bad';
-  const tagIco = o.tag==='good'?I.check:o.tag==='warn'?I.info:I.alertT;
-  const tagTxt = o.tag==='good'?'Held':o.tag==='warn'?'On thin margins':'Control missed';
-  const supIco = o.tag==='good'?I.eye:o.tag==='warn'?I.info:I.eyeoff;
+  // In-the-moment observation only. No grade, no coaching: the instrument
+  // cluster shows the situation change. Judgement is held for the debrief.
   const last = S.nodeIdx>=FLOW.length-1;
   const btn = last
     ? '<button class="btn-go" data-act="resolve">'+svg(I.arrowR)+'See how the meal ends</button>'
     : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
   return '<div class="moment"><div class="micro">'
-    +'<span class="m-tag '+tagCls+'">'+svg(tagIco)+tagTxt+'</span>'
     +'<p class="m-body">'+o.note+'</p>'
-    +'<p class="m-sup">'+svg(supIco)+'<span>'+o.sup+'</span></p>'
     +'<div class="micro-actions">'+btn+'</div>'
     +'</div></div>';
 }
 
-/* ---------- Supervision strip ---------- */
+/* ---------- Instrument cluster ---------- */
+/* Live mealtime-risk score, 0..100, derived from the running mechanics.
+   Rises as controls slip; stays low when the plan is held. */
+function riskScore(){
+  let r=14;                         // baseline: new meds, "drowsy lately"
+  const c=S.choices;
+  if(S.foodAccessible) r+=8;        // others' food within reach
+  if(c.N1==='b') r+=16;             // served unverified plate
+  if(c.N1==='c') r+=30;             // served oversized/uncut (CC2)
+  if(!S.supervisionOk) r+=26;       // supervision currently broken
+  ['N2','N3','N4'].forEach(function(n){ if(c[n]==='b') r+=8; }); // attention split
+  if(S.primed) r+=24;               // unsafe mouthful possible
+  if(S.cc1) r+=6; if(S.cc2) r+=6;
+  return clamp(r);
+}
+function riskZone(r){
+  return r<34 ? {c:'var(--g-green)',l:'Low'}
+       : r<67 ? {c:'var(--g-amber)',l:'Elevated'}
+              : {c:'var(--g-red)',l:'High'};
+}
+function riskGauge(){
+  const r=riskScore(); const z=riskZone(r);
+  const len=157.08; const off=(len*(1-r/100)).toFixed(2);
+  return '<div class="sv-gauge">'
+    +'<svg viewBox="0 0 120 68" aria-hidden="true">'
+    +'<path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="var(--surface-3)" stroke-width="9" stroke-linecap="round"/>'
+    +'<path class="gv" d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="'+z.c+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+len+'" stroke-dashoffset="'+off+'"/>'
+    +'</svg>'
+    +'<div class="g-read"><b style="color:'+z.c+'">'+r+'</b><span>'+z.l+' risk</span></div>'
+    +'<div class="g-label">Mealtime risk</div>'
+    +'</div>';
+}
 function superstrip(){
   const eyes = S.supervisionOk
     ? {cls:'sv-ok',ic:I.eye,sv:'Eyes on Daniel'}
     : {cls:'sv-bad',ic:I.eyeoff,sv:'Supervision broken'};
   const food = S.foodAccessible
-    ? {cls:'sv-warn',ic:I.utensils,sv:'Others’ food in reach'}
+    ? {cls:'sv-warn',ic:I.utensils,sv:'Food in reach'}
     : {cls:'sv-ok',ic:I.shield,sv:'Food secured'};
-  const risk = S.primed
-    ? {cls:'sv-bad',ic:I.alertT,sv:'Unsafe mouthful possible'}
-    : {cls:'sv-ok',ic:I.check,sv:'Within his plan'};
+  const daniel = S.primed
+    ? {cls:'sv-warn',ic:I.person,sv:'Unsettled'}
+    : {cls:'sv-ok',ic:I.person,sv:'Settled'};
   const t = currentTime();
   return '<div class="superstrip">'
     +'<div class="sv-clock"><div class="cw">Larkfield &middot; teatime</div><div class="cl">'+t+'</div></div>'
+    + riskGauge()
     + svStat(eyes,'Supervision')
     + svStat(food,'Access to food')
-    + svStat(risk,'Mealtime risk')
+    + svStat(daniel,'Daniel')
     +'</div>';
 }
 function svStat(o,label){
@@ -865,11 +905,11 @@ function viewDebrief(){
     +    '<div class="events">'+eventsHtml+'</div></div>'
     +  '<div class="panel" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">'
     +    '<h3>'+svg(I.restart)+'Run it again</h3>'
-    +    '<p class="ph-sub" style="margin-bottom:16px">The same choices early or late change the outcome. Try holding supervision through every interruption.</p>'
+    +    '<p class="ph-sub" style="margin-bottom:16px">Each run is assessed on its own. You can take the shift again.</p>'
     +    '<button class="btn-ghost" data-act="restart">'+svg(I.restart)+'Restart the shift</button></div>'
     +'</div>'
 
-    + crosstrack()
+    + readiness()
     +'</div></div>';
 }
 function ccItem(code,name,tripped,holdTxt,tripTxt){
@@ -890,22 +930,26 @@ function summariseEvents(){
   out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(S.outcome==='A'?'prevention':S.outcome==='B'?'near miss':'emergency')+')'});
   return out;
 }
-function crosstrack(){
-  // Standalone reflection close. The two sims are kept separate: the
-  // frontline shift is not driven by another seat's decisions.
-  const prompts = [
-    {ic:'eye', t:'Where did your attention move away from Daniel, and what pulled it?'},
-    {ic:'clipboard', t:'What did the records tell you that the plan alone did not?'},
-    {ic:'route', t:'When two people needed you at once, what kept both of them safe?'},
-  ];
-  const chips = prompts.map(function(p){
-    return '<span class="ct-node">'+svg(I[p.ic])+p.t+'</span>';
-  }).join('');
-  return '<div class="crosstrack">'
-    +'<div class="ct-k">After the shift &middot; reflect and take it back to practice</div>'
-    +'<h3>Prevention is built from ordinary moments</h3>'
-    +'<p>Daniel’s safety tonight came down to small, repeatable habits: the right texture, steady pacing, and never letting supervision lapse while food was in reach. Take a moment with these before you close.</p>'
-    +'<div class="ct-chain">'+chips+'</div>'
+function readiness(){
+  // Assessment verdict, not coaching. Derived from the critical controls,
+  // the outcome and the practice profile.
+  const doms=scoreProfile();
+  const lowAny=doms.some(function(d){return d.v<40;});
+  let band,cls,txt;
+  if(S.cc1 || S.cc2 || S.outcome==='C'){
+    band='Not yet ready'; cls='r-bad';
+    txt='A critical control was missed during the shift. In practice that is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.';
+  } else if(S.outcome==='B' || lowAny){
+    band='Developing'; cls='r-warn';
+    txt='Daniel came through the meal, but safety rested on recovery or on margins thinner than they needed to be. Parts of practice are not yet consistent.';
+  } else {
+    band='Ready'; cls='r-good';
+    txt='Supervision held, the food met Daniel’s plan, and the meal stayed safe throughout. This is the standard a lone teatime shift asks for.';
+  }
+  return '<div class="crosstrack '+cls+'">'
+    +'<div class="ct-k">Readiness &middot; this run</div>'
+    +'<div class="r-band"><span class="r-chip">'+svg(band==='Ready'?I.shield:I.alertT)+band+'</span></div>'
+    +'<p>'+txt+'</p>'
     +'</div>';
 }
 
