@@ -169,13 +169,16 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .m-scene-ic svg{width:29px;height:29px}
 .moment .eyebrow{margin-bottom:2px}
 /* bespoke scene illustration (photos can drop into the same slot later) */
-.scene-illo{flex:none;height:150px;border-radius:var(--r-lg);background:radial-gradient(135% 160% at 22% -12%,var(--teal-tint),var(--surface-2));border:1px solid var(--line);display:grid;place-items:center;margin-bottom:18px;overflow:hidden}
+.scene-illo{position:relative;flex:none;height:150px;border-radius:var(--r-lg);background:radial-gradient(135% 160% at 22% -12%,var(--teal-tint),var(--surface-2));border:1px solid var(--line);display:grid;place-items:center;margin-bottom:18px;overflow:hidden}
 .scene-illo.warn{background:radial-gradient(135% 160% at 22% -12%,var(--warn-tint),var(--surface-2))}
 .scene-illo svg{height:120px;width:auto;display:block}
 .scene-illo.has-img{flex:1 1 auto;min-height:96px;height:auto;padding:0;background:none;display:block;margin-bottom:16px}
 .scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block;transform-origin:55% 42%;animation:kenburns 24s ease-in-out infinite alternate;will-change:transform}
 @keyframes kenburns{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.18) translate(-2.2%,-1.6%)}}
+.scene-illo img.no-kb{animation:none}
 @media (prefers-reduced-motion:reduce){.scene-illo img{animation:none}}
+/* buzzer light: red glow over the intercom button, flashed in sync with the sound */
+.buzz-glow{position:absolute;width:78px;height:78px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0;z-index:2;filter:blur(1px);mix-blend-mode:screen;background:radial-gradient(circle,rgba(255,66,48,.95),rgba(255,48,36,.5) 38%,rgba(255,40,30,0) 70%)}
 .il{fill:none;stroke:var(--teal-strong);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
 .il-soft{fill:none;stroke:var(--teal-strong);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:.32}
 .il-fill{fill:var(--surface)}
@@ -467,7 +470,7 @@ const SCENES = {
 const SCENE_IMG = {
   handover:{src:'assets/frontline/scene-handover.png', pos:'50% 30%'},
   N1:{src:'assets/frontline/scene-plate.png', pos:'50% 56%'},
-  N2:{src:'assets/frontline/scene-door.png', pos:'50% 44%'},
+  N2:{src:'assets/frontline/scene-door.png', pos:'50% 44%', glow:{left:'39%', top:'41%'}},
 };
 function svgBanner(key,warn){
   var art=SCENES[key];
@@ -477,8 +480,10 @@ function svgBanner(key,warn){
 function sceneIllo(key,warn){
   var m=SCENE_IMG[key];
   if(m){
+    var glow = m.glow ? '<span class="buzz-glow" style="left:'+m.glow.left+';top:'+m.glow.top+'"></span>' : '';
     return '<div class="scene-illo has-img'+(warn?' warn':'')+'">'
-      +'<img src="'+m.src+'" alt="" style="object-position:'+(m.pos||'50% 40%')+'" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
+      +'<img'+(m.glow?' class="no-kb"':'')+' src="'+m.src+'" alt="" style="object-position:'+(m.pos||'50% 40%')+'" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
+      + glow
       +'</div>';
   }
   return svgBanner(key,warn);
@@ -540,7 +545,26 @@ const AUDIO = (function(){
   function setMuted(m){ if(m){ ambienceStop(); } else { unlock(); } }
   return {unlock:unlock, buzzer:buzzer, phone:phone, ambienceStart:ambienceStart, ambienceStop:ambienceStop, setMuted:setMuted};
 })();
-function playNodeCue(id){ if(id==='N2'){ AUDIO.buzzer(); } else if(id==='N3'){ AUDIO.phone(); } }
+/* Buzzer: sound + a red flash on the intercom light, getting more
+   insistent (shorter gaps) like an impatient delivery driver. */
+var buzzTimers=[];
+function flashGlow(){
+  var g=document.querySelector('.buzz-glow');
+  if(!g || !g.animate) return;
+  g.animate(
+    [{opacity:0},{opacity:1,offset:.04},{opacity:.12,offset:.4},{opacity:1,offset:.52},{opacity:0,offset:.92},{opacity:0}],
+    {duration:640, easing:'ease-out'}
+  );
+}
+function buzzOnce(){ AUDIO.buzzer(); flashGlow(); }
+function startBuzzSequence(){
+  stopBuzzSequence();
+  buzzOnce();
+  var gaps=[3400,3000,2500,2100,1800,1600,1500,1500], t=0;
+  for(var i=0;i<gaps.length;i++){ t+=gaps[i]; buzzTimers.push(setTimeout(buzzOnce, t)); }
+}
+function stopBuzzSequence(){ for(var i=0;i<buzzTimers.length;i++){ clearTimeout(buzzTimers[i]); } buzzTimers=[]; }
+function playNodeCue(id){ if(id==='N2'){ startBuzzSequence(); } else if(id==='N3'){ AUDIO.phone(); } }
 
 /* ---------- Content ---------- */
 const DANIEL = {
@@ -1122,6 +1146,7 @@ function readiness(){
 function beginShift(){ AUDIO.unlock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
+  stopBuzzSequence();
   S.sub='decide';               // decide first; confidence is asked after the choice
   save(); render();
   playNodeCue(FLOW[S.nodeIdx]);
@@ -1160,6 +1185,7 @@ function applyEffects(nodeId){
   }
 }
 function chooseOption(optId){
+  stopBuzzSequence();
   const nodeId=FLOW[S.nodeIdx];
   const node=NODES[nodeId];
   S.choices[nodeId]=optId;
@@ -1203,7 +1229,7 @@ function openDoc(id){
 function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); save(); render(); }
 function closeModal(){ S.modal=null; save(); render(); }
 
-function restart(){ const keep={theme:S.theme,muted:S.muted}; AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }
+function restart(){ const keep={theme:S.theme,muted:S.muted}; stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }
 function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); save(); render(); }
 
 /* ---------- Theme ---------- */
