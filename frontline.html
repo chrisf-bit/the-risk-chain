@@ -522,8 +522,27 @@ const AUDIO = (function(){
     o.connect(g).connect(master); o.start(t0); o.stop(t0+dur+0.02);
   }
   function buzzer(){ if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
-    var t=ctx.currentTime;
-    for(var k=0;k<2;k++){ var st=t+k*0.34; tone('sawtooth',175,st,0.26,0.09); tone('square',350,st,0.26,0.03); }
+    var t=ctx.currentTime, dur=1.15;
+    // deep, sustained low buzz
+    var o1=ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=98;
+    var o2=ctx.createOscillator(); o2.type='square';   o2.frequency.value=98*1.004; // slight detune for grit
+    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=780; lp.Q.value=0.8;
+    // tremolo for the electric rasp of a real entry buzzer
+    var trem=ctx.createGain(); trem.gain.value=0.82;
+    var lfo=ctx.createOscillator(); lfo.type='square'; lfo.frequency.value=24;
+    var lfoAmt=ctx.createGain(); lfoAmt.gain.value=0.3;
+    lfo.connect(lfoAmt).connect(trem.gain);
+    // amplitude envelope: quick attack, sustain, short release
+    var amp=ctx.createGain();
+    amp.gain.setValueAtTime(0.0001,t);
+    amp.gain.exponentialRampToValueAtTime(0.16,t+0.035);
+    amp.gain.setValueAtTime(0.16,t+dur-0.18);
+    amp.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    var o2g=ctx.createGain(); o2g.gain.value=0.5;
+    o1.connect(lp); o2.connect(o2g).connect(lp);
+    lp.connect(trem).connect(amp).connect(master);
+    o1.start(t); o2.start(t); lfo.start(t);
+    o1.stop(t+dur+0.02); o2.stop(t+dur+0.02); lfo.stop(t+dur+0.02);
   }
   function phone(){ if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
     var t=ctx.currentTime;
@@ -551,16 +570,18 @@ var buzzTimers=[];
 function flashGlow(){
   var g=document.querySelector('.buzz-glow');
   if(!g || !g.animate) return;
+  // sustained red glow that flickers for the length of the buzz (~1.15s)
   g.animate(
-    [{opacity:0},{opacity:1,offset:.04},{opacity:.12,offset:.4},{opacity:1,offset:.52},{opacity:0,offset:.92},{opacity:0}],
-    {duration:640, easing:'ease-out'}
+    [{opacity:0},{opacity:1,offset:.04},{opacity:.72,offset:.22},{opacity:1,offset:.4},
+     {opacity:.74,offset:.6},{opacity:.95,offset:.78},{opacity:0,offset:1}],
+    {duration:1150, easing:'ease-out'}
   );
 }
 function buzzOnce(){ AUDIO.buzzer(); flashGlow(); }
 function startBuzzSequence(){
   stopBuzzSequence();
   buzzOnce();
-  var gaps=[3400,3000,2500,2100,1800,1600,1500,1500], t=0;
+  var gaps=[3600,3200,2800,2500,2300,2200,2100,2100], t=0;
   for(var i=0;i<gaps.length;i++){ t+=gaps[i]; buzzTimers.push(setTimeout(buzzOnce, t)); }
 }
 function stopBuzzSequence(){ for(var i=0;i<buzzTimers.length;i++){ clearTimeout(buzzTimers[i]); } buzzTimers=[]; }
