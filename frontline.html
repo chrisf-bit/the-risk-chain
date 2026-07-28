@@ -146,8 +146,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .sv-clock{flex:none;background:var(--navy);color:var(--navy-ink);border-radius:var(--r);padding:9px 16px;display:flex;flex-direction:column;justify-content:center;min-width:118px}
 .sv-clock .cl{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:1px}
 .sv-clock .cw{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
-.sv-gauge{flex:none;width:166px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.sv-gauge svg{width:120px;height:auto;display:block}
+.sv-gauge{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.sv-gauge svg{width:118px;height:auto;display:block}
 .sv-gauge .gv{transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1),stroke .3s}
 .sv-gauge .g-num{font-family:var(--sans);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
 .sv-gauge .g-cap{display:flex;flex-direction:column;align-items:center;line-height:1.1}
@@ -168,6 +168,18 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .m-scene-ic{width:52px;height:52px;border-radius:12px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:16px}
 .m-scene-ic svg{width:29px;height:29px}
 .moment .eyebrow{margin-bottom:2px}
+/* bespoke scene illustration (photos can drop into the same slot later) */
+.scene-illo{flex:none;height:150px;border-radius:var(--r-lg);background:radial-gradient(135% 160% at 22% -12%,var(--teal-tint),var(--surface-2));border:1px solid var(--line);display:grid;place-items:center;margin-bottom:18px;overflow:hidden}
+.scene-illo.warn{background:radial-gradient(135% 160% at 22% -12%,var(--warn-tint),var(--surface-2))}
+.scene-illo svg{height:120px;width:auto;display:block}
+.il{fill:none;stroke:var(--teal-strong);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+.il-soft{fill:none;stroke:var(--teal-strong);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:.32}
+.il-fill{fill:var(--surface)}
+.il-tint{fill:var(--teal-tint)}
+.il-skin{fill:#f0d0b4}
+.il-dot{fill:var(--teal-strong);stroke:none}
+.il-warn{stroke:var(--warn)}
+.il-warn-f{fill:var(--warn);stroke:var(--warn)}
 .scene-text{font-family:var(--serif);font-size:19.5px;line-height:1.55;color:var(--ink);margin-top:12px;max-width:52ch}
 .m-q{font-size:15px;font-weight:750;color:var(--ink-2);margin-top:22px}
 .opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
@@ -373,8 +385,135 @@ const I = {
   book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v16"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".4"/>',
+  sound:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a8 8 0 0 1 0 11"/>',
+  mute:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M22 9.5l-5 5M17 9.5l5 5"/>',
 };
 function svg(p,cls){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'+(cls?' class="'+cls+'"':'')+' aria-hidden="true">'+p+'</svg>';}
+
+/* ---------- Illustration (bespoke SVG scenes; photos can drop in later) ---------- */
+function dHead(cx,cy){
+  return '<path class="il il-tint" d="M'+(cx-17)+' '+cy+' a17 17 0 0 1 34 0 v6 a17 17 0 0 1 -34 0 z"/>'
+    +'<path class="il" d="M'+(cx-18)+' '+(cy)+' a18 15 0 0 1 36 0"/>'
+    +'<circle class="il-dot" cx="'+(cx-6)+'" cy="'+(cy+4)+'" r="2.1"/>'
+    +'<circle class="il-dot" cx="'+(cx+6)+'" cy="'+(cy+4)+'" r="2.1"/>'
+    +'<path class="il" d="M'+(cx-6)+' '+(cy+12)+' q6 4 12 0"/>';
+}
+function dSeated(cx){
+  return '<path class="il il-fill" d="M'+(cx-25)+' 116 q0 -33 25 -33 q25 0 25 33 z"/>'+dHead(cx,58);
+}
+const FLOOR='<line class="il-soft" x1="24" y1="118" x2="316" y2="118"/>';
+const SCENES = {
+  handover:
+    FLOOR
+    +'<rect class="il il-fill" x="118" y="40" width="66" height="80" rx="6"/>'
+    +'<rect class="il il-tint" x="140" y="34" width="22" height="11" rx="3"/>'
+    +'<path class="il-soft" d="M130 62h42M130 76h42M130 90h26"/>'
+    +'<path class="il il-fill" d="M206 90h34v18a9 9 0 0 1 -9 9h-16a9 9 0 0 1 -9 -9z"/>'
+    +'<path class="il" d="M240 95h5a7 7 0 0 1 0 14h-5"/>'
+    +'<path class="il-soft" d="M216 82c-4-5 4-8 0-13M228 82c-4-5 4-8 0-13"/>',
+  N1:
+    FLOOR
+    +'<rect class="il il-fill" x="60" y="104" width="220" height="14" rx="4"/>'
+    +'<path class="il" d="M96 82v34M92 82v9M100 82v9"/>'
+    +'<path class="il" d="M292 82v34"/>'
+    +'<ellipse class="il il-fill" cx="150" cy="100" rx="52" ry="15"/>'
+    +'<ellipse class="il-soft" cx="150" cy="100" rx="34" ry="9"/>'
+    +'<circle class="il il-tint" cx="137" cy="98" r="7"/><circle class="il il-tint" cx="157" cy="97" r="8"/><circle class="il il-tint" cx="150" cy="104" r="6"/>'
+    +'<ellipse class="il il-fill" cx="240" cy="102" rx="30" ry="9"/>'
+    +'<path class="il il-tint" d="M228 101l12-15 12 15z"/>',
+  N2:
+    FLOOR
+    +'<rect class="il il-fill" x="120" y="30" width="86" height="88" rx="4"/>'
+    +'<rect class="il-soft" x="132" y="42" width="62" height="30" rx="3"/>'
+    +'<rect class="il-soft" x="132" y="80" width="62" height="28" rx="3"/>'
+    +'<circle class="il-dot" cx="142" cy="86" r="3.2"/>'
+    +'<rect class="il il-tint" x="224" y="58" width="22" height="32" rx="4"/>'
+    +'<circle class="il-dot" cx="235" cy="80" r="2.2"/>'
+    +'<path class="il il-warn" d="M258 64q9 10 0 20M267 58q15 16 0 32"/>',
+  N3:
+    FLOOR
+    +'<rect class="il il-fill" x="148" y="44" width="46" height="74" rx="9"/>'
+    +'<rect class="il-soft" x="154" y="52" width="34" height="52" rx="3"/>'
+    +'<line class="il" x1="164" y1="112" x2="178" y2="112"/>'
+    +'<path class="il il-warn" d="M206 62q13 15 0 30M136 62q-13 15 0 30"/>',
+  N4:
+    FLOOR
+    +'<rect class="il il-fill" x="70" y="104" width="200" height="14" rx="4"/>'
+    + dSeated(118)
+    +'<circle class="il il-tint" cx="226" cy="50" r="16"/>'
+    +'<path class="il" d="M212 50a16 15 0 0 1 28 0"/>'
+    +'<circle class="il-dot" cx="221" cy="52" r="2"/><circle class="il-dot" cx="231" cy="52" r="2"/>'
+    +'<path class="il il-warn" d="M208 116 q6 -44 40 -50"/>'
+    +'<path class="il il-warn" d="M250 70 q10 22 -2 46"/>',
+  N5:
+    FLOOR
+    +'<rect class="il il-fill" x="70" y="104" width="200" height="14" rx="4"/>'
+    +'<path class="il il-fill" d="M145 116 q0 -33 25 -33 q25 0 25 33 z"/>'
+    +'<path class="il il-tint" d="M153 56 a17 17 0 0 1 34 0 v6 a17 17 0 0 1 -34 0 z"/>'
+    +'<path class="il" d="M152 56 a18 15 0 0 1 36 0"/>'
+    +'<circle class="il-dot" cx="164" cy="60" r="2.1"/><circle class="il-dot" cx="176" cy="60" r="2.1"/>'
+    +'<path class="il il-warn" d="M164 72 q6 -4 12 0"/>'
+    +'<path class="il il-warn" d="M206 44l4 8 8-2M214 62l7 3 1 8"/>'
+    +'<path class="il il-warn-f" d="M226 40l10 18h-20z"/><path class="il" d="M231 47v5" stroke="var(--surface)"/>',
+};
+function sceneIllo(key,warn){
+  var art=SCENES[key]; if(!art) return '';
+  return '<div class="scene-illo'+(warn?' warn':'')+'"><svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+art+'</svg></div>';
+}
+function danielChipAvatar(){
+  return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
+    +'<circle cx="22" cy="22" r="21" class="il-chip-bg"/>'
+    +'<path class="il-chip il-chip-skin" d="M13 22 a9 9 0 0 1 18 0 v3 a9 9 0 0 1 -18 0 z"/>'
+    +'<path class="il-chip" d="M12 22 a10 8 0 0 1 20 0"/>'
+    +'<circle cx="18.5" cy="24" r="1.3" class="il-chip-dot"/><circle cx="25.5" cy="24" r="1.3" class="il-chip-dot"/>'
+    +'<path class="il-chip" d="M18.5 29 q3.5 2.5 7 0"/></svg>';
+}
+
+/* ---------- Audio (synthesised; no external files) ---------- */
+const AUDIO = (function(){
+  var ctx=null, master=null, amb=null;
+  function ensure(){
+    if(ctx) return ctx;
+    try{
+      var AC=window.AudioContext||window.webkitAudioContext;
+      ctx=new AC(); master=ctx.createGain(); master.gain.value=0.9; master.connect(ctx.destination);
+    }catch(e){ ctx=null; }
+    return ctx;
+  }
+  function unlock(){ if(!ensure()) return; if(ctx.state==='suspended'){ ctx.resume(); } if(!S.muted){ ambienceStart(); } }
+  function tone(type,freq,t0,dur,peak){
+    var o=ctx.createOscillator(), g=ctx.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(peak,t0+0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g).connect(master); o.start(t0); o.stop(t0+dur+0.02);
+  }
+  function buzzer(){ if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
+    var t=ctx.currentTime;
+    for(var k=0;k<2;k++){ var st=t+k*0.34; tone('sawtooth',175,st,0.26,0.09); tone('square',350,st,0.26,0.03); }
+  }
+  function phone(){ if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
+    var t=ctx.currentTime;
+    for(var r=0;r<2;r++){ for(var b=0;b<2;b++){ var st=t+r*0.9+b*0.2; tone('sine',420,st,0.16,0.06); tone('sine',480,st+0.08,0.1,0.05); } }
+  }
+  function ambienceStart(){
+    if(S.muted||!ensure()||amb) return; if(ctx.state==='suspended') ctx.resume();
+    var buf=ctx.createBuffer(1, ctx.sampleRate*2, ctx.sampleRate), d=buf.getChannelData(0);
+    for(var i=0;i<d.length;i++){ d[i]=(Math.random()*2-1)*0.5; }
+    var src=ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=520;
+    var g=ctx.createGain(); g.gain.value=0.012;
+    var hum=ctx.createOscillator(), hg=ctx.createGain(); hum.type='sine'; hum.frequency.value=70; hg.gain.value=0.006;
+    src.connect(lp).connect(g).connect(master); hum.connect(hg).connect(master);
+    src.start(); hum.start();
+    amb={src:src,hum:hum};
+  }
+  function ambienceStop(){ if(!amb) return; try{ amb.src.stop(); amb.hum.stop(); }catch(e){} amb=null; }
+  function setMuted(m){ if(m){ ambienceStop(); } else { unlock(); } }
+  return {unlock:unlock, buzzer:buzzer, phone:phone, ambienceStart:ambienceStart, ambienceStop:ambienceStop, setMuted:setMuted};
+})();
+function playNodeCue(id){ if(id==='N2'){ AUDIO.buzzer(); } else if(id==='N3'){ AUDIO.phone(); } }
 
 /* ---------- Content ---------- */
 const DANIEL = {
@@ -560,6 +699,7 @@ function initState(){
     modal:null,                 // {id}
     outcome:null,               // 'A' | 'B' | 'C'
     theme:null,
+    muted:false,                // sound on by default
   };
 }
 let S;
@@ -599,6 +739,7 @@ function topbar(){
     +'<div class="tb-spacer"></div>'
     +'<span class="tb-tag">Fictional proof of concept</span>'
     +(showReset?'<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>':'')
+    +'<button class="tb-btn" data-act="mute" aria-label="'+(S.muted?'Unmute':'Mute')+'">'+svg(S.muted?I.mute:I.sound)+'</button>'
     +'<button class="tb-btn" data-act="theme">'+svg(themeIc)+'</button>'
     +'</header>';
 }
@@ -630,7 +771,7 @@ function viewHandover(){
     + superstrip()
     + '<div class="scene">'
     +   '<div class="moment">'
-    +     '<div class="m-scene-ic">'+svg(I.clipboard)+'</div>'
+    +     sceneIllo('handover',false)
     +     '<span class="eyebrow">17:40 &middot; Handover</span>'
     +     '<p class="scene-text">You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.</p>'
     +     '<p class="m-q">Open anything on the right. When you are ready, go to the table.</p>'
@@ -656,15 +797,15 @@ function viewScene(){
 
 function decidePanel(node){
   const sceneText = node.recog ? recogSceneText() : node.scene;
-  const ecls = node.inject ? 'm-scene-ic" style="background:var(--warn-tint);color:var(--warn)' : 'm-scene-ic';
   const eyebrow = (node.inject?'Interruption &middot; ':'')+node.time+' &middot; '+node.label;
+  const warnScene = node.inject || (node.recog && S.primed);
   const opts = node.options.map(function(o){
     return '<button class="opt" data-act="choose" data-opt="'+o.id+'">'
       +'<span class="ob">'+svg(I.checkSmall)+'</span>'
       +'<span class="ot">'+o.text+'</span></button>';
   }).join('');
   return '<div class="moment">'
-    +'<div class="'+ecls+'">'+svg(I[node.icon])+'</div>'
+    +sceneIllo(FLOW[S.nodeIdx], warnScene)
     +'<span class="eyebrow">'+eyebrow+'</span>'
     +'<p class="scene-text">'+sceneText+'</p>'
     +'<p class="m-q">'+node.q+'</p>'
@@ -726,40 +867,34 @@ function riskZone(r){
        : r<67 ? {c:'var(--g-amber)',l:'Elevated'}
               : {c:'var(--g-red)',l:'High'};
 }
-function riskGauge(){
-  const r=riskScore(); const z=riskZone(r);
-  const len=157.08; const off=(len*(1-r/100)).toFixed(2);
+/* Assurance direction: higher = safer (green). Risk is the inverse. */
+function assurZone(v){ return v>=70 ? 'var(--g-green)' : v>=40 ? 'var(--g-amber)' : 'var(--g-red)'; }
+function meter(value,color,word,label){
+  const len=157.08; const off=(len*(1-value/100)).toFixed(2);
   return '<div class="sv-gauge">'
     +'<svg viewBox="0 0 120 66" aria-hidden="true">'
     +'<path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="var(--surface-3)" stroke-width="9" stroke-linecap="round"/>'
-    +'<path class="gv" d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="'+z.c+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+len+'" stroke-dashoffset="'+off+'"/>'
-    +'<text x="60" y="55" text-anchor="middle" class="g-num" fill="'+z.c+'">'+r+'</text>'
+    +'<path class="gv" d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+len+'" stroke-dashoffset="'+off+'"/>'
+    +'<text x="60" y="55" text-anchor="middle" class="g-num" fill="'+color+'">'+value+'</text>'
     +'</svg>'
-    +'<div class="g-cap"><b style="color:'+z.c+'">'+z.l+'</b><span>Mealtime risk</span></div>'
+    +'<div class="g-cap"><b style="color:'+color+'">'+word+'</b><span>'+label+'</span></div>'
     +'</div>';
 }
 function superstrip(){
-  const eyes = S.supervisionOk
-    ? {cls:'sv-ok',ic:I.eye,sv:'Eyes on Daniel'}
-    : {cls:'sv-bad',ic:I.eyeoff,sv:'Supervision broken'};
-  const food = S.foodAccessible
-    ? {cls:'sv-warn',ic:I.utensils,sv:'Food in reach'}
-    : {cls:'sv-ok',ic:I.shield,sv:'Food secured'};
-  const daniel = S.primed
-    ? {cls:'sv-warn',ic:I.person,sv:'Unsettled'}
-    : {cls:'sv-ok',ic:I.person,sv:'Settled'};
-  const t = currentTime();
+  const t=currentTime();
+  const c=S.choices;
+  const rk=riskScore(), rz=riskZone(rk);
+  const split=['N2','N3','N4'].some(function(n){return c[n]==='b';});
+  const sup = !S.supervisionOk ? {v:12,w:'Broken'} : split ? {v:60,w:'Divided'} : {v:100,w:'Eyes on'};
+  const food = S.foodAccessible ? {v:45,w:'In reach'} : {v:100,w:'Secured'};
+  const dan = S.primed ? {v:50,w:'Unsettled'} : {v:100,w:'Settled'};
   return '<div class="superstrip">'
     +'<div class="sv-clock"><div class="cw">Larkfield &middot; teatime</div><div class="cl">'+t+'</div></div>'
-    + riskGauge()
-    + svStat(eyes,'Supervision')
-    + svStat(food,'Access to food')
-    + svStat(daniel,'Daniel')
+    + meter(rk, rz.c, rz.l, 'Mealtime risk')
+    + meter(sup.v, assurZone(sup.v), sup.w, 'Supervision')
+    + meter(food.v, assurZone(food.v), food.w, 'Access to food')
+    + meter(dan.v, assurZone(dan.v), dan.w, 'Daniel')
     +'</div>';
-}
-function svStat(o,label){
-  return '<div class="sv-stat '+o.cls+'"><div class="si">'+svg(o.ic)+'</div>'
-    +'<div><div class="sl">'+label+'</div><div class="sv">'+o.sv+'</div></div></div>';
 }
 
 /* ---------- Evidence rail ---------- */
@@ -954,17 +1089,19 @@ function readiness(){
 }
 
 /* ---------- Reducers / actions ---------- */
-function beginShift(){ S.stage='handover'; save(); render(); }
+function beginShift(){ AUDIO.unlock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
   const node=currentNode();
   S.sub = node.confidence ? 'confidence' : 'decide';
   save(); render();
+  if(S.sub==='decide'){ playNodeCue(FLOW[S.nodeIdx]); }
 }
 function setConfidence(val){
   S.conf[FLOW[S.nodeIdx]] = val;
   log('CONFIDENCE', {node:FLOW[S.nodeIdx], value:val});
   S.sub='decide'; save(); render();
+  playNodeCue(FLOW[S.nodeIdx]);
 }
 function chooseOption(optId){
   const nodeId=FLOW[S.nodeIdx];
@@ -1011,6 +1148,7 @@ function resolve(){
   else { S.outcome = (n5==='a'||n5==='b') ? 'B' : 'C'; }
   if(S.outcome==='B'){ log('NEARMISS_RECORDED',{bool:true}); }
   log('OUTCOME',{path:S.outcome});
+  AUDIO.ambienceStop();
   S.stage='outcome'; save(); render();
 }
 function toDebrief(){ S.stage='debrief'; save(); render(); }
@@ -1025,7 +1163,8 @@ function openDoc(id){
 function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); save(); render(); }
 function closeModal(){ S.modal=null; save(); render(); }
 
-function restart(){ S=initState(); applyTheme(); save(); render(); }
+function restart(){ const keep={theme:S.theme,muted:S.muted}; AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }
+function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); save(); render(); }
 
 /* ---------- Theme ---------- */
 function applyTheme(){
@@ -1061,6 +1200,7 @@ document.addEventListener('click', function(e){
       break;
     case 'restart': restart(); break;
     case 'theme': toggleTheme(); break;
+    case 'mute': toggleMute(); break;
   }
 });
 
