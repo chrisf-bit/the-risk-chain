@@ -526,11 +526,11 @@ const AUDIO = (function(){
     // deep, smooth low buzz: warm tone with a gentle pulse (no harsh chop)
     var o1=ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=110;
     var o2=ctx.createOscillator(); o2.type='sine';     o2.frequency.value=110; // sub body
-    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=520; lp.Q.value=0.3;
-    // gentle sine tremolo for a soft pulse, not a rasp
-    var trem=ctx.createGain(); trem.gain.value=0.9;
-    var lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=15;
-    var lfoAmt=ctx.createGain(); lfoAmt.gain.value=0.1;
+    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=680; lp.Q.value=0.5;
+    // faster sine tremolo for an electric flutter, still smooth (no chop)
+    var trem=ctx.createGain(); trem.gain.value=0.85;
+    var lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=26;
+    var lfoAmt=ctx.createGain(); lfoAmt.gain.value=0.22;
     lfo.connect(lfoAmt).connect(trem.gain);
     // amplitude envelope: soft attack (no click), sustain, gentle release
     var amp=ctx.createGain();
@@ -538,7 +538,7 @@ const AUDIO = (function(){
     amp.gain.exponentialRampToValueAtTime(0.17,t+0.06);
     amp.gain.setValueAtTime(0.17,t+dur-0.22);
     amp.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    var o2g=ctx.createGain(); o2g.gain.value=0.55;
+    var o2g=ctx.createGain(); o2g.gain.value=0.4;
     o1.connect(lp); o2.connect(o2g).connect(lp);
     lp.connect(trem).connect(amp).connect(master);
     o1.start(t); o2.start(t); lfo.start(t);
@@ -770,6 +770,7 @@ function initState(){
     cc1:false, cc2:false,
     medFlagged:false,
     openedBeforeServe:false,
+    pendingChoice:null,         // option selected, awaiting confidence
     modal:null,                 // {id}
     outcome:null,               // 'A' | 'B' | 'C'
     theme:null,
@@ -856,70 +857,69 @@ function viewHandover(){
     + '</div>';
 }
 
-/* ---------- Scene (nodes S1..S4, N1..N5) ---------- */
+/* ---------- Scene (nodes N1..N5): one evolving, image-anchored panel ----------
+   Each node is a single screen. It moves through: decide -> (confidence,
+   inline, on confidence nodes) -> consequence, without ever leaving the
+   panel or the scene photo. */
 function viewScene(){
   const node=currentNode();
-  let left='';
-  if(S.sub==='confidence') left=confPanel(node);
-  else if(S.sub==='micro') left=microPanel(node);
-  else left=decidePanel(node);
   return '<div class="stage">'
     + superstrip()
-    + '<div class="scene">'+left+eviRail()+'</div>'
+    + '<div class="scene">'+momentCard(node)+eviRail()+'</div>'
     + '</div>';
 }
-
-function decidePanel(node){
+function momentCard(node){
+  const key=FLOW[S.nodeIdx];
+  const warnScene = node.inject || (node.recog && S.primed);
+  let body;
+  if(S.sub==='consequence') body=consequenceBody(node);
+  else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
+  else body=decideBody(node);
+  return '<div class="moment">'+sceneIllo(key,warnScene)+body+'</div>';
+}
+function decideBody(node){
   const sceneText = node.recog ? recogSceneText() : node.scene;
   const eyebrow = (node.inject?'Interruption &middot; ':'')+node.time+' &middot; '+node.label;
-  const warnScene = node.inject || (node.recog && S.primed);
   const opts = node.options.map(function(o){
     return '<button class="opt" data-act="choose" data-opt="'+o.id+'">'
       +'<span class="ob">'+svg(I.checkSmall)+'</span>'
       +'<span class="ot">'+o.text+'</span></button>';
   }).join('');
-  return '<div class="moment">'
-    +sceneIllo(FLOW[S.nodeIdx], warnScene)
-    +'<span class="eyebrow">'+eyebrow+'</span>'
+  return '<span class="eyebrow">'+eyebrow+'</span>'
     +'<p class="scene-text">'+sceneText+'</p>'
     +'<p class="m-q">'+node.q+'</p>'
-    +'<div class="opts">'+opts+'</div>'
+    +'<div class="opts">'+opts+'</div>';
+}
+function confidenceBody(node){
+  const o=node.options.find(function(x){return x.id===S.pendingChoice;});
+  return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+    +(o?'<p class="conf-choice">'+svg(I.checkSmall)+'<span>'+o.text+'</span></p>':'')
+    +'<p class="m-q">How confident are you in that decision?</p>'
+    +'<div class="conf-opts">'
+    + confPill('cautious','scale','Cautious','Not sure it was right')
+    + confPill('measured','gauge2','Measured','Reasonably sure')
+    + confPill('confident','bolt','Confident','Sure it was right')
     +'</div>';
+}
+function consequenceBody(node){
+  const o=chosenOpt(FLOW[S.nodeIdx]);
+  const last = S.nodeIdx>=FLOW.length-1;
+  const btn = last
+    ? '<button class="btn-go" data-act="resolve">'+svg(I.arrowR)+'See how the meal ends</button>'
+    : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
+  // In-the-moment observation only: no grade, no coaching. The instrument
+  // cluster above shows the situation change; judgement waits for the debrief.
+  return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+    +'<p class="scene-text">'+(o?o.note:'')+'</p>'
+    +'<div class="micro-actions">'+btn+'</div>';
 }
 function recogSceneText(){
   return S.primed
     ? 'Daniel coughs, once, hard. Then he goes quiet. His lips are moving but no sound comes.'
     : 'Daniel gives a small cough, then carries on. He clears his throat and keeps eating.';
 }
-
-function confPanel(node){
-  const o=chosenOpt(FLOW[S.nodeIdx]);
-  return '<div class="moment"><div class="conf-wrap">'
-    +'<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
-    +'<h3>How confident are you in that decision?</h3>'
-    +(o?'<p class="conf-choice">'+svg(I.checkSmall)+'<span>'+o.text+'</span></p>':'')
-    +'<div class="conf-opts">'
-    + confPill('cautious','scale','Cautious','Not sure it was right')
-    + confPill('measured','gauge2','Measured','Reasonably sure')
-    + confPill('confident','bolt','Confident','Sure it was right')
-    +'</div></div></div>';
-}
 function confPill(v,ic,b,s){
   return '<button class="conf-pill" data-act="confidence" data-val="'+v+'"><span class="cp-ic">'+svg(I[ic])+'</span><b>'+b+'</b><span>'+s+'</span></button>';
-}
-
-function microPanel(node){
-  const o=chosenOpt(FLOW[S.nodeIdx]);
-  // In-the-moment observation only. No grade, no coaching: the instrument
-  // cluster shows the situation change. Judgement is held for the debrief.
-  const last = S.nodeIdx>=FLOW.length-1;
-  const btn = last
-    ? '<button class="btn-go" data-act="resolve">'+svg(I.arrowR)+'See how the meal ends</button>'
-    : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
-  return '<div class="moment"><div class="micro">'
-    +'<p class="m-body">'+o.note+'</p>'
-    +'<div class="micro-actions">'+btn+'</div>'
-    +'</div></div>';
 }
 
 /* ---------- Instrument cluster ---------- */
@@ -1168,7 +1168,8 @@ function beginShift(){ AUDIO.unlock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
   stopBuzzSequence();
-  S.sub='decide';               // decide first; confidence is asked after the choice
+  S.sub='decide';               // decide first; confidence is asked inline after the choice
+  S.pendingChoice=null;
   save(); render();
   playNodeCue(FLOW[S.nodeIdx]);
 }
@@ -1209,21 +1210,22 @@ function chooseOption(optId){
   stopBuzzSequence();
   const nodeId=FLOW[S.nodeIdx];
   const node=NODES[nodeId];
-  S.choices[nodeId]=optId;
-  if(node.confidence){
-    // ask confidence in the decision just made, then reveal the consequence
-    S.sub='confidence'; save(); render();
-  } else {
-    applyEffects(nodeId);
-    S.sub='micro'; save(); render();
+  if(node.confidence && !S.pendingChoice){
+    // hold the choice and ask confidence inline before revealing anything
+    S.pendingChoice=optId; save(); render(); return;
   }
+  S.choices[nodeId]=optId;
+  applyEffects(nodeId);
+  S.sub='consequence'; save(); render();
 }
 function setConfidence(val){
   const nodeId=FLOW[S.nodeIdx];
+  S.choices[nodeId]=S.pendingChoice;
   S.conf[nodeId]=val;
   log('CONFIDENCE', {node:nodeId, value:val});
   applyEffects(nodeId);
-  S.sub='micro'; save(); render();
+  S.pendingChoice=null;
+  S.sub='consequence'; save(); render();
 }
 function nextNode(){
   if(S.nodeIdx < FLOW.length-1){ S.nodeIdx++; enterNode(); }
