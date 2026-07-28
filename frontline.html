@@ -172,6 +172,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .scene-illo{flex:none;height:150px;border-radius:var(--r-lg);background:radial-gradient(135% 160% at 22% -12%,var(--teal-tint),var(--surface-2));border:1px solid var(--line);display:grid;place-items:center;margin-bottom:18px;overflow:hidden}
 .scene-illo.warn{background:radial-gradient(135% 160% at 22% -12%,var(--warn-tint),var(--surface-2))}
 .scene-illo svg{height:120px;width:auto;display:block}
+.scene-illo.has-img{height:228px;padding:0;background:none;align-items:stretch}
+.scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block}
 .il{fill:none;stroke:var(--teal-strong);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
 .il-soft{fill:none;stroke:var(--teal-strong);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:.32}
 .il-fill{fill:var(--surface)}
@@ -456,9 +458,27 @@ const SCENES = {
     +'<path class="il il-warn" d="M206 44l4 8 8-2M214 62l7 3 1 8"/>'
     +'<path class="il il-warn-f" d="M226 40l10 18h-20z"/><path class="il" d="M231 47v5" stroke="var(--surface)"/>',
 };
-function sceneIllo(key,warn){
-  var art=SCENES[key]; if(!art) return '';
+/* Real photos drop in here per scene; missing keys fall back to the SVG. */
+const SCENE_IMG = {
+  handover:'assets/frontline/scene-handover.png',
+};
+function svgBanner(key,warn){
+  var art=SCENES[key];
+  if(!art) return '<div class="scene-illo'+(warn?' warn':'')+'"></div>';
   return '<div class="scene-illo'+(warn?' warn':'')+'"><svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+art+'</svg></div>';
+}
+function sceneIllo(key,warn){
+  var img=SCENE_IMG[key];
+  if(img){
+    return '<div class="scene-illo has-img'+(warn?' warn':'')+'">'
+      +'<img src="'+img+'" alt="" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
+      +'</div>';
+  }
+  return svgBanner(key,warn);
+}
+function sceneImgError(imgEl){
+  var wrap=imgEl.parentNode, key=imgEl.getAttribute('data-key'), warn=imgEl.getAttribute('data-warn')==='1';
+  wrap.outerHTML = svgBanner(key,warn);
 }
 function danielChipAvatar(){
   return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
