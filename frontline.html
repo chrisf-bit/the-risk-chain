@@ -523,22 +523,22 @@ const AUDIO = (function(){
   }
   function buzzer(){ if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
     var t=ctx.currentTime, dur=1.15;
-    // deep, sustained low buzz
-    var o1=ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=98;
-    var o2=ctx.createOscillator(); o2.type='square';   o2.frequency.value=98*1.004; // slight detune for grit
-    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=780; lp.Q.value=0.8;
-    // tremolo for the electric rasp of a real entry buzzer
-    var trem=ctx.createGain(); trem.gain.value=0.82;
-    var lfo=ctx.createOscillator(); lfo.type='square'; lfo.frequency.value=24;
-    var lfoAmt=ctx.createGain(); lfoAmt.gain.value=0.3;
+    // deep, smooth low buzz: warm tone with a gentle pulse (no harsh chop)
+    var o1=ctx.createOscillator(); o1.type='sawtooth'; o1.frequency.value=110;
+    var o2=ctx.createOscillator(); o2.type='sine';     o2.frequency.value=110; // sub body
+    var lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=520; lp.Q.value=0.3;
+    // gentle sine tremolo for a soft pulse, not a rasp
+    var trem=ctx.createGain(); trem.gain.value=0.9;
+    var lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=15;
+    var lfoAmt=ctx.createGain(); lfoAmt.gain.value=0.1;
     lfo.connect(lfoAmt).connect(trem.gain);
-    // amplitude envelope: quick attack, sustain, short release
+    // amplitude envelope: soft attack (no click), sustain, gentle release
     var amp=ctx.createGain();
     amp.gain.setValueAtTime(0.0001,t);
-    amp.gain.exponentialRampToValueAtTime(0.16,t+0.035);
-    amp.gain.setValueAtTime(0.16,t+dur-0.18);
+    amp.gain.exponentialRampToValueAtTime(0.17,t+0.06);
+    amp.gain.setValueAtTime(0.17,t+dur-0.22);
     amp.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    var o2g=ctx.createGain(); o2g.gain.value=0.5;
+    var o2g=ctx.createGain(); o2g.gain.value=0.55;
     o1.connect(lp); o2.connect(o2g).connect(lp);
     lp.connect(trem).connect(amp).connect(master);
     o1.start(t); o2.start(t); lfo.start(t);
