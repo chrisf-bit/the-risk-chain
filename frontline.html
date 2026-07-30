@@ -13,88 +13,89 @@
    dark variant sits on the theme toggle.
    ============================================================ */
 /* ------------------------------------------------------------------
-   Palette: "Hearth". Warmed to sit with the care-home photography,
-   amber lamplight, oak, cream walls, the worker's navy jumper, dusk
-   through the windows. Four zone identities layer on top:
+   Palette: "Dusk". A calm blue-grey backdrop drawn from the windows
+   at teatime, so the warm care-home photography (amber lamplight, oak,
+   the worker's navy jumper) glows against it. Four zone identities:
      chrome  = navy   (top bar: who/where you are)
      monitor = slate  (instrument strip: things to watch)
      read    = oak    (evidence rail: things to read)
-     do      = bronze (the scene + options: things to do; this is the
-                       app's default accent, so --teal carries it)
+     do      = amber  (the scene + options: things to do; carried by --teal)
+   Dark mode is a dim slate, deliberately not black.
    ------------------------------------------------------------------ */
 :root{
-  --ground:#efe7d9; --surface:#fdf9f1; --surface-2:#f5eddf; --surface-3:#e7dcc7;
-  --ink:#2a2015; --ink-2:#584734; --ink-3:#6e5b45; --ink-4:#8b7761;
-  --line:#ddd0ba; --line-2:#ece2d1;
-  --navy:#243a5a; --navy-2:#1b2c45; --navy-ink:#fdf9f1;
-  --teal:#a9741f; --teal-strong:#8a5f18; --teal-tint:#f5e7cc; --teal-deep:#6f4c12;
-  --z-monitor:#456b8a; --z-monitor-2:#37576f; --z-monitor-tint:#e7eef3;
-  --z-read:#8a5824; --z-read-2:#6d451b; --z-read-tint:#f1e5cf;
-  --z-do:#b07a24; --z-do-2:#8c5f18; --z-do-tint:#f8edd4;
-  --good:#3f7d38; --good-tint:#e7f0e0; --good-line:#bcd8b1;
-  --warn:#c06a10; --warn-tint:#f8ead2; --warn-line:#eece9b;
-  --bad:#c0392b; --bad-tint:#f8e5e0; --bad-line:#eec5bd;
-  --info:#456b8a; --info-tint:#e7eef3;
+  --ground:#e9eef3; --surface:#fbfcfe; --surface-2:#eef2f6; --surface-3:#dbe3ea;
+  --ink:#22303c; --ink-2:#46586a; --ink-3:#5c6d7d; --ink-4:#7d8ea0;
+  --line:#d3dde5; --line-2:#e5ebf0;
+  --navy:#21344f; --navy-2:#182740; --navy-ink:#fbfcfe;
+  --teal:#b07a24; --teal-strong:#8f6118; --teal-tint:#f6ead2; --teal-deep:#734d13;
+  --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#e4ebf1;
+  --z-read:#97672c; --z-read-2:#79521f; --z-read-tint:#f2e7d3;
+  --z-do:#b87c20; --z-do-2:#96631a; --z-do-tint:#f7ecd6;
+  --good:#3f7d38; --good-tint:#e6efe0; --good-line:#bcd8b1;
+  --warn:#c06a10; --warn-tint:#f7ead2; --warn-line:#eece9b;
+  --bad:#c0392b; --bad-tint:#f7e4df; --bad-line:#eec5bd;
+  --info:#3f6486; --info-tint:#e4ebf1;
   --g-red:#c0392b; --g-amber:#a86c08; --g-green:#3a7a32;
-  --shadow:0 1px 2px rgba(60,40,20,.07),0 4px 14px rgba(60,40,20,.09);
-  --shadow-lg:0 4px 12px rgba(60,40,20,.12),0 18px 40px rgba(60,40,20,.16);
+  --shadow:0 1px 2px rgba(30,50,75,.08),0 4px 14px rgba(30,50,75,.10);
+  --shadow-lg:0 4px 12px rgba(30,50,75,.12),0 18px 40px rgba(30,50,75,.17);
   --r:8px; --r-sm:5px; --r-lg:12px;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
   --sans:Arial,"Helvetica Neue",Helvetica,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --scene:"Segoe UI","Seravek","Helvetica Neue",system-ui,-apple-system,sans-serif;
   --mono:"Cascadia Code",ui-monospace,"SFMono-Regular",Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --ground:#191410; --surface:#241d16; --surface-2:#2d241b; --surface-3:#392d21;
-    --ink:#f3e9db; --ink-2:#cebca4; --ink-3:#a8977e; --ink-4:#87755e;
-    --line:#3a2e22; --line-2:#2c2318;
-    --navy:#1c2a44; --navy-2:#141f34; --navy-ink:#f3e9db;
-    --teal:#d59a44; --teal-strong:#e0a659; --teal-tint:#3a2b15; --teal-deep:#c2872f;
-    --z-monitor:#7c9cbb; --z-monitor-2:#93b0cc; --z-monitor-tint:#1e2a36;
-    --z-read:#cd955a; --z-read-2:#dbab77; --z-read-tint:#332619;
-    --z-do:#d59a44; --z-do-2:#e5b064; --z-do-tint:#332711;
-    --good:#5fae4f; --good-tint:#18301a; --good-line:#2f5a34;
-    --warn:#e0a02a; --warn-tint:#332810; --warn-line:#5b471a;
-    --bad:#e2604e; --bad-tint:#331d18; --bad-line:#5a2e27;
-    --info:#7c9cbb; --info-tint:#1e2a36;
+    --ground:#1b2530; --surface:#25313d; --surface-2:#2d3a47; --surface-3:#384754;
+    --ink:#eef4f9; --ink-2:#c2cfda; --ink-3:#9eafbc; --ink-4:#7e8f9d;
+    --line:#3a4855; --line-2:#2c3844;
+    --navy:#22344c; --navy-2:#1a2940; --navy-ink:#eef4f9;
+    --teal:#d99a44; --teal-strong:#e6ac5e; --teal-tint:#3a2c15; --teal-deep:#c2872f;
+    --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#223243;
+    --z-read:#d1975a; --z-read-2:#e0ac78; --z-read-tint:#33291b;
+    --z-do:#d99a44; --z-do-2:#e8b268; --z-do-tint:#342a13;
+    --good:#5fae4f; --good-tint:#213a20; --good-line:#356a3a;
+    --warn:#e0a02a; --warn-tint:#3a2f14; --warn-line:#5f4a1c;
+    --bad:#e2604e; --bad-tint:#3a221c; --bad-line:#61332b;
+    --info:#7ea6c8; --info-tint:#223243;
     --g-red:#e2604e; --g-amber:#e6ac35; --g-green:#5fae4f;
-    --shadow:0 2px 6px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);
-    --shadow-lg:0 8px 20px rgba(0,0,0,.5),0 28px 56px rgba(0,0,0,.6);
+    --shadow:0 2px 6px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.42);
+    --shadow-lg:0 8px 20px rgba(0,0,0,.42),0 24px 50px rgba(0,0,0,.5);
   }
 }
 :root[data-theme="light"]{
-  --ground:#efe7d9; --surface:#fdf9f1; --surface-2:#f5eddf; --surface-3:#e7dcc7;
-  --ink:#2a2015; --ink-2:#584734; --ink-3:#6e5b45; --ink-4:#8b7761;
-  --line:#ddd0ba; --line-2:#ece2d1;
-  --navy:#243a5a; --navy-2:#1b2c45; --navy-ink:#fdf9f1;
-  --teal:#a9741f; --teal-strong:#8a5f18; --teal-tint:#f5e7cc; --teal-deep:#6f4c12;
-  --z-monitor:#456b8a; --z-monitor-2:#37576f; --z-monitor-tint:#e7eef3;
-  --z-read:#8a5824; --z-read-2:#6d451b; --z-read-tint:#f1e5cf;
-  --z-do:#b07a24; --z-do-2:#8c5f18; --z-do-tint:#f8edd4;
-  --good:#3f7d38; --good-tint:#e7f0e0; --good-line:#bcd8b1;
-  --warn:#c06a10; --warn-tint:#f8ead2; --warn-line:#eece9b;
-  --bad:#c0392b; --bad-tint:#f8e5e0; --bad-line:#eec5bd;
-  --info:#456b8a; --info-tint:#e7eef3;
+  --ground:#e9eef3; --surface:#fbfcfe; --surface-2:#eef2f6; --surface-3:#dbe3ea;
+  --ink:#22303c; --ink-2:#46586a; --ink-3:#5c6d7d; --ink-4:#7d8ea0;
+  --line:#d3dde5; --line-2:#e5ebf0;
+  --navy:#21344f; --navy-2:#182740; --navy-ink:#fbfcfe;
+  --teal:#b07a24; --teal-strong:#8f6118; --teal-tint:#f6ead2; --teal-deep:#734d13;
+  --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#e4ebf1;
+  --z-read:#97672c; --z-read-2:#79521f; --z-read-tint:#f2e7d3;
+  --z-do:#b87c20; --z-do-2:#96631a; --z-do-tint:#f7ecd6;
+  --good:#3f7d38; --good-tint:#e6efe0; --good-line:#bcd8b1;
+  --warn:#c06a10; --warn-tint:#f7ead2; --warn-line:#eece9b;
+  --bad:#c0392b; --bad-tint:#f7e4df; --bad-line:#eec5bd;
+  --info:#3f6486; --info-tint:#e4ebf1;
   --g-red:#c0392b; --g-amber:#a86c08; --g-green:#3a7a32;
-  --shadow:0 1px 2px rgba(60,40,20,.07),0 4px 14px rgba(60,40,20,.09);
-  --shadow-lg:0 4px 12px rgba(60,40,20,.12),0 18px 40px rgba(60,40,20,.16);
+  --shadow:0 1px 2px rgba(30,50,75,.08),0 4px 14px rgba(30,50,75,.10);
+  --shadow-lg:0 4px 12px rgba(30,50,75,.12),0 18px 40px rgba(30,50,75,.17);
 }
 :root[data-theme="dark"]{
-  --ground:#191410; --surface:#241d16; --surface-2:#2d241b; --surface-3:#392d21;
-  --ink:#f3e9db; --ink-2:#cebca4; --ink-3:#a8977e; --ink-4:#87755e;
-  --line:#3a2e22; --line-2:#2c2318;
-  --navy:#1c2a44; --navy-2:#141f34; --navy-ink:#f3e9db;
-  --teal:#d59a44; --teal-strong:#e0a659; --teal-tint:#3a2b15; --teal-deep:#c2872f;
-  --z-monitor:#7c9cbb; --z-monitor-2:#93b0cc; --z-monitor-tint:#1e2a36;
-  --z-read:#cd955a; --z-read-2:#dbab77; --z-read-tint:#332619;
-  --z-do:#d59a44; --z-do-2:#e5b064; --z-do-tint:#332711;
-  --good:#5fae4f; --good-tint:#18301a; --good-line:#2f5a34;
-  --warn:#e0a02a; --warn-tint:#332810; --warn-line:#5b471a;
-  --bad:#e2604e; --bad-tint:#331d18; --bad-line:#5a2e27;
-  --info:#7c9cbb; --info-tint:#1e2a36;
+  --ground:#1b2530; --surface:#25313d; --surface-2:#2d3a47; --surface-3:#384754;
+  --ink:#eef4f9; --ink-2:#c2cfda; --ink-3:#9eafbc; --ink-4:#7e8f9d;
+  --line:#3a4855; --line-2:#2c3844;
+  --navy:#22344c; --navy-2:#1a2940; --navy-ink:#eef4f9;
+  --teal:#d99a44; --teal-strong:#e6ac5e; --teal-tint:#3a2c15; --teal-deep:#c2872f;
+  --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#223243;
+  --z-read:#d1975a; --z-read-2:#e0ac78; --z-read-tint:#33291b;
+  --z-do:#d99a44; --z-do-2:#e8b268; --z-do-tint:#342a13;
+  --good:#5fae4f; --good-tint:#213a20; --good-line:#356a3a;
+  --warn:#e0a02a; --warn-tint:#3a2f14; --warn-line:#5f4a1c;
+  --bad:#e2604e; --bad-tint:#3a221c; --bad-line:#61332b;
+  --info:#7ea6c8; --info-tint:#223243;
   --g-red:#e2604e; --g-amber:#e6ac35; --g-green:#5fae4f;
-  --shadow:0 2px 6px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);
-  --shadow-lg:0 8px 20px rgba(0,0,0,.5),0 28px 56px rgba(0,0,0,.6);
+  --shadow:0 2px 6px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.42);
+  --shadow-lg:0 8px 20px rgba(0,0,0,.42),0 24px 50px rgba(0,0,0,.5);
 }
 
 *{box-sizing:border-box}
@@ -209,11 +210,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .il-dot{fill:var(--teal-strong);stroke:none}
 .il-warn{stroke:var(--warn)}
 .il-warn-f{fill:var(--warn);stroke:var(--warn)}
-.scene-text{font-family:var(--serif);font-size:19.5px;line-height:1.55;color:var(--ink);margin-top:12px;max-width:52ch}
+.scene-text{font-family:var(--scene);font-size:19px;line-height:1.6;color:var(--ink);margin-top:12px;max-width:54ch;letter-spacing:-.005em}
 .m-q{font-size:15px;font-weight:750;color:var(--ink-2);margin-top:22px}
 .opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .opt{text-align:left;display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);transition:background .12s,border-color .12s}
-.opt:hover{border-color:#cbbda0;background:var(--surface-2)}
+.opt:hover{border-color:#b9c6d2;background:var(--surface-2)}
 .opt .ob{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;display:grid;place-items:center}
 .opt .ob svg{width:17px;height:17px;color:#fff;opacity:0}
 .opt .ot{font-size:14.5px;line-height:1.42;color:var(--ink)}
