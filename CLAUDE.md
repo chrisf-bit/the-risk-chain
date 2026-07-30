@@ -152,6 +152,32 @@ When something looks wrong, grep for competing rules on the same selector.
   texture‑modified meal. Use royalty‑free/stock only; never real identifiable
   patients/records.
 
+## Frontline sim (`frontline.html`) — separate sim, same repo
+
+`frontline.html` is a SECOND, standalone sim (F1 "The Teatime Shift"; first‑person
+support worker; person **Daniel**), deployed from the same repo/Render at
+`<render-url>/frontline.html`. Independent of The Risk Chain — do **not** couple them.
+Same hard design rules apply (no em dashes, no handles, no visible scrollbars,
+selection = fill, don't lead the player).
+
+**Text / decision changes (2026‑07‑30):**
+- **N2 "The door" node** rewritten. The defensible answer is now fuller — *move the
+  housemate's toast out of Daniel's reach + answer on the **in‑room** intercom + keep
+  eyes on Daniel* — so it secures the food AND keeps line of sight, matching the F1 build
+  script's defensible option (the old version only used the intercom and left the food).
+  Consequence copy now states both Daniel's meal and the toast are set out of reach.
+- **Almost‑correct distractor:** N2's risky option secures the food too but still steps to
+  the door — the supervision break is the *only* thing separating it from correct — and it
+  is placed **first**, so "pick the top / most cautious option" no longer games the node.
+- **Option display order varied across nodes (N1–N5)** so the correct answer is not always
+  first. Scoring and outcomes key on the option **`id`** (`m={a:100,b:55,c:15}`, and
+  `resolve()` checks `N5==='a'||'b'`), **not** on array position — so reordering the
+  options array is display‑only and safe.
+- **Scenario body font** moved off the Palatino serif to a clean humanist sans via a new
+  `--scene` token (used by `.scene-text`).
+- Real scene photos are in `assets/frontline/scene-*.jpg` (re‑encoded small; preloaded).
+- **Colour palette is still being iterated — deliberately NOT recorded here yet.**
+
 ## The user
 
 Cares deeply about visual quality and gives direct, specific feedback. Prefers: action
