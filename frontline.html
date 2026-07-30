@@ -12,19 +12,32 @@
    two seats read as one product. Light is primary; a clinical
    dark variant sits on the theme toggle.
    ============================================================ */
+/* ------------------------------------------------------------------
+   Palette: "Hearth". Warmed to sit with the care-home photography,
+   amber lamplight, oak, cream walls, the worker's navy jumper, dusk
+   through the windows. Four zone identities layer on top:
+     chrome  = navy   (top bar: who/where you are)
+     monitor = slate  (instrument strip: things to watch)
+     read    = oak    (evidence rail: things to read)
+     do      = bronze (the scene + options: things to do; this is the
+                       app's default accent, so --teal carries it)
+   ------------------------------------------------------------------ */
 :root{
-  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f4f7f8; --surface-3:#e2e8ea;
-  --ink:#212b32; --ink-2:#425563; --ink-3:#4c5f6c; --ink-4:#66788a;
-  --line:#d8dde0; --line-2:#e8edee;
-  --navy:#003087; --navy-2:#002766; --navy-ink:#ffffff;
-  --teal:#005eb8; --teal-strong:#004a94; --teal-tint:#e6eff6; --teal-deep:#00437f;
-  --good:#007f3b; --good-tint:#e4f2ea; --good-line:#b3ddc4;
-  --warn:#a35c00; --warn-tint:#fbeeda; --warn-line:#f0d9a8;
-  --bad:#d5281b; --bad-tint:#fbe9e7; --bad-line:#f4c3bd;
-  --info:#005eb8; --info-tint:#e6eff6;
-  --g-red:#d5281b; --g-amber:#ffb81c; --g-green:#009639;
-  --shadow:0 1px 2px rgba(20,40,60,.06),0 4px 14px rgba(20,40,60,.08);
-  --shadow-lg:0 4px 12px rgba(20,40,60,.1),0 18px 40px rgba(20,40,60,.14);
+  --ground:#efe7d9; --surface:#fdf9f1; --surface-2:#f5eddf; --surface-3:#e7dcc7;
+  --ink:#2a2015; --ink-2:#584734; --ink-3:#6e5b45; --ink-4:#8b7761;
+  --line:#ddd0ba; --line-2:#ece2d1;
+  --navy:#243a5a; --navy-2:#1b2c45; --navy-ink:#fdf9f1;
+  --teal:#a9741f; --teal-strong:#8a5f18; --teal-tint:#f5e7cc; --teal-deep:#6f4c12;
+  --z-monitor:#456b8a; --z-monitor-2:#37576f; --z-monitor-tint:#e7eef3;
+  --z-read:#8a5824; --z-read-2:#6d451b; --z-read-tint:#f1e5cf;
+  --z-do:#b07a24; --z-do-2:#8c5f18; --z-do-tint:#f8edd4;
+  --good:#3f7d38; --good-tint:#e7f0e0; --good-line:#bcd8b1;
+  --warn:#c06a10; --warn-tint:#f8ead2; --warn-line:#eece9b;
+  --bad:#c0392b; --bad-tint:#f8e5e0; --bad-line:#eec5bd;
+  --info:#456b8a; --info-tint:#e7eef3;
+  --g-red:#c0392b; --g-amber:#a86c08; --g-green:#3a7a32;
+  --shadow:0 1px 2px rgba(60,40,20,.07),0 4px 14px rgba(60,40,20,.09);
+  --shadow-lg:0 4px 12px rgba(60,40,20,.12),0 18px 40px rgba(60,40,20,.16);
   --r:8px; --r-sm:5px; --r-lg:12px;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
   --sans:Arial,"Helvetica Neue",Helvetica,"Segoe UI",system-ui,-apple-system,sans-serif;
@@ -32,47 +45,56 @@
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --ground:#0e1a24; --surface:#17242f; --surface-2:#1e2d3a; --surface-3:#26333e;
-    --ink:#eef4f7; --ink-2:#b8c6d0; --ink-3:#93a4b0; --ink-4:#71838f;
-    --line:#2b3b47; --line-2:#233039;
-    --navy:#0a2a5c; --navy-2:#06274f; --navy-ink:#ffffff;
-    --teal:#41b6e6; --teal-strong:#2f9fd0; --teal-tint:#0f2c3f; --teal-deep:#1c72a8;
-    --good:#45c26e; --good-tint:#12301f; --good-line:#1f5c37;
-    --warn:#ffb81c; --warn-tint:#332a10; --warn-line:#5a4a1a;
-    --bad:#f0574a; --bad-tint:#331a17; --bad-line:#5a2b26;
-    --info:#41b6e6; --info-tint:#0f2c3f;
-    --g-red:#f0574a; --g-amber:#ffb81c; --g-green:#45c26e;
-    --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
-    --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
+    --ground:#191410; --surface:#241d16; --surface-2:#2d241b; --surface-3:#392d21;
+    --ink:#f3e9db; --ink-2:#cebca4; --ink-3:#a8977e; --ink-4:#87755e;
+    --line:#3a2e22; --line-2:#2c2318;
+    --navy:#1c2a44; --navy-2:#141f34; --navy-ink:#f3e9db;
+    --teal:#d59a44; --teal-strong:#e0a659; --teal-tint:#3a2b15; --teal-deep:#c2872f;
+    --z-monitor:#7c9cbb; --z-monitor-2:#93b0cc; --z-monitor-tint:#1e2a36;
+    --z-read:#cd955a; --z-read-2:#dbab77; --z-read-tint:#332619;
+    --z-do:#d59a44; --z-do-2:#e5b064; --z-do-tint:#332711;
+    --good:#5fae4f; --good-tint:#18301a; --good-line:#2f5a34;
+    --warn:#e0a02a; --warn-tint:#332810; --warn-line:#5b471a;
+    --bad:#e2604e; --bad-tint:#331d18; --bad-line:#5a2e27;
+    --info:#7c9cbb; --info-tint:#1e2a36;
+    --g-red:#e2604e; --g-amber:#e6ac35; --g-green:#5fae4f;
+    --shadow:0 2px 6px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);
+    --shadow-lg:0 8px 20px rgba(0,0,0,.5),0 28px 56px rgba(0,0,0,.6);
   }
 }
 :root[data-theme="light"]{
-  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f4f7f8; --surface-3:#e2e8ea;
-  --ink:#212b32; --ink-2:#425563; --ink-3:#4c5f6c; --ink-4:#66788a;
-  --line:#d8dde0; --line-2:#e8edee;
-  --navy:#003087; --navy-2:#002766;
-  --teal:#005eb8; --teal-strong:#004a94; --teal-tint:#e6eff6; --teal-deep:#00437f;
-  --good:#007f3b; --good-tint:#e4f2ea; --good-line:#b3ddc4;
-  --warn:#a35c00; --warn-tint:#fbeeda; --warn-line:#f0d9a8;
-  --bad:#d5281b; --bad-tint:#fbe9e7; --bad-line:#f4c3bd;
-  --info:#005eb8; --info-tint:#e6eff6;
-  --g-red:#d5281b; --g-amber:#ffb81c; --g-green:#009639;
-  --shadow:0 1px 2px rgba(20,40,60,.06),0 4px 14px rgba(20,40,60,.08);
-  --shadow-lg:0 4px 12px rgba(20,40,60,.1),0 18px 40px rgba(20,40,60,.14);
+  --ground:#efe7d9; --surface:#fdf9f1; --surface-2:#f5eddf; --surface-3:#e7dcc7;
+  --ink:#2a2015; --ink-2:#584734; --ink-3:#6e5b45; --ink-4:#8b7761;
+  --line:#ddd0ba; --line-2:#ece2d1;
+  --navy:#243a5a; --navy-2:#1b2c45; --navy-ink:#fdf9f1;
+  --teal:#a9741f; --teal-strong:#8a5f18; --teal-tint:#f5e7cc; --teal-deep:#6f4c12;
+  --z-monitor:#456b8a; --z-monitor-2:#37576f; --z-monitor-tint:#e7eef3;
+  --z-read:#8a5824; --z-read-2:#6d451b; --z-read-tint:#f1e5cf;
+  --z-do:#b07a24; --z-do-2:#8c5f18; --z-do-tint:#f8edd4;
+  --good:#3f7d38; --good-tint:#e7f0e0; --good-line:#bcd8b1;
+  --warn:#c06a10; --warn-tint:#f8ead2; --warn-line:#eece9b;
+  --bad:#c0392b; --bad-tint:#f8e5e0; --bad-line:#eec5bd;
+  --info:#456b8a; --info-tint:#e7eef3;
+  --g-red:#c0392b; --g-amber:#a86c08; --g-green:#3a7a32;
+  --shadow:0 1px 2px rgba(60,40,20,.07),0 4px 14px rgba(60,40,20,.09);
+  --shadow-lg:0 4px 12px rgba(60,40,20,.12),0 18px 40px rgba(60,40,20,.16);
 }
 :root[data-theme="dark"]{
-  --ground:#0e1a24; --surface:#17242f; --surface-2:#1e2d3a; --surface-3:#26333e;
-  --ink:#eef4f7; --ink-2:#b8c6d0; --ink-3:#93a4b0; --ink-4:#71838f;
-  --line:#2b3b47; --line-2:#233039;
-  --navy:#0a2a5c; --navy-2:#06274f;
-  --teal:#41b6e6; --teal-strong:#2f9fd0; --teal-tint:#0f2c3f; --teal-deep:#1c72a8;
-  --good:#45c26e; --good-tint:#12301f; --good-line:#1f5c37;
-  --warn:#ffb81c; --warn-tint:#332a10; --warn-line:#5a4a1a;
-  --bad:#f0574a; --bad-tint:#331a17; --bad-line:#5a2b26;
-  --info:#41b6e6; --info-tint:#0f2c3f;
-  --g-red:#f0574a; --g-amber:#ffb81c; --g-green:#45c26e;
-  --shadow:0 2px 6px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.4);
-  --shadow-lg:0 8px 20px rgba(0,0,0,.45),0 28px 56px rgba(0,0,0,.55);
+  --ground:#191410; --surface:#241d16; --surface-2:#2d241b; --surface-3:#392d21;
+  --ink:#f3e9db; --ink-2:#cebca4; --ink-3:#a8977e; --ink-4:#87755e;
+  --line:#3a2e22; --line-2:#2c2318;
+  --navy:#1c2a44; --navy-2:#141f34; --navy-ink:#f3e9db;
+  --teal:#d59a44; --teal-strong:#e0a659; --teal-tint:#3a2b15; --teal-deep:#c2872f;
+  --z-monitor:#7c9cbb; --z-monitor-2:#93b0cc; --z-monitor-tint:#1e2a36;
+  --z-read:#cd955a; --z-read-2:#dbab77; --z-read-tint:#332619;
+  --z-do:#d59a44; --z-do-2:#e5b064; --z-do-tint:#332711;
+  --good:#5fae4f; --good-tint:#18301a; --good-line:#2f5a34;
+  --warn:#e0a02a; --warn-tint:#332810; --warn-line:#5b471a;
+  --bad:#e2604e; --bad-tint:#331d18; --bad-line:#5a2e27;
+  --info:#7c9cbb; --info-tint:#1e2a36;
+  --g-red:#e2604e; --g-amber:#e6ac35; --g-green:#5fae4f;
+  --shadow:0 2px 6px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 20px rgba(0,0,0,.5),0 28px 56px rgba(0,0,0,.6);
 }
 
 *{box-sizing:border-box}
@@ -100,7 +122,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 /* ---------- Top bar (navy chrome) ---------- */
 .topbar{flex:none;background:var(--navy);color:var(--navy-ink);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:14px;padding:0 20px;height:54px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.01em;font-size:15px}
-.brand .emblem{width:30px;height:30px;border-radius:7px;background:linear-gradient(160deg,#2f7fe0,#005eb8);display:grid;place-items:center;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.brand .emblem{width:30px;height:30px;border-radius:7px;background:linear-gradient(160deg,#e0a659,#a9741f);display:grid;place-items:center;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
 .brand .emblem svg{width:18px;height:18px}
 .brand small{display:block;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 .tb-spacer{margin-left:auto}
@@ -123,9 +145,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* ---------- Landing ---------- */
 .landing{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:36px 22px;background:
-  radial-gradient(1100px 460px at 82% -8%,rgba(0,94,184,.10),transparent 60%),var(--ground)}
+  radial-gradient(1100px 460px at 82% -8%,rgba(176,122,36,.14),transparent 60%),var(--ground)}
 .land-card{max-width:760px;width:100%;text-align:left}
-.land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--teal-tint);color:var(--teal-strong);border:1px solid #cfe0f0;border-radius:100px;padding:6px 14px;font-size:12px;font-weight:750;letter-spacing:.04em}
+.land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--teal-tint);color:var(--teal-strong);border:1px solid #e6d3ad;border-radius:100px;padding:6px 14px;font-size:12px;font-weight:750;letter-spacing:.04em}
 .land-kicker svg{width:15px;height:15px}
 .land-card h1{font-size:44px;letter-spacing:-.025em;margin:20px 0 0;line-height:1.02}
 .land-card .lead{font-family:var(--serif);font-size:19px;line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:60ch}
@@ -143,20 +165,20 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* instrument cluster */
 .superstrip{flex:none;display:flex;align-items:stretch;gap:10px;margin-bottom:13px}
-.sv-clock{flex:none;background:var(--navy);color:var(--navy-ink);border-radius:var(--r);padding:9px 16px;display:flex;flex-direction:column;justify-content:center;min-width:118px}
+.sv-clock{flex:none;background:var(--z-monitor);color:#fff;border-radius:var(--r);padding:9px 16px;display:flex;flex-direction:column;justify-content:center;min-width:118px}
 .sv-clock .cl{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:1px}
 .sv-clock .cw{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
-.sv-gauge{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.sv-gauge{flex:1;min-width:0;background:var(--z-monitor-tint);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .sv-gauge svg{width:118px;height:auto;display:block}
 .sv-gauge .gv{transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1),stroke .3s}
 .sv-gauge .g-num{font-family:var(--sans);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
 .sv-gauge .g-cap{display:flex;flex-direction:column;align-items:center;line-height:1.1}
 .sv-gauge .g-cap b{font-size:12.5px;font-weight:800}
-.sv-gauge .g-cap span{font-size:9.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-4);margin-top:1px}
-.sv-stat{flex:1;display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:9px 15px;box-shadow:var(--shadow)}
+.sv-gauge .g-cap span{font-size:9.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--z-monitor-2);margin-top:1px}
+.sv-stat{flex:1;display:flex;align-items:center;gap:11px;background:var(--z-monitor-tint);border:1px solid var(--line);border-radius:var(--r);padding:9px 15px;box-shadow:var(--shadow)}
 .sv-stat .si{width:42px;height:42px;border-radius:9px;display:grid;place-items:center;flex:none}
 .sv-stat .si svg{width:24px;height:24px}
-.sv-stat .sl{font-size:11px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-4)}
+.sv-stat .sl{font-size:11px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--z-monitor-2)}
 .sv-stat .sv{font-size:14px;font-weight:750;margin-top:1px}
 .sv-ok .si{background:var(--good-tint);color:var(--good)} .sv-ok .sv{color:var(--good)}
 .sv-warn .si{background:var(--warn-tint);color:var(--warn)} .sv-warn .sv{color:var(--warn)}
@@ -191,7 +213,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .m-q{font-size:15px;font-weight:750;color:var(--ink-2);margin-top:22px}
 .opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .opt{text-align:left;display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);transition:background .12s,border-color .12s}
-.opt:hover{border-color:#b9c6cf;background:var(--surface-2)}
+.opt:hover{border-color:#cbbda0;background:var(--surface-2)}
 .opt .ob{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;display:grid;place-items:center}
 .opt .ob svg{width:17px;height:17px;color:#fff;opacity:0}
 .opt .ot{font-size:14.5px;line-height:1.42;color:var(--ink)}
@@ -227,15 +249,15 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* evidence rail */
 .evi{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
-.evi-head{flex:none;padding:14px 16px 10px;border-bottom:1px solid var(--line-2)}
+.evi-head{flex:none;padding:14px 16px 10px;border-bottom:1px solid var(--line-2);background:var(--z-read-tint)}
 .evi-head h3{font-size:14.5px;display:flex;align-items:center;gap:8px}
-.evi-head h3 svg{width:20px;height:20px;color:var(--teal-strong)}
+.evi-head h3 svg{width:20px;height:20px;color:var(--z-read)}
 .evi-head p{font-size:11.5px;color:var(--ink-4);margin-top:3px}
 .evi-scroll{flex:1;min-height:0;overflow:auto;padding:10px 12px}
-.evi-grp{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-4);padding:8px 4px 6px}
+.evi-grp{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--z-read-2);padding:8px 4px 6px}
 .doc-row{width:100%;text-align:left;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);border:1px solid transparent;background:none}
 .doc-row:hover{background:var(--surface-2);border-color:var(--line)}
-.doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--surface-3);color:var(--ink-2);display:grid;place-items:center;flex:none}
+.doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--z-read-tint);color:var(--z-read);display:grid;place-items:center;flex:none}
 .doc-row .di svg{width:23px;height:23px}
 .doc-row .dt{font-size:13px;font-weight:650;line-height:1.25;flex:1}
 .doc-row .dts{font-size:11px;color:var(--ink-4);margin-top:1px;font-weight:400}
@@ -248,7 +270,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);max-width:560px;width:100%;max-height:86vh;overflow:auto;animation:pop .18s}
 @keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
 .doc-modal .dm-top{display:flex;align-items:flex-start;gap:14px;padding:22px 24px 16px;border-bottom:1px solid var(--line-2)}
-.doc-modal .dm-emblem{width:46px;height:46px;border-radius:10px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;flex:none}
+.doc-modal .dm-emblem{width:46px;height:46px;border-radius:10px;background:var(--z-read-tint);color:var(--z-read);display:grid;place-items:center;flex:none}
 .doc-modal .dm-emblem svg{width:25px;height:25px}
 .doc-modal .dm-kick{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-4)}
 .doc-modal h3{font-size:19px;margin-top:3px}
@@ -258,7 +280,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .doc-body{padding:20px 24px 8px}
 .doc-body .dl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
 .doc-body .dl li{display:flex;gap:11px;font-size:14.5px;line-height:1.45;color:var(--ink)}
-.doc-body .dl li svg{width:17px;height:17px;color:var(--teal-strong);flex:none;margin-top:2px}
+.doc-body .dl li svg{width:17px;height:17px;color:var(--z-read);flex:none;margin-top:2px}
 .doc-note{font-family:var(--serif);font-size:15.5px;line-height:1.55;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-top:4px}
 .dm-prov{padding:14px 24px 22px;display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-4)}
 .dm-prov svg{width:15px;height:15px}
@@ -319,7 +341,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .ev .evk{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--teal-strong);background:var(--teal-tint);border-radius:4px;padding:2px 7px;flex:none}
 .ev .evd{color:var(--ink-3)}
 .crosstrack{margin-top:18px;background:linear-gradient(150deg,var(--navy),var(--navy-2));color:#eaf1fb;border-radius:var(--r-lg);padding:22px 24px;position:relative;overflow:hidden}
-.crosstrack .ct-k{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8fbff0}
+.crosstrack .ct-k{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#e2b877}
 .crosstrack h3{color:#fff;font-size:20px;margin-top:8px;letter-spacing:-.02em}
 .crosstrack p{font-size:14px;line-height:1.55;color:rgba(234,241,251,.85);margin-top:10px;max-width:64ch}
 .crosstrack .r-band{margin-top:12px}
@@ -330,8 +352,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .crosstrack.r-bad .r-chip{color:#ff9b8f;border-color:rgba(255,155,143,.46)}
 .crosstrack .ct-chain{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
 .ct-node{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:7px 13px;font-size:12.5px;font-weight:650}
-.ct-node svg{width:15px;height:15px;color:#8fbff0}
-.ct-arr{color:#6f92c4}
+.ct-node svg{width:15px;height:15px;color:#e2b877}
+.ct-arr{color:#b79256}
 .ct-actions{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
 .btn-navy{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:var(--r);padding:11px 18px;font-weight:700;font-size:14px}
 .btn-navy:hover{background:rgba(255,255,255,.2)}
@@ -468,10 +490,12 @@ const SCENES = {
 /* Real photos drop in here per scene; missing keys fall back to the SVG.
    pos = object-position, so the key content survives the fill-crop. */
 const SCENE_IMG = {
-  handover:{src:'assets/frontline/scene-handover.png', pos:'50% 30%'},
-  N1:{src:'assets/frontline/scene-plate.png', pos:'50% 56%'},
-  N2:{src:'assets/frontline/scene-door.png', pos:'50% 44%', glow:{left:'39%', top:'41%'}},
+  handover:{src:'assets/frontline/scene-handover.jpg', pos:'50% 30%'},
+  N1:{src:'assets/frontline/scene-plate.jpg', pos:'50% 56%'},
+  N2:{src:'assets/frontline/scene-door.jpg', pos:'50% 44%', glow:{left:'39%', top:'41%'}},
 };
+/* Warm the cache up front so scene transitions never wait on a download. */
+try{ Object.keys(SCENE_IMG).forEach(function(k){ var im=new Image(); im.src=SCENE_IMG[k].src; }); }catch(e){}
 function svgBanner(key,warn){
   var art=SCENES[key];
   if(!art) return '<div class="scene-illo'+(warn?' warn':'')+'"></div>';
@@ -482,7 +506,7 @@ function sceneIllo(key,warn){
   if(m){
     var glow = m.glow ? '<span class="buzz-glow" style="left:'+m.glow.left+';top:'+m.glow.top+'"></span>' : '';
     return '<div class="scene-illo has-img'+(warn?' warn':'')+'">'
-      +'<img'+(m.glow?' class="no-kb"':'')+' src="'+m.src+'" alt="" style="object-position:'+(m.pos||'50% 40%')+'" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
+      +'<img'+(m.glow?' class="no-kb"':'')+' src="'+m.src+'" alt="" loading="eager" decoding="async" fetchpriority="high" style="object-position:'+(m.pos||'50% 40%')+'" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
       + glow
       +'</div>';
   }
@@ -677,13 +701,13 @@ const NODES = {
     scene:'The door buzzer goes. A courier is at the door with a parcel. Daniel is mid-meal, and the housemate’s toast is still on the table.',
     q:'The buzzer is insistent. What do you do?',
     options:[
-      {id:'a',kind:'defensible',
-       text:'Answer on the intercom, ask them to leave the parcel, and stay with Daniel.',
-       tag:'good', note:'You answer on the intercom and ask them to leave the parcel by the door. Your attention stays on Daniel throughout.',
-       sup:''},
       {id:'b',kind:'risky',securesFood:true,
-       text:'Move the plates out of reach, then step to the door to sign for it.',
-       tag:'warn', note:'You move the plates out of reach, step to the door to sign, and come straight back to the table.',
+       text:'Move the housemate’s toast out of reach, then step across to the door to sign for the parcel.',
+       tag:'warn', note:'You set Daniel’s meal and his housemate’s toast out of reach, then step across to the door to sign for the parcel. For a few seconds your back is turned, then you come straight back and settle him to his meal again.',
+       sup:''},
+      {id:'a',kind:'defensible',securesFood:true,
+       text:'Move the housemate’s toast out of Daniel’s reach, answer on the in-room intercom, and keep your eyes on Daniel throughout.',
+       tag:'good', note:'You set Daniel’s meal and his housemate’s toast out of reach, answer on the in-room intercom, and ask them to leave the parcel by the door. Your line of sight never breaks, and you settle Daniel straight back to his meal.',
        sup:''},
       {id:'c',kind:'failing',cc:'CC1',
        text:'Leave the table and go to sort out the delivery.',
@@ -694,10 +718,6 @@ const NODES = {
     scene:'The on-call phone rings. It is a GP callback about a different person on the floor. Daniel is still eating.',
     q:'The phone keeps ringing. What do you do?',
     options:[
-      {id:'a',kind:'defensible',
-       text:'Leave it to ring and stay with Daniel.',
-       tag:'good', note:'You let it ring out and stay with Daniel, keeping the pace steady. You can return the call in a moment.',
-       sup:''},
       {id:'b',kind:'risky',
        text:'Take the call at the table while he eats.',
        tag:'warn', note:'You take the call at the table. Your pacing prompts stop while you talk, and Daniel eats a little faster.',
@@ -706,18 +726,22 @@ const NODES = {
        text:'Step away and take the call.',
        tag:'bad', note:'You turn away to take the call. For a while, no one is watching Daniel eat.',
        sup:''},
+      {id:'a',kind:'defensible',
+       text:'Leave it to ring and stay with Daniel.',
+       tag:'good', note:'You let it ring out and stay with Daniel, keeping the pace steady. You can return the call in a moment.',
+       sup:''},
     ]},
   N4:{ order:4, time:'17:54', label:'The housemate', icon:'users', inject:true,
     scene:'A housemate becomes distressed and starts to get up and leave the table. Daniel is still mid-meal beside you.',
     q:'Two people need you at once. What do you do?',
     options:[
-      {id:'a',kind:'defensible',escalation:true,
-       text:'Call up for the shift leader and hold Daniel’s meal until help comes.',
-       tag:'good', note:'You call for the shift leader and pause Daniel’s meal, staying between him and the food while you settle the housemate with a calm word.',
-       sup:''},
       {id:'b',kind:'risky',
        text:'Settle the housemate and mind Daniel yourself, moving between them.',
        tag:'warn', note:'You move quickly between the two of them. For seconds at a time, your attention is fully on the housemate.',
+       sup:''},
+      {id:'a',kind:'defensible',escalation:true,
+       text:'Call up for the shift leader and hold Daniel’s meal until help comes.',
+       tag:'good', note:'You call for the shift leader and pause Daniel’s meal, staying between him and the food while you settle the housemate with a calm word.',
        sup:''},
       {id:'c',kind:'failing',cc:'CC1',
        text:'Go to the housemate and leave Daniel to his meal.',
@@ -727,12 +751,12 @@ const NODES = {
   N5:{ order:5, time:'17:57', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
     q:'What do you do, right now?',
     options:[
-      {id:'a',kind:'defensible',
-       text:'Stop the meal, check him, and call for help.',
-       tag:'good'},
       {id:'b',kind:'risky',
        text:'Wait a moment to see if he clears it himself.',
        tag:'warn'},
+      {id:'a',kind:'defensible',
+       text:'Stop the meal, keep him upright, check him, and shout for help.',
+       tag:'good'},
       {id:'c',kind:'failing',
        text:'Offer him a drink to help wash it down.',
        tag:'bad'},
