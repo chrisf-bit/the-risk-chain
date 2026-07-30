@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teatime Shift — mobile concept</title>
+<style>
+/* ============================================================
+   MOBILE-FIRST design concept — "clean, glossy, soft-bold".
+   Standalone mockup of the N2 "door" scene, so the look can be
+   judged before folding it into the real app.
+   ============================================================ */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --ink:#20273b; --ink-2:#5c6684; --ink-3:#909abb;
+  --card:#ffffff;
+  --line:#e9ecf6;
+  --indigo-1:#7c86ff; --indigo-2:#5860e6; --indigo-ink:#4b52c9;
+  --teal-1:#3bd6c6; --teal-2:#16b7a8; --teal-soft:#e5faf7;
+  --amber-1:#ffc56d; --amber-2:#ff9f43; --amber-soft:#fff3e2;
+  --coral:#ff7d92; --coral-soft:#ffeef1;
+  --green:#2fc96b; --warn:#f5a623; --red:#ff6b6b;
+  --r:18px; --r-lg:26px; --r-sm:13px;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  --shadow:0 2px 6px rgba(45,55,95,.06),0 14px 30px rgba(45,55,95,.10);
+  --shadow-sm:0 1px 2px rgba(45,55,95,.05),0 6px 16px rgba(45,55,95,.08);
+}
+html,body{margin:0;height:100%;overflow-x:hidden}
+body{
+  font-family:var(--sans);color:var(--ink);
+  background:#eef1fb;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(420px 320px at 12% -4%,rgba(124,134,255,.28),transparent 60%),
+    radial-gradient(460px 340px at 100% 8%,rgba(59,214,198,.24),transparent 60%),
+    radial-gradient(520px 380px at 50% 108%,rgba(255,125,146,.20),transparent 60%);
+  background-attachment:fixed;
+}
+.phone{max-width:440px;margin:0 auto;min-height:100%;padding:0 16px 40px;position:relative;overflow-x:hidden}
+
+/* ---- sticky glassy header ---- */
+.hdr{position:sticky;top:0;z-index:20;margin:0 -16px;padding:13px 16px 11px;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(247,249,255,.72);backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.6)}
+.brand{min-width:0;flex:1;overflow:hidden}
+.brand b,.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-em{width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(155deg,var(--indigo-1),var(--indigo-2));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px rgba(88,96,230,.4)}
+.brand-em svg{width:21px;height:21px}
+.brand b{display:block;font-size:15px;font-weight:800;letter-spacing:-.01em}
+.brand span{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.clock{margin-left:auto;flex:none;text-align:right;padding-left:8px}
+.clock b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.clock span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---- stat rail (horizontal scroll) ---- */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:16px 0 4px}
+.stat{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:var(--r);padding:13px 14px;
+  box-shadow:var(--shadow-sm);border:1px solid rgba(255,255,255,.9)}
+.stat .txt{min-width:0}
+.stat .ring{position:relative;width:44px;height:44px;flex:none}
+.stat .ring svg{width:44px;height:44px;transform:rotate(-90deg)}
+.stat .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:800}
+.stat .sl{font-size:12px;font-weight:800;letter-spacing:-.01em}
+.stat .sc{font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+
+/* ---- scene hero card ---- */
+.scene{background:var(--card);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow);margin-top:8px;border:1px solid rgba(255,255,255,.9)}
+.hero{position:relative;height:230px}
+.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(18,20,40,.72),rgba(18,20,40,.05) 55%,transparent)}
+.hero .tag{position:absolute;left:16px;top:14px;z-index:2;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.22);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:6px 11px;border-radius:100px}
+.hero h1{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;margin:0;color:#fff;
+  font-size:26px;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.scene-body{padding:18px 18px 20px}
+.scene-body p{margin:0;font-size:16px;line-height:1.55;color:var(--ink-2)}
+.q{font-size:13px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--indigo-ink);margin:18px 0 0}
+
+/* ---- glossy choice buttons ---- */
+.opts{display:flex;flex-direction:column;gap:12px;margin-top:13px}
+.opt{display:flex;align-items:center;gap:13px;text-align:left;width:100%;cursor:pointer;
+  border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f7f8fe);
+  border-radius:var(--r);padding:15px 15px;box-shadow:var(--shadow-sm);
+  transition:transform .14s ease,box-shadow .14s ease}
+.opt:active{transform:scale(.985)}
+.opt .ic{width:38px;height:38px;flex:none;border-radius:11px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(155deg,var(--indigo-1),var(--indigo-2));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(88,96,230,.34)}
+.opt .ic svg{width:19px;height:19px}
+.opt .tx{font-size:15px;line-height:1.35;font-weight:600;color:var(--ink)}
+.opt.teal .ic{background:linear-gradient(155deg,var(--teal-1),var(--teal-2));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(22,183,168,.34)}
+.opt.violet .ic{background:linear-gradient(155deg,#b99cff,#8a6ef0);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(138,110,240,.34)}
+
+/* ---- records card ---- */
+.recs{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);margin-top:16px;padding:16px 16px 6px;border:1px solid rgba(255,255,255,.9)}
+.recs-h{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.recs-h .re{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(155deg,var(--teal-1),var(--teal-2));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(22,183,168,.3)}
+.recs-h .re svg{width:18px;height:18px}
+.recs-h b{font-size:16px;font-weight:800;letter-spacing:-.01em}
+.recs-h span{display:block;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.rrow{display:flex;align-items:center;gap:13px;padding:12px 4px;border-top:1px solid var(--line)}
+.rrow .di{width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:#eef0f8;color:var(--indigo-ink)}
+.rrow .di svg{width:20px;height:20px}
+.rrow .dt{font-size:14.5px;font-weight:700}
+.rrow .dt small{display:block;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.rrow .chev{margin-left:auto;color:var(--ink-3)}
+.rrow .chev svg{width:18px;height:18px}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="hdr">
+    <span class="brand-em"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.6-9.2-9C1.3 8 2.6 4.5 6 4.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.4 0 4.7 3.5 3.2 6.5C19 15.4 12 20 12 20z"/></svg></span>
+    <span class="brand"><b>PracticE Ready</b><span>The Teatime Shift</span></span>
+    <span class="clock"><b>17:47</b></span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#eef0f8" stroke-width="6"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--green)" stroke-width="6" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="88"/></svg><b style="color:var(--green)">22</b></div>
+      <div class="txt"><div class="sl">Low</div><div class="sc">Risk</div></div>
+    </div>
+    <div class="stat">
+      <div class="ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#eef0f8" stroke-width="6"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--green)" stroke-width="6" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="0"/></svg><b style="color:var(--green)">100</b></div>
+      <div class="txt"><div class="sl">Eyes on</div><div class="sc">Supervision</div></div>
+    </div>
+    <div class="stat">
+      <div class="ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#eef0f8" stroke-width="6"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--warn)" stroke-width="6" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="62"/></svg><b style="color:var(--warn)">45</b></div>
+      <div class="txt"><div class="sl">In reach</div><div class="sc">Access to food</div></div>
+    </div>
+    <div class="stat">
+      <div class="ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#eef0f8" stroke-width="6"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--green)" stroke-width="6" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="0"/></svg><b style="color:var(--green)">100</b></div>
+      <div class="txt"><div class="sl">Settled</div><div class="sc">Daniel</div></div>
+    </div>
+  </div>
+
+  <div class="scene">
+    <div class="hero">
+      <img src="assets/frontline/scene-door.jpg" alt="">
+      <span class="tag">Interruption · 17:47</span>
+      <h1>The door</h1>
+    </div>
+    <div class="scene-body">
+      <p>The door buzzer goes. A courier is at the door with a parcel. Daniel is mid-meal, and the housemate’s toast is still on the table.</p>
+      <p class="q">The buzzer is insistent. What do you do?</p>
+      <div class="opts">
+        <button class="opt teal">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="tx">Move the housemate’s toast out of reach, then step across to the door to sign for the parcel.</span>
+        </button>
+        <button class="opt">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="tx">Move the housemate’s toast out of Daniel’s reach, answer on the in-room intercom, and keep your eyes on Daniel throughout.</span>
+        </button>
+        <button class="opt violet">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="tx">Leave the table and go to sort out the delivery.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="recs">
+    <div class="recs-h">
+      <span class="re"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+      <span><b>Records &amp; tools</b><span>Opened 0 of 8 · tap to read &amp; judge</span></span>
+    </div>
+    <div class="rrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></svg></span><span class="dt">Mealtime plan<small>Toolkit TK6.4</small></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
+    <div class="rrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5"/></svg></span><span class="dt">Medication record<small>Daniel’s file</small></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
+    <div class="rrow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-4 3z"/></svg></span><span class="dt">Shift handover note<small>Daniel’s file</small></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div>
+  </div>
+
+</div>
+</body>
+</html>
