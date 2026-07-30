@@ -192,15 +192,17 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* scene grid: moment + evidence */
 .scene{flex:1;min-height:0;display:grid;grid-template-columns:1fr 322px;gap:16px}
-.moment{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:hidden;padding:22px 28px}
+.moment{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:hidden}
+.m-pad{flex:1;min-height:0;overflow:auto;padding:20px 30px 24px;display:flex;flex-direction:column}
 .m-scene-ic{width:52px;height:52px;border-radius:12px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:16px}
 .m-scene-ic svg{width:29px;height:29px}
 .moment .eyebrow{margin-bottom:2px}
 /* bespoke scene illustration (photos can drop into the same slot later) */
-.scene-illo{position:relative;flex:none;height:150px;border-radius:var(--r-lg);background:radial-gradient(135% 160% at 22% -12%,var(--teal-tint),var(--surface-2));border:1px solid var(--line);display:grid;place-items:center;margin-bottom:18px;overflow:hidden}
+.scene-illo{position:relative;flex:none;height:176px;background:radial-gradient(135% 160% at 22% -12%,var(--teal-tint),var(--surface-2));border-bottom:1px solid var(--line);display:grid;place-items:center;margin:0;overflow:hidden}
 .scene-illo.warn{background:radial-gradient(135% 160% at 22% -12%,var(--warn-tint),var(--surface-2))}
 .scene-illo svg{height:120px;width:auto;display:block}
-.scene-illo.has-img{flex:1 1 auto;min-height:96px;height:auto;padding:0;background:none;display:block;margin-bottom:16px}
+.scene-illo.has-img{flex:none;height:330px;min-height:330px;background:none;display:block;margin:0}
+.scene-illo.has-img::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(to top,rgba(10,16,24,.34),rgba(10,16,24,0));pointer-events:none}
 .scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block;transform-origin:55% 42%;animation:kenburns 24s ease-in-out infinite alternate;will-change:transform}
 @keyframes kenburns{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.18) translate(-2.2%,-1.6%)}}
 .scene-illo img.no-kb{animation:none}
@@ -218,13 +220,15 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .scene-text{font-family:var(--scene);font-size:19px;line-height:1.6;color:var(--ink);margin-top:12px;max-width:54ch;letter-spacing:-.005em}
 .m-q{font-size:15px;font-weight:750;color:var(--ink-2);margin-top:22px}
 .opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.opt{text-align:left;display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);transition:background .12s,border-color .12s}
-.opt:hover{border-color:#b9c6d2;background:var(--surface-2)}
-.opt .ob{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:1px;display:grid;place-items:center}
-.opt .ob svg{width:17px;height:17px;color:#fff;opacity:0}
-.opt .ot{font-size:14.5px;line-height:1.42;color:var(--ink)}
+.opt{position:relative;text-align:left;display:flex;gap:14px;align-items:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:0 1px 2px rgba(24,42,66,.05),0 2px 8px rgba(24,42,66,.06);transition:transform .13s ease,box-shadow .13s ease,border-color .13s ease;cursor:pointer}
+.opt:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 7px 20px rgba(24,42,66,.15)}
+.opt:active{transform:translateY(0);box-shadow:0 1px 3px rgba(24,42,66,.10)}
+.opt .ob{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--teal-strong);flex:none;display:grid;place-items:center;transition:background .13s,color .13s,border-color .13s}
+.opt:hover .ob{background:var(--teal);border-color:var(--teal);color:#fff}
+.opt .ob svg{width:17px;height:17px;opacity:1}
+.opt .ot{font-size:15px;line-height:1.42;color:var(--ink);font-weight:550;flex:1}
 .opt.sel{background:var(--teal-tint);border-color:var(--teal)}
-.opt.sel .ob{background:var(--teal);border-color:var(--teal)} .opt.sel .ob svg{opacity:1}
+.opt.sel .ob{background:var(--teal);border-color:var(--teal);color:#fff}
 
 /* confidence */
 .conf-wrap{margin:auto 0;max-width:46ch}
@@ -877,10 +881,12 @@ function viewHandover(){
     + '<div class="scene">'
     +   '<div class="moment">'
     +     sceneIllo('handover',false)
+    +     '<div class="m-pad">'
     +     '<span class="eyebrow">17:40 &middot; Handover</span>'
     +     '<p class="scene-text">You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.</p>'
     +     '<p class="m-q">Open anything on the right. When you are ready, go to the table.</p>'
     +     '<div class="opts"><div style="margin-top:8px"><button class="btn-go" data-act="to-table">'+svg(I.arrowR)+'Go to the table</button></div></div>'
+    +     '</div>'
     +   '</div>'
     +   eviRail()
     + '</div>'
@@ -905,14 +911,14 @@ function momentCard(node){
   if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
   else body=decideBody(node);
-  return '<div class="moment">'+sceneIllo(key,warnScene)+body+'</div>';
+  return '<div class="moment">'+sceneIllo(key,warnScene)+'<div class="m-pad">'+body+'</div></div>';
 }
 function decideBody(node){
   const sceneText = node.recog ? recogSceneText() : node.scene;
   const eyebrow = (node.inject?'Interruption &middot; ':'')+node.time+' &middot; '+node.label;
   const opts = node.options.map(function(o){
     return '<button class="opt" data-act="choose" data-opt="'+o.id+'">'
-      +'<span class="ob">'+svg(I.checkSmall)+'</span>'
+      +'<span class="ob">'+svg(I.arrowR)+'</span>'
       +'<span class="ot">'+o.text+'</span></button>';
   }).join('');
   return '<span class="eyebrow">'+eyebrow+'</span>'
