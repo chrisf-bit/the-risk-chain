@@ -27,7 +27,7 @@
 }
 html,body{margin:0;height:100%;overflow-x:hidden}
 body{
-  font-family:var(--sans);color:var(--ink);
+  font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5;font-weight:400;letter-spacing:-.003em;
   background:#eef1fb;
   -webkit-font-smoothing:antialiased;
   background-image:
@@ -49,22 +49,23 @@ body{
   background:linear-gradient(155deg,var(--indigo-1),var(--indigo-2));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px rgba(88,96,230,.4)}
 .brand-em svg{width:21px;height:21px}
-.brand b{display:block;font-size:15px;font-weight:800;letter-spacing:-.01em}
+.brand b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.01em}
 .brand span{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
 .clock{margin-left:auto;flex:none;text-align:right;padding-left:8px}
-.clock b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.clock b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
 .clock span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
 
 /* ---- stat rail (horizontal scroll) ---- */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:16px 0 4px}
-.stat{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:var(--r);padding:13px 14px;
-  box-shadow:var(--shadow-sm);border:1px solid rgba(255,255,255,.9)}
+.stat{display:flex;align-items:center;gap:13px;background:var(--card);border-radius:var(--r);padding:15px 15px;
+  box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.9)}
 .stat .txt{min-width:0}
-.stat .ring{position:relative;width:44px;height:44px;flex:none}
-.stat .ring svg{width:44px;height:44px;transform:rotate(-90deg)}
-.stat .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:800}
-.stat .sl{font-size:12px;font-weight:800;letter-spacing:-.01em}
-.stat .sc{font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.stat .ring{position:relative;width:52px;height:52px;flex:none}
+.stat .ring svg{width:52px;height:52px;transform:rotate(-90deg)}
+.stat .ring circle{stroke-width:7px}
+.stat .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:19px;font-weight:800;letter-spacing:-.02em}
+.stat .sl{font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.stat .sc{font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
 
 /* ---- scene hero card ---- */
 .scene{background:var(--card);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow);margin-top:8px;border:1px solid rgba(255,255,255,.9)}
@@ -73,12 +74,12 @@ body{
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(18,20,40,.72),rgba(18,20,40,.05) 55%,transparent)}
 .hero .tag{position:absolute;left:16px;top:14px;z-index:2;display:inline-flex;align-items:center;gap:6px;
   background:rgba(255,255,255,.22);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.35);
-  color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:6px 11px;border-radius:100px}
+  color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:100px}
 .hero h1{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;margin:0;color:#fff;
-  font-size:26px;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+  font-size:27px;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 12px rgba(0,0,0,.4)}
 .scene-body{padding:18px 18px 20px}
-.scene-body p{margin:0;font-size:16px;line-height:1.55;color:var(--ink-2)}
-.q{font-size:13px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--indigo-ink);margin:18px 0 0}
+.scene-body p{margin:0;font-size:16px;line-height:1.55;font-weight:400;color:var(--ink-2)}
+.q{font-size:15.5px;font-weight:600;letter-spacing:-.005em;color:var(--ink);margin:20px 0 2px}
 
 /* ---- glossy choice buttons ---- */
 .opts{display:flex;flex-direction:column;gap:12px;margin-top:13px}
@@ -91,9 +92,7 @@ body{
   background:linear-gradient(155deg,var(--indigo-1),var(--indigo-2));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(88,96,230,.34)}
 .opt .ic svg{width:19px;height:19px}
-.opt .tx{font-size:15px;line-height:1.35;font-weight:600;color:var(--ink)}
-.opt.teal .ic{background:linear-gradient(155deg,var(--teal-1),var(--teal-2));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(22,183,168,.34)}
-.opt.violet .ic{background:linear-gradient(155deg,#b99cff,#8a6ef0);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(138,110,240,.34)}
+.opt .tx{font-size:15px;line-height:1.4;font-weight:600;color:var(--ink)}
 
 /* ---- records card ---- */
 .recs{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);margin-top:16px;padding:16px 16px 6px;border:1px solid rgba(255,255,255,.9)}
@@ -101,14 +100,14 @@ body{
 .recs-h .re{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;
   background:linear-gradient(155deg,var(--teal-1),var(--teal-2));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 5px 12px rgba(22,183,168,.3)}
 .recs-h .re svg{width:18px;height:18px}
-.recs-h b{font-size:16px;font-weight:800;letter-spacing:-.01em}
-.recs-h span{display:block;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.recs-h b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.recs-h span{display:block;font-size:12px;color:var(--ink-3);font-weight:500}
 .rrow{display:flex;align-items:center;gap:13px;padding:12px 4px;border-top:1px solid var(--line)}
 .rrow .di{width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
   background:#eef0f8;color:var(--indigo-ink)}
 .rrow .di svg{width:20px;height:20px}
-.rrow .dt{font-size:14.5px;font-weight:700}
-.rrow .dt small{display:block;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.rrow .dt{font-size:15px;font-weight:600;color:var(--ink)}
+.rrow .dt small{display:block;font-size:12px;color:var(--ink-3);font-weight:500}
 .rrow .chev{margin-left:auto;color:var(--ink-3)}
 .rrow .chev svg{width:18px;height:18px}
 </style>
@@ -151,7 +150,7 @@ body{
       <p>The door buzzer goes. A courier is at the door with a parcel. Daniel is mid-meal, and the housemate’s toast is still on the table.</p>
       <p class="q">The buzzer is insistent. What do you do?</p>
       <div class="opts">
-        <button class="opt teal">
+        <button class="opt">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
           <span class="tx">Move the housemate’s toast out of reach, then step across to the door to sign for the parcel.</span>
         </button>
@@ -159,7 +158,7 @@ body{
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
           <span class="tx">Move the housemate’s toast out of Daniel’s reach, answer on the in-room intercom, and keep your eyes on Daniel throughout.</span>
         </button>
-        <button class="opt violet">
+        <button class="opt">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
           <span class="tx">Leave the table and go to sort out the delivery.</span>
         </button>
