@@ -15,21 +15,22 @@
 /* ------------------------------------------------------------------
    Palette: "Dusk". A calm blue-grey backdrop drawn from the windows
    at teatime, so the warm care-home photography (amber lamplight, oak,
-   the worker's navy jumper) glows against it. Four zone identities:
-     chrome  = navy   (top bar: who/where you are)
-     monitor = slate  (instrument strip: things to watch)
-     read    = oak    (evidence rail: things to read)
-     do      = amber  (the scene + options: things to do; carried by --teal)
-   Dark mode is a dim slate, deliberately not black.
+   the worker's navy jumper) glows against it. Four zone identities,
+   each its own surface + accent so no two panels read alike:
+     chrome  = navy       (top bar: who/where you are)
+     monitor = slate      (instrument strip, white tiles: things to watch)
+     read    = sage-green (evidence rail: things to read)
+     do      = amber      (the scene + options: things to do; via --teal)
+   Cards lift off the ground on real elevation, in light and dark.
    ------------------------------------------------------------------ */
 :root{
-  --ground:#e9eef3; --surface:#fbfcfe; --surface-2:#eef2f6; --surface-3:#dbe3ea;
+  --ground:#e9eef3; --surface:#ffffff; --surface-2:#eef2f6; --surface-3:#dbe3ea;
   --ink:#22303c; --ink-2:#46586a; --ink-3:#5c6d7d; --ink-4:#7d8ea0;
   --line:#d3dde5; --line-2:#e5ebf0;
-  --navy:#21344f; --navy-2:#182740; --navy-ink:#fbfcfe;
+  --navy:#21344f; --navy-2:#182740; --navy-ink:#ffffff;
   --teal:#b07a24; --teal-strong:#8f6118; --teal-tint:#f6ead2; --teal-deep:#734d13;
-  --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#e4ebf1;
-  --z-read:#97672c; --z-read-2:#79521f; --z-read-tint:#f2e7d3;
+  --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#ffffff;
+  --z-read:#4f7a58; --z-read-2:#3d6446; --z-read-tint:#e7efe7;
   --z-do:#b87c20; --z-do-2:#96631a; --z-do-tint:#f7ecd6;
   --good:#3f7d38; --good-tint:#e6efe0; --good-line:#bcd8b1;
   --warn:#c06a10; --warn-tint:#f7ead2; --warn-line:#eece9b;
@@ -46,31 +47,31 @@
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --ground:#1b2530; --surface:#25313d; --surface-2:#2d3a47; --surface-3:#384754;
+    --ground:#141d26; --surface:#283644; --surface-2:#31404e; --surface-3:#3c4c5a;
     --ink:#eef4f9; --ink-2:#c2cfda; --ink-3:#9eafbc; --ink-4:#7e8f9d;
-    --line:#3a4855; --line-2:#2c3844;
-    --navy:#22344c; --navy-2:#1a2940; --navy-ink:#eef4f9;
+    --line:#3d4c59; --line-2:#31404d;
+    --navy:#243851; --navy-2:#1a2940; --navy-ink:#eef4f9;
     --teal:#d99a44; --teal-strong:#e6ac5e; --teal-tint:#3a2c15; --teal-deep:#c2872f;
-    --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#223243;
-    --z-read:#d1975a; --z-read-2:#e0ac78; --z-read-tint:#33291b;
+    --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#2c3f52;
+    --z-read:#8fbf95; --z-read-2:#a6cfab; --z-read-tint:#243029;
     --z-do:#d99a44; --z-do-2:#e8b268; --z-do-tint:#342a13;
     --good:#5fae4f; --good-tint:#213a20; --good-line:#356a3a;
     --warn:#e0a02a; --warn-tint:#3a2f14; --warn-line:#5f4a1c;
     --bad:#e2604e; --bad-tint:#3a221c; --bad-line:#61332b;
-    --info:#7ea6c8; --info-tint:#223243;
+    --info:#7ea6c8; --info-tint:#2c3f52;
     --g-red:#e2604e; --g-amber:#e6ac35; --g-green:#5fae4f;
     --shadow:0 2px 6px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.42);
     --shadow-lg:0 8px 20px rgba(0,0,0,.42),0 24px 50px rgba(0,0,0,.5);
   }
 }
 :root[data-theme="light"]{
-  --ground:#e9eef3; --surface:#fbfcfe; --surface-2:#eef2f6; --surface-3:#dbe3ea;
+  --ground:#e9eef3; --surface:#ffffff; --surface-2:#eef2f6; --surface-3:#dbe3ea;
   --ink:#22303c; --ink-2:#46586a; --ink-3:#5c6d7d; --ink-4:#7d8ea0;
   --line:#d3dde5; --line-2:#e5ebf0;
-  --navy:#21344f; --navy-2:#182740; --navy-ink:#fbfcfe;
+  --navy:#21344f; --navy-2:#182740; --navy-ink:#ffffff;
   --teal:#b07a24; --teal-strong:#8f6118; --teal-tint:#f6ead2; --teal-deep:#734d13;
-  --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#e4ebf1;
-  --z-read:#97672c; --z-read-2:#79521f; --z-read-tint:#f2e7d3;
+  --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#ffffff;
+  --z-read:#4f7a58; --z-read-2:#3d6446; --z-read-tint:#e7efe7;
   --z-do:#b87c20; --z-do-2:#96631a; --z-do-tint:#f7ecd6;
   --good:#3f7d38; --good-tint:#e6efe0; --good-line:#bcd8b1;
   --warn:#c06a10; --warn-tint:#f7ead2; --warn-line:#eece9b;
@@ -81,18 +82,18 @@
   --shadow-lg:0 4px 12px rgba(30,50,75,.12),0 18px 40px rgba(30,50,75,.17);
 }
 :root[data-theme="dark"]{
-  --ground:#1b2530; --surface:#25313d; --surface-2:#2d3a47; --surface-3:#384754;
+  --ground:#141d26; --surface:#283644; --surface-2:#31404e; --surface-3:#3c4c5a;
   --ink:#eef4f9; --ink-2:#c2cfda; --ink-3:#9eafbc; --ink-4:#7e8f9d;
-  --line:#3a4855; --line-2:#2c3844;
-  --navy:#22344c; --navy-2:#1a2940; --navy-ink:#eef4f9;
+  --line:#3d4c59; --line-2:#31404d;
+  --navy:#243851; --navy-2:#1a2940; --navy-ink:#eef4f9;
   --teal:#d99a44; --teal-strong:#e6ac5e; --teal-tint:#3a2c15; --teal-deep:#c2872f;
-  --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#223243;
-  --z-read:#d1975a; --z-read-2:#e0ac78; --z-read-tint:#33291b;
+  --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#2c3f52;
+  --z-read:#8fbf95; --z-read-2:#a6cfab; --z-read-tint:#243029;
   --z-do:#d99a44; --z-do-2:#e8b268; --z-do-tint:#342a13;
   --good:#5fae4f; --good-tint:#213a20; --good-line:#356a3a;
   --warn:#e0a02a; --warn-tint:#3a2f14; --warn-line:#5f4a1c;
   --bad:#e2604e; --bad-tint:#3a221c; --bad-line:#61332b;
-  --info:#7ea6c8; --info-tint:#223243;
+  --info:#7ea6c8; --info-tint:#2c3f52;
   --g-red:#e2604e; --g-amber:#e6ac35; --g-green:#5fae4f;
   --shadow:0 2px 6px rgba(0,0,0,.3),0 10px 26px rgba(0,0,0,.42);
   --shadow-lg:0 8px 20px rgba(0,0,0,.42),0 24px 50px rgba(0,0,0,.5);
@@ -249,7 +250,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .micro-actions{margin-top:26px}
 
 /* evidence rail */
-.evi{min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
+.evi{min-height:0;display:flex;flex-direction:column;background:var(--z-read-tint);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
 .evi-head{flex:none;padding:14px 16px 10px;border-bottom:1px solid var(--line-2);background:var(--z-read-tint)}
 .evi-head h3{font-size:14.5px;display:flex;align-items:center;gap:8px}
 .evi-head h3 svg{width:20px;height:20px;color:var(--z-read)}
@@ -258,7 +259,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .evi-grp{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--z-read-2);padding:8px 4px 6px}
 .doc-row{width:100%;text-align:left;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:var(--r-sm);border:1px solid transparent;background:none}
 .doc-row:hover{background:var(--surface-2);border-color:var(--line)}
-.doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--z-read-tint);color:var(--z-read);display:grid;place-items:center;flex:none}
+.doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--surface);color:var(--z-read);display:grid;place-items:center;flex:none}
 .doc-row .di svg{width:23px;height:23px}
 .doc-row .dt{font-size:13px;font-weight:650;line-height:1.25;flex:1}
 .doc-row .dts{font-size:11px;color:var(--ink-4);margin-top:1px;font-weight:400}
