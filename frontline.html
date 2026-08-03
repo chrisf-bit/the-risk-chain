@@ -422,6 +422,18 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 /* real video band (fills a 16:9 slot, corners clipped by the parent card) */
 .vband{position:relative;width:100%;aspect-ratio:16/9;background:#0b1016;border-bottom:1px solid var(--line);overflow:hidden}
 .vplayer{width:100%;height:100%;display:block;object-fit:cover;background:#0b1016}
+/* gated intro video in the disclaimer lightbox */
+.disc-vband,.disc-video{background:#0b1016}
+.disc-playoverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,16,22,.5);color:#fff;border:0;font-size:var(--t-body);font-weight:700;cursor:pointer}
+.disc-playoverlay[hidden]{display:none}
+.disc-playoverlay span{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.disc-playoverlay svg{width:30px;height:30px}
+.disc-playoverlay:hover span{background:rgba(255,255,255,.26)}
+.disc-progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.18)}
+.disc-progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .2s linear}
+.disc-wait{padding:14px 26px 20px;text-align:center;font-size:var(--t-sm);color:var(--ink-4)}
+.disc-gate{display:none}
+.disc-gate.show{display:block}
 
 /* disclaimer lightbox */
 .disc-modal{max-width:540px}
@@ -1004,21 +1016,58 @@ function render(){
   else if(S.stage==='node') view=viewScene();
   else if(S.stage==='outcome') view=viewOutcome();
   else if(S.stage==='debrief') view=viewDebrief();
-  const disc = (S.stage==='landing' && !disclaimerAcked()) ? disclaimerModal() : '';
-  app.innerHTML = topbar() + view + disc + (S.modal?docModal(S.modal.id):'');
+  const showDisc = (S.stage==='landing' && !disclaimerAcked());
+  app.innerHTML = topbar() + view + (showDisc?disclaimerModal():'') + (S.modal?docModal(S.modal.id):'');
   window.scrollTo(0,0);
+  if(showDisc){ setupDisclaimer(); }
 }
 /* Disclaimer lightbox: the SME-owned caveat, shown once per browser and
    requiring acknowledgement before the shift can begin. */
-function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v3')==='1'; }catch(e){ return true; } }
-function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v3','1'); }catch(e){} render(); }
+function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v4')==='1'; }catch(e){ return true; } }
+function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v4','1'); }catch(e){} render(); }
 function disclaimerModal(){
   return '<div class="backdrop disc-back"><div class="modal disc-modal" data-stop="1">'
-    +videoBand('assets/frontline/intro.mp4')
-    +'<div class="disc-top"><span class="disc-emblem">'+svg(I.info)+'</span><h3>Before you begin</h3></div>'
-    +'<div class="disc-body"><p>'+SIM_CAVEAT+'</p></div>'
-    +'<div class="disc-actions"><button class="btn-go" data-act="ack-disclaimer">'+svg(I.check)+'I understand &mdash; continue</button></div>'
+    +'<div class="vband disc-vband">'
+    +  '<video class="vplayer disc-video" src="assets/frontline/intro.mp4" playsinline preload="auto"></video>'
+    +  '<button class="disc-playoverlay" type="button" hidden><span>'+svg(I.play)+'</span>Play introduction</button>'
+    +  '<div class="disc-progress"><i></i></div>'
+    +'</div>'
+    +'<div class="disc-wait">Please watch the introduction to continue.</div>'
+    +'<div class="disc-gate">'
+    +  '<div class="disc-top"><span class="disc-emblem">'+svg(I.info)+'</span><h3>Before you begin</h3></div>'
+    +  '<div class="disc-body"><p>'+SIM_CAVEAT+'</p></div>'
+    +  '<div class="disc-actions"><button class="btn-go" data-act="ack-disclaimer">'+svg(I.check)+'I understand &mdash; continue</button></div>'
+    +'</div>'
     +'</div></div>';
+}
+/* Autoplay the intro; unlock the caveat + acknowledge button only once the
+   learner has watched ~80%. Falls back to a Play button if the browser blocks
+   autoplaying sound, and never traps the learner if the video can't load. */
+function setupDisclaimer(){
+  var v=document.querySelector('.disc-video'); if(!v) return;
+  var gate=document.querySelector('.disc-gate');
+  var wait=document.querySelector('.disc-wait');
+  var overlay=document.querySelector('.disc-playoverlay');
+  var bar=document.querySelector('.disc-progress > i');
+  var revealed=false;
+  function reveal(){ if(revealed) return; revealed=true; if(gate) gate.classList.add('show'); if(wait) wait.style.display='none'; }
+  function showOverlay(){ if(overlay) overlay.removeAttribute('hidden'); }
+  function hideOverlay(){ if(overlay) overlay.setAttribute('hidden',''); }
+  v.addEventListener('timeupdate', function(){
+    if(v.duration && !isNaN(v.duration)){
+      var f=v.currentTime/v.duration;
+      if(bar) bar.style.width=Math.min(100,f*100)+'%';
+      if(f>=0.8) reveal();
+    }
+  });
+  v.addEventListener('ended', reveal);
+  v.addEventListener('error', reveal);
+  v.addEventListener('play', hideOverlay);
+  if(overlay){ overlay.addEventListener('click', function(){ hideOverlay(); v.play(); }); }
+  var p=v.play();
+  if(p && p.catch){ p.catch(showOverlay); }
+  setTimeout(function(){ if(v.paused){ showOverlay(); } }, 1200);          // autoplay blocked → offer Play
+  setTimeout(function(){ if(!revealed && (!v.duration || isNaN(v.duration))){ reveal(); } }, 40000); // safety net
 }
 
 function topbar(){
