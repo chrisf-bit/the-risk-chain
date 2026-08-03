@@ -29,6 +29,7 @@
   --line:#d6dfe8; --line-2:#e8edf2;
   --navy:#22374f; --navy-2:#15263b; --navy-ink:#ffffff;
   --teal:#a9741f; --teal-strong:#8a5f18; --teal-tint:#faecd2; --teal-deep:#6f4c12;
+  --go:#2e7a35; --go-sh:#1b5223; --kicker-bg:#faecd2; --kicker-line:#e6d3ad;
   --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#ffffff;
   --z-read:#1a6a72; --z-read-2:#155158; --z-read-tint:#e5f1f1; --chip-bg:#1a6a72; --chip-ink:#ffffff; --read-head:#1c6d75; --read-head-2:#14535a;
   --z-do:#b87c20; --z-do-2:#96631a; --z-do-tint:#faecd2;
@@ -53,7 +54,7 @@
   /* Type scale: nine deliberate steps. Every font-size below snaps to one
      of these, so the interface reads as one system, not ad-hoc values. */
   --t-hero:38px; --t-h1:28px; --t-h2:21px; --t-h3:17px;
-  --t-body:15px; --t-sm:13px; --t-cap:12px; --t-eyebrow:11px; --t-nano:9.5px;
+  --t-body:15.5px; --t-sm:14px; --t-cap:13px; --t-eyebrow:11.5px; --t-nano:10px;
 }
 @media (prefers-color-scheme:dark){
   :root{
@@ -61,7 +62,8 @@
     --ink:#eef4f9; --ink-2:#c4d0db; --ink-3:#9fb0bd; --ink-4:#82929f;
     --line:#3c4a58; --line-2:#313e4b;
     --navy:#233a54; --navy-2:#152840; --navy-ink:#eef4f9;
-    --teal:#e0a24a; --teal-strong:#ecb469; --teal-tint:#3a2c15; --teal-deep:#c2872f;
+    --teal:#e0a24a; --teal-strong:#ecb469; --teal-tint:#332d22; --teal-deep:#c2872f;
+  --go:#2b7d3b; --go-sh:#123f1c; --kicker-bg:rgba(224,162,74,.13); --kicker-line:rgba(224,162,74,.32);
     --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#2c3f52;
     --z-read:#5ac0c7; --z-read-2:#7bd3d9; --z-read-tint:#153230; --chip-bg:#3ba7af; --chip-ink:#0b2321; --read-head:#17656d; --read-head-2:#0f4a51;
     --z-do:#e0a24a; --z-do-2:#eab868; --z-do-tint:#342a13;
@@ -81,6 +83,7 @@
   --line:#d6dfe8; --line-2:#e8edf2;
   --navy:#22374f; --navy-2:#15263b; --navy-ink:#ffffff;
   --teal:#a9741f; --teal-strong:#8a5f18; --teal-tint:#faecd2; --teal-deep:#6f4c12;
+  --go:#2e7a35; --go-sh:#1b5223; --kicker-bg:#faecd2; --kicker-line:#e6d3ad;
   --z-monitor:#3f6486; --z-monitor-2:#33526e; --z-monitor-tint:#ffffff;
   --z-read:#1a6a72; --z-read-2:#155158; --z-read-tint:#e5f1f1; --chip-bg:#1a6a72; --chip-ink:#ffffff; --read-head:#1c6d75; --read-head-2:#14535a;
   --z-do:#b87c20; --z-do-2:#96631a; --z-do-tint:#faecd2;
@@ -98,7 +101,8 @@
   --ink:#eef4f9; --ink-2:#c4d0db; --ink-3:#9fb0bd; --ink-4:#82929f;
   --line:#3c4a58; --line-2:#313e4b;
   --navy:#233a54; --navy-2:#152840; --navy-ink:#eef4f9;
-  --teal:#e0a24a; --teal-strong:#ecb469; --teal-tint:#3a2c15; --teal-deep:#c2872f;
+  --teal:#e0a24a; --teal-strong:#ecb469; --teal-tint:#332d22; --teal-deep:#c2872f;
+  --go:#2b7d3b; --go-sh:#123f1c; --kicker-bg:rgba(224,162,74,.13); --kicker-line:rgba(224,162,74,.32);
   --z-monitor:#7ea6c8; --z-monitor-2:#98b7d2; --z-monitor-tint:#2c3f52;
   --z-read:#5ac0c7; --z-read-2:#7bd3d9; --z-read-tint:#153230; --chip-bg:#3ba7af; --chip-ink:#0b2321; --read-head:#17656d; --read-head-2:#0f4a51;
   --z-do:#e0a24a; --z-do-2:#eab868; --z-do-tint:#342a13;
@@ -148,9 +152,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* ---------- Generic ---------- */
 .eyebrow{font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong)}
-.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--good);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 3px 0 #00602c}
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--go);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 3px 0 var(--go-sh)}
 .btn-go:hover{filter:brightness(1.05)}
-.btn-go:active{transform:translateY(2px);box-shadow:0 1px 0 #00602c}
+.btn-go:active{transform:translateY(2px);box-shadow:0 1px 0 var(--go-sh)}
 .btn-go svg{width:18px;height:18px}
 .btn-go[disabled]{background:var(--surface-3);color:var(--ink-4);box-shadow:none;cursor:not-allowed}
 .btn-ghost{display:inline-flex;align-items:center;gap:9px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 18px;font-weight:700;font-size:var(--t-body)}
@@ -162,7 +166,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .landing{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:36px 22px;background:
   radial-gradient(1100px 460px at 82% -8%,rgba(176,122,36,.14),transparent 60%),var(--ground)}
 .land-card{max-width:760px;width:100%;text-align:left}
-.land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--teal-tint);color:var(--teal-strong);border:1px solid #e6d3ad;border-radius:100px;padding:6px 14px;font-size:var(--t-cap);font-weight:750;letter-spacing:.04em}
+.land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line);border-radius:100px;padding:6px 14px;font-size:var(--t-cap);font-weight:750;letter-spacing:.04em}
 .land-kicker svg{width:15px;height:15px}
 .land-card h1{font-size:var(--t-hero);letter-spacing:-.025em;margin:20px 0 0;line-height:1.02}
 .land-card .lead{font-family:var(--serif);font-size:var(--t-h3);line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:60ch}
@@ -170,8 +174,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .land-facts .lf{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
 .land-facts .lf .lf-ic{width:48px;height:48px;border-radius:11px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:12px}
 .land-facts .lf .lf-ic svg{width:27px;height:27px}
-.land-facts .lf h4{font-size:var(--t-body)}
-.land-facts .lf p{font-size:var(--t-cap);color:var(--ink-3);margin-top:3px;line-height:1.4}
+.land-facts .lf h4{font-size:var(--t-h3)}
+.land-facts .lf p{font-size:var(--t-sm);color:var(--ink-3);margin-top:5px;line-height:1.45}
 .land-actions{margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .land-note{font-size:var(--t-cap);color:var(--ink-4);max-width:44ch}
 
@@ -279,7 +283,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--chip-bg);color:var(--chip-ink);display:grid;place-items:center;flex:none}
 .doc-row .di svg{width:23px;height:23px}
 .doc-row .dt{font-size:var(--t-sm);font-weight:650;line-height:1.25;flex:1}
-.doc-row .dts{font-size:var(--t-eyebrow);color:var(--ink-4);margin-top:1px;font-weight:400}
+.doc-row .dts{display:block;font-size:var(--t-eyebrow);color:var(--ink-4);margin-top:2px;font-weight:400}
 .doc-row .dv{flex:none;width:18px;height:18px;color:var(--good)}
 .doc-row.opened .di{background:var(--good);color:#fff}
 
@@ -377,6 +381,57 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .btn-navy{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:var(--r);padding:11px 18px;font-weight:700;font-size:var(--t-body)}
 .btn-navy:hover{background:rgba(255,255,255,.2)}
 .btn-navy svg{width:16px;height:16px}
+
+/* Motion polish: soft, brief entrances with an ease-out that settles like a
+   spring. Disabled entirely for anyone who prefers reduced motion. */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes settle{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:none}}
+  .land-card,.oc-card,.db-wrap,.moment{animation:settle .42s cubic-bezier(.22,.61,.36,1) both}
+  .opt{animation:rise .34s cubic-bezier(.22,.61,.36,1) both}
+  .opt:nth-child(1){animation-delay:.04s}
+  .opt:nth-child(2){animation-delay:.09s}
+  .opt:nth-child(3){animation-delay:.14s}
+  .oc-steps .os{animation:rise .32s ease both}
+  .oc-steps .os:nth-child(2){animation-delay:.05s}
+  .oc-steps .os:nth-child(3){animation-delay:.10s}
+  .oc-steps .os:nth-child(4){animation-delay:.15s}
+  .oc-steps .os:nth-child(5){animation-delay:.20s}
+  .oc-steps .os:nth-child(6){animation-delay:.25s}
+  .conf-pill{animation:rise .3s cubic-bezier(.22,.61,.36,1) both}
+  .conf-pill:nth-child(2){animation-delay:.06s} .conf-pill:nth-child(3){animation-delay:.12s}
+  .oc-badge,.r-chip{animation:settle .5s cubic-bezier(.22,.61,.36,1) both}
+}
+
+/* SME-owned learning caveat (landing + emergency outcomes) */
+.caveat{display:flex;gap:10px;align-items:flex-start;margin-top:22px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);font-size:var(--t-cap);color:var(--ink-3);line-height:1.5}
+.caveat svg{width:17px;height:17px;color:var(--ink-4);flex:none;margin-top:1px}
+/* fatal-path aftermath lines */
+.aftermath{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.aftermath .af-line{display:flex;gap:11px;align-items:flex-start;font-size:var(--t-sm);color:var(--ink-2);line-height:1.5}
+.aftermath .af-line svg{width:18px;height:18px;color:var(--teal-strong);flex:none;margin-top:2px}
+/* talking-head video placeholder (shows the real footprint before clips exist) */
+.vslot{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r-lg);border:2px dashed var(--line);background:linear-gradient(180deg,var(--surface-2),var(--surface-3));display:grid;place-items:center;overflow:hidden}
+.vslot.band{border:0;border-bottom:1px solid var(--line);border-radius:0}
+.vslot-in{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;padding:14px}
+.vslot-play{width:58px;height:58px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--teal-strong);box-shadow:var(--shadow)}
+.vslot-play svg{width:30px;height:30px}
+.vslot-label{font-size:var(--t-body);font-weight:700;color:var(--ink-2)}
+.vslot-dim{font-size:var(--t-cap);color:var(--ink-4);font-family:var(--mono);letter-spacing:.02em}
+.vhero{max-width:520px;margin-bottom:18px}
+/* real video band (fills a 16:9 slot, corners clipped by the parent card) */
+.vband{position:relative;width:100%;aspect-ratio:16/9;background:#0b1016;border-bottom:1px solid var(--line);overflow:hidden}
+.vplayer{width:100%;height:100%;display:block;object-fit:cover;background:#0b1016}
+
+/* disclaimer lightbox */
+.disc-modal{max-width:540px}
+.disc-top{display:flex;align-items:center;gap:13px;padding:24px 26px 4px}
+.disc-emblem{width:44px;height:44px;border-radius:11px;background:var(--z-read-tint);color:var(--z-read);display:grid;place-items:center;flex:none}
+.disc-emblem svg{width:24px;height:24px}
+.disc-modal h3{font-size:var(--t-h2)}
+.disc-body{padding:10px 26px 4px}
+.disc-body p{font-size:var(--t-h3);line-height:1.6;color:var(--ink)}
+.disc-actions{padding:18px 26px 24px}
 
 /* targeted toolkit rows (debrief) */
 .tk-list{display:flex;flex-direction:column;gap:9px;margin-top:14px}
@@ -524,6 +579,8 @@ const SCENE_IMG = {
   N4:{src:'assets/frontline/scene-housemate.jpg', pos:'50% 40%'},
   N5:{src:'assets/frontline/scene-signs.jpg', pos:'50% 30%'},
 };
+/* The emergency node reuses the emerging-signs illustration (SVG fallback). */
+SCENES.N6 = SCENES.N5;
 /* Warm the cache up front so scene transitions never wait on a download. */
 try{ Object.keys(SCENE_IMG).forEach(function(k){ var im=new Image(); im.src=SCENE_IMG[k].src; }); }catch(e){}
 function svgBanner(key,warn){
@@ -545,6 +602,19 @@ function sceneIllo(key,warn){
 function sceneImgError(imgEl){
   var wrap=imgEl.parentNode, key=imgEl.getAttribute('data-key'), warn=imgEl.getAttribute('data-warn')==='1';
   wrap.outerHTML = svgBanner(key,warn);
+}
+/* Placeholder for a talking-head clip. Shows the true footprint (16:9) until
+   a real <video> is dropped in. band = full-bleed inside a card (no radius). */
+function vslot(label,maxw,band){
+  const style = maxw ? ' style="max-width:'+maxw+'px"' : '';
+  return '<div class="vslot'+(band?' band':'')+'"'+style+'>'
+    +'<div class="vslot-in"><span class="vslot-play">'+svg(I.play)+'</span>'
+    +'<span class="vslot-label">'+label+'</span>'
+    +'<span class="vslot-dim">talking head &middot; 16:9 &middot; 1920&times;1080</span></div></div>';
+}
+/* Real talking-head clip in a 16:9 band (used once a video exists). */
+function videoBand(src,poster){
+  return '<div class="vband"><video class="vplayer" src="'+src+'"'+(poster?' poster="'+poster+'"':'')+' controls playsinline preload="metadata"></video></div>';
 }
 function danielChipAvatar(){
   return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
@@ -616,7 +686,43 @@ const AUDIO = (function(){
   }
   function ambienceStop(){ if(!amb) return; try{ amb.src.stop(); amb.hum.stop(); }catch(e){} amb=null; }
   function setMuted(m){ if(m){ ambienceStop(); } else { unlock(); } }
-  return {unlock:unlock, buzzer:buzzer, phone:phone, ambienceStart:ambienceStart, ambienceStop:ambienceStop, setMuted:setMuted};
+  /* ---- UI sound design: soft, short, low-level cues in the Apple mould.
+     Sine bodies, gentle exponential attack/release, quiet peaks (~0.03–0.05
+     against a 0.9 master). A light lowpass keeps them warm, never clicky. */
+  function note(freq,t0,dur,peak,type){
+    var o=ctx.createOscillator(), g=ctx.createGain(), lp=ctx.createBiquadFilter();
+    lp.type='lowpass'; lp.frequency.value=2600;
+    o.type=type||'sine'; o.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(peak,t0+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g).connect(lp).connect(master); o.start(t0); o.stop(t0+dur+0.02);
+  }
+  function glide(f0,f1,t0,dur,peak,type){
+    var o=ctx.createOscillator(), g=ctx.createGain(), lp=ctx.createBiquadFilter();
+    lp.type='lowpass'; lp.frequency.value=2600;
+    o.type=type||'sine'; o.frequency.setValueAtTime(f0,t0); o.frequency.exponentialRampToValueAtTime(f1,t0+dur);
+    g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(peak,t0+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g).connect(lp).connect(master); o.start(t0); o.stop(t0+dur+0.02);
+  }
+  function sfx(name){
+    if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
+    var t=ctx.currentTime;
+    switch(name){
+      case 'tap':     note(523,t,0.05,0.035); break;                                   // soft key press
+      case 'select':  note(587,t,0.05,0.045); note(880,t+0.028,0.05,0.028); break;     // pick an option
+      case 'forward': note(523,t,0.09,0.045); note(784,t+0.055,0.13,0.05); break;      // advance / continue
+      case 'back':    glide(500,360,t,0.10,0.035); break;                              // restart / back
+      case 'open':    glide(320,660,t,0.12,0.045); break;                              // open a document
+      case 'close':   glide(600,320,t,0.11,0.04); break;                               // close a document
+      case 'confirm': note(659,t,0.10,0.045); note(988,t+0.075,0.18,0.04); break;      // flag / commit
+      case 'toggle':  note(720,t,0.04,0.03); break;                                    // theme / sound
+      case 'good':    note(523,t,0.13,0.045); note(659,t+0.085,0.13,0.045); note(988,t+0.17,0.30,0.04); break;   // prevention
+      case 'warn':    note(392,t,0.16,0.045,'triangle'); note(294,t+0.11,0.22,0.038); break;                     // near miss / emergency
+      case 'somber':  note(147,t,0.55,0.05); note(110,t+0.20,0.8,0.045); break;        // fatal — low, slow, respectful
+    }
+  }
+  return {unlock:unlock, buzzer:buzzer, phone:phone, ambienceStart:ambienceStart, ambienceStop:ambienceStop, setMuted:setMuted, sfx:sfx};
 })();
 /* Buzzer: sound + a red flash on the intercom light, getting more
    insistent (shorter gaps) like an impatient delivery driver. */
@@ -791,11 +897,31 @@ const NODES = {
        text:'Offer him a drink to help wash it down.',
        tag:'bad'},
     ]},
+  /* N6, the emergency response (Paths C/D). Only reached when the meal has
+     already tipped into a full obstruction. Wording validated with Emma (SME):
+     recognise, call 999, follow choking first-aid guidance. We deliberately do
+     NOT teach a physical technique here. See docs/F1-emergency-path-for-validation.md. */
+  N6:{ order:6, time:'17:58', label:'The emergency', icon:'alertT', emergency:true,
+    scene:'Daniel cannot breathe, speak or cough. He is silent, gripping the table, his colour changing. This is a choking emergency.',
+    q:'He cannot clear it. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',
+       text:'Shout for help, call 999, and follow choking first-aid guidance straight away.'},
+      {id:'b',kind:'risky',
+       text:'Start first aid, and get to the 999 call when you have a free moment.'},
+      {id:'c',kind:'failing',
+       text:'Leave Daniel and run upstairs to fetch the shift leader.'},
+    ]},
 };
 const FLOW = ['N1','N2','N3','N4','N5'];
+/* Paths C/D: if an unsafe mouthful became possible AND the learner did not
+   recognise/act at the emerging signs (N5 b or c), the meal reaches a full
+   obstruction and the shift continues to the emergency node N6. Otherwise the
+   flow ends at N5. This three-failure chain is what gates the fatal outcome. */
+function goesToEmergency(){ return S.primed && (S.choices.N5==='b' || S.choices.N5==='c'); }
+function flow(){ return goesToEmergency() ? FLOW.concat('N6') : FLOW; }
 
-/* The near miss is the prototype's worst-case ceiling (Path C emergency is
-   deferred, §12). This is the safe recovery sequence shown on that path. */
+/* Near-miss recovery sequence (Path B). */
 const RECOVERY_STEPS = [
   'Recognise the signs and stop the meal straight away.',
   'Keep Daniel upright and encourage him to cough.',
@@ -804,6 +930,27 @@ const RECOVERY_STEPS = [
   'Record a near miss (TK5.5b) once he is safe.',
   'Add an Early Watch entry (TK5.1) and get the plan reviewed.',
 ];
+/* Post-incident escalation, split by who owns each step (Emma, SME): the
+   frontline worker reports and escalates; the manager and organisation lead
+   the rest. Sources: TK2.3 Incident Escalation Flowchart, TK7.2a, TK7.4. */
+const WORKER_STEPS = [
+  'Stop the meal and keep the other person at the table safe.',            // TK2.3 s1; TK7.1a
+  'Call 999 and follow choking first-aid guidance until help arrives.',    // TK2.3 s3–4; TK7.2a; TK7.3a
+  'Stay with Daniel and hand over to the paramedics.',
+  'Escalate to your shift leader or manager immediately.',                 // TK2.3 s5
+  'Record what happened and start the incident report.',                   // TK2.3 s6; TK7.4
+];
+const ORG_STEPS = [
+  'Daniel’s family or advocate are contacted.',                            // TK2.3 s7
+  'A safeguarding notification is considered.',                            // TK2.3 s8; TK7.2a
+  'A root cause analysis is carried out.',                                  // TK2.3 s9; TK7.4
+  'The EDAR and support plans are reviewed.',                              // TK2.3 s10
+  'Learning and actions are implemented across the team.',                 // TK2.3 s11
+];
+const ORG_STEP_FATAL = 'CQC is notified of Daniel’s death.';               // TK7.2a "harm or death → CQC"
+
+/* Standard caveat. Wording owned by Emma (SME); keep verbatim wherever used. */
+const SIM_CAVEAT = 'This simulation is for learning and reflection. It does not replace or override a person’s individual eating, drinking and swallowing plan, professional or clinical guidance, your organisation’s own policies and procedures, accredited first-aid training, or the instructions of the emergency services.';
 
 /* ---------- State ---------- */
 const KEY='teatime_v1';
@@ -828,7 +975,7 @@ function initState(){
     openedBeforeServe:false,
     pendingChoice:null,         // option selected, awaiting confidence
     modal:null,                 // {id}
-    outcome:null,               // 'A' | 'B' | 'C'
+    outcome:null,               // 'A' | 'B' | 'C' | 'D'
     theme:null,
     muted:false,                // sound on by default
   };
@@ -840,7 +987,7 @@ function log(t,payload){ S.events.push(Object.assign({t:t}, payload||{})); }
 
 /* ---------- Helpers ---------- */
 function clamp(n){ return Math.max(0, Math.min(100, Math.round(n))); }
-function currentNode(){ return NODES[FLOW[S.nodeIdx]]; }
+function currentNode(){ return NODES[flow()[S.nodeIdx]]; }
 function currentTime(){
   const stage = S.stage==='handover' ? '17:40'
     : S.stage==='node' ? currentNode().time
@@ -857,8 +1004,21 @@ function render(){
   else if(S.stage==='node') view=viewScene();
   else if(S.stage==='outcome') view=viewOutcome();
   else if(S.stage==='debrief') view=viewDebrief();
-  app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
+  const disc = (S.stage==='landing' && !disclaimerAcked()) ? disclaimerModal() : '';
+  app.innerHTML = topbar() + view + disc + (S.modal?docModal(S.modal.id):'');
   window.scrollTo(0,0);
+}
+/* Disclaimer lightbox: the SME-owned caveat, shown once per browser and
+   requiring acknowledgement before the shift can begin. */
+function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v3')==='1'; }catch(e){ return true; } }
+function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v3','1'); }catch(e){} render(); }
+function disclaimerModal(){
+  return '<div class="backdrop disc-back"><div class="modal disc-modal" data-stop="1">'
+    +videoBand('assets/frontline/intro.mp4')
+    +'<div class="disc-top"><span class="disc-emblem">'+svg(I.info)+'</span><h3>Before you begin</h3></div>'
+    +'<div class="disc-body"><p>'+SIM_CAVEAT+'</p></div>'
+    +'<div class="disc-actions"><button class="btn-go" data-act="ack-disclaimer">'+svg(I.check)+'I understand &mdash; continue</button></div>'
+    +'</div></div>';
 }
 
 function topbar(){
@@ -868,7 +1028,6 @@ function topbar(){
     +'<div class="brand"><span class="emblem">'+svg(I.heart)+'</span>'
     +'<span>PracticE Ready<small>Frontline &middot; The Teatime Shift</small></span></div>'
     +'<div class="tb-spacer"></div>'
-    +'<span class="tb-tag">Fictional proof of concept</span>'
     +(showReset?'<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>':'')
     +'<button class="tb-btn" data-act="mute" aria-label="'+(S.muted?'Unmute':'Mute')+'">'+svg(S.muted?I.mute:I.sound)+'</button>'
     +'<button class="tb-btn" data-act="theme">'+svg(themeIc)+'</button>'
@@ -888,7 +1047,6 @@ function viewLanding(){
     +'</div>'
     +'<div class="land-actions">'
     +'<button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button>'
-    +'<span class="land-note">A fictional composite for training. Clinical detail to be confirmed against the source guidance.</span>'
     +'</div>'
     +'</div></div>';
 }
@@ -902,7 +1060,7 @@ function viewHandover(){
     + superstrip()
     + '<div class="scene">'
     +   '<div class="moment">'
-    +     sceneIllo('handover',false)
+    +     vslot('Handover video &mdash; the colleague briefs you','',true)
     +     '<div class="m-pad">'
     +     '<span class="eyebrow">17:40 &middot; Handover</span>'
     +     '<p class="scene-text">You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.</p>'
@@ -927,8 +1085,8 @@ function viewScene(){
     + '</div>';
 }
 function momentCard(node){
-  const key=FLOW[S.nodeIdx];
-  const warnScene = node.inject || (node.recog && S.primed);
+  const key=flow()[S.nodeIdx];
+  const warnScene = node.inject || node.emergency || (node.recog && S.primed);
   let body;
   if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
@@ -960,11 +1118,15 @@ function confidenceBody(node){
     +'</div>';
 }
 function consequenceBody(node){
-  const o=chosenOpt(FLOW[S.nodeIdx]);
-  const last = S.nodeIdx>=FLOW.length-1;
+  const fl=flow();
+  const o=chosenOpt(fl[S.nodeIdx]);
+  const last = S.nodeIdx>=fl.length-1;
+  const nextIsEmergency = fl[S.nodeIdx+1]==='N6';
   const btn = last
     ? '<button class="btn-go" data-act="resolve">'+svg(I.arrowR)+'See how the meal ends</button>'
-    : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
+    : nextIsEmergency
+      ? '<button class="btn-go" data-act="next-node">'+svg(I.alertT)+'What happens next</button>'
+      : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
   // In-the-moment observation only: no grade, no coaching. The instrument
   // cluster above shows the situation change; judgement waits for the debrief.
   return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
@@ -1075,40 +1237,83 @@ function docModal(id){
 }
 
 /* ---------- Outcome (S5) ---------- */
+function stepBlock(title, steps, startNum){
+  return '<span class="eyebrow" style="display:block;margin-top:22px;margin-bottom:10px">'+title+'</span>'
+    + '<div class="oc-steps">'+steps.map(function(s,i){
+        return '<div class="os"><span class="osn">'+(startNum+i)+'</span><p>'+s+'</p></div>';
+      }).join('')+'</div>';
+}
+function caveatBox(){
+  return '<div class="caveat">'+svg(I.info)+'<span>'+SIM_CAVEAT+'</span></div>';
+}
+/* The chain named on the fatal screen and in the debrief only lists failures
+   that were genuinely on this learner's route (Emma's requirement). */
+function failureChain(){
+  const links=[];
+  if(S.cc2 || S.plateUnverified){ links.push('a plate that did not meet Daniel’s plan'); }
+  if(S.cc1){ links.push('supervision that broke while food was within reach'); }
+  if(!S.medFlagged){ links.push('a medication change that was never connected to today’s risk'); }
+  return links;
+}
+/* Post-incident steps, split into what the frontline worker owns and what
+   happens later at manager/organisation level (Emma's requirement). */
+function postIncidentBlocks(fatal){
+  const org = ORG_STEPS.slice();
+  if(fatal){ org.splice(2,0,ORG_STEP_FATAL); }   // CQC sits after safeguarding on the fatal path
+  return stepBlock('What the frontline worker owns', WORKER_STEPS, 1)
+    + stepBlock('What happens later, at manager and service level', org, WORKER_STEPS.length+1);
+}
+function fatalAftermath(){
+  return '<div class="aftermath">'
+    +'<p class="af-line">'+svg(I.users)+'<span>You are not expected to carry this alone. The team holds a debrief, colleagues who witnessed it are checked on, and support is offered to staff. Being affected by this is not weakness; it is human.</span></p>'
+    +'<p class="af-line">'+svg(I.target)+'<span>Sit with what this shift shows. The links that led here were ordinary and preventable. In the debrief you will see where each one could have held.</span></p>'
+    +'</div>';
+}
 function viewOutcome(){
   const o=S.outcome;
-  let badge,badgeCls,h,body,steps='';
+  let badgeCls,badge,icon=I.alertT,h,body,extra='';
   if(o==='A'){
     const top = !S.primed && S.medFlagged;
-    badgeCls='oc-good'; badge='Prevention';
+    badgeCls='oc-good'; badge='Prevention'; icon=I.shield;
     h = top ? 'A safe, unhurried meal, and you saw what the plan missed' : 'Daniel has a safe, unhurried meal';
     body = 'Nothing dramatic happened, which is the whole point. The right texture, steady pacing and unbroken supervision meant the busy teatime was just fifteen ordinary minutes. '
       + (top ? 'You also read the medication change against the drowsiness note and flagged that Daniel needs a reassessment. That is prevention working several days before any incident.'
              : 'The incident was prevented by the ordinary controls holding, not by luck.');
-  } else {
-    // Path B: near miss, recovered — the prototype's worst-case ceiling.
-    // The N5 response never changes survival here, but it changes the
-    // reading of what happened, so the copy adapts to how it was handled.
-    const n5=S.choices.N5;
+  } else if(o==='B'){
+    // Near miss, recovered. Only reached when the learner recognised at the
+    // cough (N5 a); the copy affirms it and shows the safe recovery sequence.
     badgeCls='oc-warn'; badge='Near miss, recovered';
     h='Daniel coughs hard on an unsafe mouthful, then recovers';
-    if(n5==='a'){
-      body='An unsafe mouthful was taken and Daniel coughed. You recognised it at once, stopped the meal, kept him upright and called for help, and he cleared it. Recording the near miss and adding an Early Watch entry is the right close: recognising and learning from a near miss is success, not failure. The conditions for it, though, were set earlier in the shift.';
-    } else if(n5==='b'){
-      body='An unsafe mouthful was taken and Daniel coughed. You waited to see if he would clear it himself. He did, this time, but the pause let things go further than they needed to before you acted. He recovered, and the near miss must be recorded and reviewed. A few seconds’ delay is the margin you cannot rely on.';
+    body='An unsafe mouthful was taken and Daniel coughed. You recognised it at once, stopped the meal, kept him upright and called for help, and he cleared it. Recording the near miss and adding an Early Watch entry is the right close: recognising and learning from a near miss is success, not failure. The conditions for it, though, were set earlier in the shift.';
+    extra = stepBlock('The safe response, step by step', RECOVERY_STEPS, 1);
+  } else if(o==='C'){
+    // Emergency, survived. Copy must NOT read "without delay" if the learner
+    // actually delayed the 999 call (Emma); the delay is named as unsafe.
+    const n6=S.choices.N6;
+    badgeCls='oc-warn'; badge='Emergency, survived';
+    h='Daniel is stabilised and taken to hospital';
+    if(n6==='a'){
+      body='The obstruction was serious. You recognised the emergency, called 999 and followed choking first-aid guidance without delay, and the paramedics took over. Daniel is alive because the response was run at once — not a near miss, and not luck, but a fast, correct emergency response after the meal had already gone wrong.';
     } else {
-      body='An unsafe mouthful was taken and Daniel coughed. Offering a drink to wash it down can push an obstruction further rather than clear it; that he recovered was his own cough, not the response you gave. He is safe this time. Recognising the signs and stopping, not adding to the airway, is what a near miss like this asks for.';
+      body='The obstruction was serious. You began to help, but the 999 call was left until you had a free moment. Daniel survived — and that matters — but that delay was unsafe: in a full obstruction the call for help cannot wait. Getting emergency help on its way is part of the first response, not something to fit in afterwards.';
     }
-    steps = '<span class="eyebrow" style="display:block;margin-top:22px;margin-bottom:10px">The safe response, step by step</span>'
-      + '<div class="oc-steps">'+RECOVERY_STEPS.map(function(s,i){
-        return '<div class="os"><span class="osn">'+(i+1)+'</span><p>'+s+'</p></div>';
-      }).join('')+'</div>';
+    extra = postIncidentBlocks(false);
+  } else {
+    // Emergency, fatal. Reached only through the full three-failure chain.
+    // The chain is composed from what actually went wrong on this run.
+    badgeCls='oc-bad'; badge='Emergency';
+    h='Daniel does not survive';
+    const links=failureChain(); links.push('an emergency that was not answered in time');
+    const chain = links.length>1 ? links.slice(0,-1).join(', ')+' and '+links[links.length-1] : links[0];
+    body='The airway stayed blocked. With the emergency response not run in time, Daniel could not be resuscitated. This is the outcome the whole shift was working to prevent. '
+      +'It did not come from one moment. It came from a chain: '+chain+'. Any one link, held, would have changed the ending.';
+    extra = fatalAftermath() + postIncidentBlocks(true);
   }
   return '<div class="outcome"><div class="oc-card">'
-    +'<span class="oc-badge '+badgeCls+'">'+svg(o==='A'?I.shield:I.alertT)+badge+'</span>'
+    +'<span class="oc-badge '+badgeCls+'">'+svg(icon)+badge+'</span>'
     +'<h1>'+h+'</h1>'
     +'<p class="oc-body">'+body+'</p>'
-    + steps
+    + extra
     +'<div class="oc-actions"><button class="btn-go" data-act="to-debrief">'+svg(I.arrowR)+'Go to the debrief</button></div>'
     +'</div></div>';
 }
@@ -1121,7 +1326,9 @@ function scoreProfile(){
   const dyn  = Math.round(((m[c.N2]||0)+(m[c.N3]||0))/2);
   const person = Math.round(((c.N1==='a'?72:c.N1==='b'?48:20) + (c.N4==='a'?100:c.N4==='b'?55:25))/2);
   const team = m[c.N4]||0;
-  const resp = c.N5?(m[c.N5]||0):0;
+  // Response & learning: at the emerging signs, and (if it reached one) the emergency.
+  let resp = c.N5?(m[c.N5]||0):0;
+  if(c.N6){ resp = Math.round(((m[c.N5]||0) + (c.N6==='a'?100:c.N6==='b'?45:0))/2); }
   return [
     {k:'Information use', v:info, note:'Read the plan before serving; connected the medication clue.'},
     {k:'Preparation', v:prep, note:'Verified and corrected the plate before the meal.'},
@@ -1158,6 +1365,7 @@ function viewDebrief(){
   const outLabel = S.outcome==='A'?'Prevention':'Near miss, recovered';
 
   return '<div class="debrief"><div class="db-wrap">'
+    +'<div class="vhero">'+vslot('Debrief video &mdash; your assessor','',false)+'</div>'
     +'<div class="db-head"><div><span class="eyebrow">Debrief &middot; the teatime shift</span>'
     +'<h1>How the shift went, and why</h1></div>'
     +'<span class="oc-badge '+(S.outcome==='A'?'oc-good':'oc-warn')+'">'+svg(S.outcome==='A'?I.shield:I.alertT)+outLabel+'</span></div>'
@@ -1203,8 +1411,12 @@ function summariseEvents(){
   out.push({k:'SUPERVISION_BREAK', d:breaks===0?'None: supervision held all shift':breaks+' break'+(breaks>1?'s':'')+' logged'});
   out.push({k:'MEDCLUE_FLAGGED', d:S.medFlagged?'Yes: reassessment flagged':'No'});
   const esc=S.events.filter(function(e){return e.t==='ESCALATION';}).length;
-  out.push({k:'ESCALATION', d:esc?'Called for the shift leader':'Not escalated'});
-  out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(S.outcome==='A'?'prevention':'near miss')+')'});
+  out.push({k:'ESCALATION', d:esc?'Escalated / called for help':'Not escalated'});
+  if(S.choices.N6){
+    out.push({k:'EMERGENCY_RESPONSE', d:S.choices.N6==='a'?'999 called and first aid given without delay':S.choices.N6==='b'?'First aid given; 999 call delayed':'No effective response run'});
+  }
+  const oc={A:'prevention',B:'near miss',C:'emergency, survived',D:'emergency, fatal'};
+  out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
   return out;
 }
 function readiness(){
@@ -1213,12 +1425,17 @@ function readiness(){
   const doms=scoreProfile();
   const lowAny=doms.some(function(d){return d.v<40;});
   let band,cls,txt;
-  if(S.cc1 || S.cc2){
+  if(S.outcome==='D'){
     band='Not yet ready'; cls='r-bad';
-    txt='A critical control was missed during the shift. In practice that is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.';
-  } else if(S.outcome==='B' || lowAny){
+    txt='The shift ended in the outcome this training exists to prevent. It was a chain of failures, each recoverable on its own — in practice, any one of them held would have changed the ending. This cannot be offset by good work elsewhere.';
+  } else if(S.cc1 || S.cc2){
+    band='Not yet ready'; cls='r-bad';
+    txt = S.outcome==='C'
+      ? 'Daniel survived a choking emergency, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone, and a delayed call for help is never safe. This cannot be offset by good work elsewhere.'
+      : 'A critical control was missed during the shift. In practice that is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.';
+  } else if(lowAny){
     band='Developing'; cls='r-warn';
-    txt='Daniel came through the meal, but safety rested on recovery or on margins thinner than they needed to be. Parts of practice are not yet consistent.';
+    txt='Daniel came through the meal, but safety rested on margins thinner than they needed to be. Parts of practice are not yet consistent.';
   } else {
     band='Ready'; cls='r-good';
     txt='Supervision held, the food met Daniel’s plan, and the meal stayed safe throughout. This is the standard a lone teatime shift asks for.';
@@ -1251,6 +1468,13 @@ function targetedToolkit(){
   }
   if(S.choices.N5==='b' || S.choices.N5==='c'){
     items.push({ic:'alertT',ref:'TK7.1',t:'Choking red flags',p:'Revisit how to recognise deterioration and act without waiting.'});
+  }
+  if(S.outcome==='C' || S.outcome==='D'){
+    items.push({ic:'route',ref:'TK2.3',t:'Incident escalation flowchart',p:'The full sequence from incident to learning, and who owns each step.'});
+    items.push({ic:'phone',ref:'TK7.2a',t:'Who to call',p:'999, manager, safeguarding and CQC — who to contact, when, and why.'});
+  }
+  if(S.outcome==='D'){
+    items.push({ic:'heart',ref:'TK5.4',t:'Emotional impact',p:'Support for staff after a serious incident. Being affected is human, not weakness.'});
   }
   const rows=items.map(function(x){
     return '<div class="tk-row"><div class="tki">'+svg(I[x.ic])+'</div>'
@@ -1289,7 +1513,7 @@ function enterNode(){
   S.sub='decide';               // decide first; confidence is asked inline after the choice
   S.pendingChoice=null;
   save(); render();
-  playNodeCue(FLOW[S.nodeIdx]);
+  playNodeCue(flow()[S.nodeIdx]);
 }
 function chosenOpt(nodeId){
   const node=NODES[nodeId];
@@ -1303,6 +1527,11 @@ function applyEffects(nodeId){
     S.openedBeforeServe = !!(S.opened.DOC_PLAN || S.opened.DOC_IDDSI);
     if(opt.verified){ S.plateVerified=true; log('PLATE_VERIFIED',{bool:true}); log('DOC_RELIED',{id:'DOC_PLAN'}); }
     else if(opt.id==='b'){ S.plateUnverified=true; }   // served without checking
+  }
+  if(nodeId==='N6'){   // emergency response: recognition + 999 + first aid
+    if(opt.id==='a'){ log('ESCALATION',{type:'ambulance_999',latency_ms:0}); log('FIRST_AID',{given:true,delayed:false}); }
+    else if(opt.id==='b'){ log('ESCALATION',{type:'ambulance_999',latency_ms:9000}); log('FIRST_AID',{given:true,delayed:true}); }
+    else { log('FIRST_AID',{given:false,delayed:false}); log('LEFT_TABLE',{node:'N6',food_accessible:S.foodAccessible}); }
   }
   if(opt.securesFood){ S.foodAccessible=false; }
   if(opt.cc==='CC2'){ S.cc2=true; S.primed=true; S.supervisionOk=false; }
@@ -1326,7 +1555,7 @@ function applyEffects(nodeId){
 }
 function chooseOption(optId){
   stopBuzzSequence();
-  const nodeId=FLOW[S.nodeIdx];
+  const nodeId=flow()[S.nodeIdx];
   const node=NODES[nodeId];
   if(node.confidence && !S.pendingChoice){
     // hold the choice and ask confidence inline before revealing anything
@@ -1334,10 +1563,11 @@ function chooseOption(optId){
   }
   S.choices[nodeId]=optId;
   applyEffects(nodeId);
+  if(node.emergency){ resolve(); return; }   // emergency node goes straight to the outcome
   S.sub='consequence'; save(); render();
 }
 function setConfidence(val){
-  const nodeId=FLOW[S.nodeIdx];
+  const nodeId=flow()[S.nodeIdx];
   S.choices[nodeId]=S.pendingChoice;
   S.conf[nodeId]=val;
   log('CONFIDENCE', {node:nodeId, value:val});
@@ -1346,22 +1576,29 @@ function setConfidence(val){
   S.sub='consequence'; save(); render();
 }
 function nextNode(){
-  if(S.nodeIdx < FLOW.length-1){ S.nodeIdx++; enterNode(); }
+  if(S.nodeIdx < flow().length-1){ S.nodeIdx++; enterNode(); }
   else { resolve(); }
 }
 function resolve(){
-  // F1 prototype ceiling: the worst reachable outcome is a recovered near
-  // miss. The emergency/obstruction path (Path C) is specified in the build
-  // script but deferred for this prototype (open item, §12), so a primed run
-  // always resolves to Path B regardless of the N5 response. How well N5 was
-  // handled still drives the score, the outcome copy and the debrief.
+  // Four outcome paths (validated with SME):
+  //   A prevention · B near miss recovered · C emergency survived · D emergency fatal.
+  // The fatal outcome is gated behind a full chain of failures: an unsafe
+  // mouthful becomes possible (a critical control fails), the emerging signs
+  // are not recognised (N5 b/c → obstruction), AND the emergency response is
+  // not run (N6 c). Any single link held changes the ending; A is always
+  // reachable and nothing is forced.
   if(!S.primed){ S.outcome='A'; }
-  else { S.outcome='B'; }
+  else if(S.choices.N5==='a'){ S.outcome='B'; }        // recognised at the cough → recovered
+  else {                                               // obstruction → N6 decides survival
+    const n6=S.choices.N6;
+    S.outcome = (n6==='a'||n6==='b') ? 'C' : 'D';
+  }
   // The near miss is only "recorded" as closed-loop learning if the learner
   // actually recognised and acted (not if they tried to wash it down).
   if(S.outcome==='B' && S.choices.N5!=='c'){ log('NEARMISS_RECORDED',{bool:true}); }
   log('OUTCOME',{path:S.outcome});
   AUDIO.ambienceStop();
+  AUDIO.sfx({A:'good',B:'confirm',C:'warn',D:'somber'}[S.outcome]);
   S.stage='outcome'; save(); render();
 }
 function toDebrief(){ S.stage='debrief'; save(); render(); }
@@ -1383,13 +1620,14 @@ function openDoc(id){
     S.opened[id]=true; log('DOC_OPENED',{id:id,order:order,dwell_ms:0});
   }
   docView={id:id, at:Date.now()};
+  AUDIO.sfx('open');
   S.modal={id:id}; save(); render();
 }
-function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); save(); render(); }
-function closeModal(){ recordDwell(); S.modal=null; save(); render(); }
+function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); AUDIO.sfx('confirm'); save(); render(); }
+function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); render(); }
 
 function restart(){ const keep={theme:S.theme,muted:S.muted}; stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }
-function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); save(); render(); }
+function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); if(!S.muted){ AUDIO.sfx('toggle'); } save(); render(); }
 
 /* ---------- Theme ---------- */
 function applyTheme(){
@@ -1397,6 +1635,7 @@ function applyTheme(){
   else{ document.documentElement.removeAttribute('data-theme'); }
 }
 function toggleTheme(){
+  AUDIO.sfx('toggle');
   const cur=document.documentElement.getAttribute('data-theme');
   const isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
   S.theme = isDark ? 'light' : 'dark';
@@ -1408,6 +1647,11 @@ document.addEventListener('click', function(e){
   const el=e.target.closest('[data-act]');
   if(!el){ return; }
   const act=el.getAttribute('data-act');
+  // Navigation / selection cues. Document, flag, toggle and outcome cues are
+  // fired inside their own handlers so they stay precise (e.g. the modal
+  // close-guard, or the outcome tone matched to the path).
+  const nav={begin:'forward','to-table':'forward',confidence:'select',choose:'select','next-node':'forward','to-debrief':'forward',restart:'back'};
+  if(nav[act]){ AUDIO.sfx(nav[act]); }
   switch(act){
     case 'begin': beginShift(); break;
     case 'to-table': toTable(); break;
@@ -1423,6 +1667,7 @@ document.addEventListener('click', function(e){
       if(el.classList.contains('backdrop') && e.target.closest('.modal')){ break; }
       closeModal();
       break;
+    case 'ack-disclaimer': ackDisclaimer(); break;
     case 'restart': restart(); break;
     case 'theme': toggleTheme(); break;
     case 'mute': toggleMute(); break;
