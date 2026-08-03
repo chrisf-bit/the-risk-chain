@@ -1041,7 +1041,7 @@ function disclaimerModal(){
     +'</div></div>';
 }
 /* Autoplay the intro; unlock the caveat + acknowledge button only once the
-   learner has watched ~80%. Falls back to a Play button if the browser blocks
+   learner has watched ~85%. Falls back to a Play button if the browser blocks
    autoplaying sound, and never traps the learner if the video can't load. */
 function setupDisclaimer(){
   var v=document.querySelector('.disc-video'); if(!v) return;
@@ -1057,7 +1057,7 @@ function setupDisclaimer(){
     if(v.duration && !isNaN(v.duration)){
       var f=v.currentTime/v.duration;
       if(bar) bar.style.width=Math.min(100,f*100)+'%';
-      if(f>=0.8) reveal();
+      if(f>=0.85) reveal();
     }
   });
   v.addEventListener('ended', reveal);
