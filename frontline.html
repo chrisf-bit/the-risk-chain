@@ -421,6 +421,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .vhero{max-width:520px;margin-bottom:18px}
 /* real video band (fills a 16:9 slot, corners clipped by the parent card) */
 .vband{position:relative;width:100%;aspect-ratio:16/9;background:#0b1016;border-bottom:1px solid var(--line);overflow:hidden}
+.vband.flush{border:0;border-bottom:1px solid var(--line);border-radius:0}
 .vplayer{width:100%;height:100%;display:block;object-fit:cover;background:#0b1016}
 /* gated intro video in the disclaimer lightbox */
 .disc-vband,.disc-video{background:#0b1016}
@@ -628,6 +629,16 @@ function vslot(label,maxw,band){
 function videoBand(src,poster){
   return '<div class="vband"><video class="vplayer" src="'+src+'"'+(poster?' poster="'+poster+'"':'')+' controls playsinline preload="metadata"></video></div>';
 }
+/* Talking-head clip with an inline (data-URI) caption track, so captions load
+   over file:// as well as on deploy. flush = full-bleed inside a card. */
+function captionVideo(cls,src,vtt,flush){
+  return '<div class="vband'+(flush?' flush':'')+'">'
+    +'<video class="vplayer '+cls+'" playsinline preload="auto" controls>'
+    +'<source src="'+src+'" type="video/mp4">'
+    +'<track kind="captions" srclang="en" label="English" default src="'+vtt+'">'
+    +'</video></div>';
+}
+const HANDOVER_VTT='data:text/vtt;base64,V0VCVlRUCgpOT1RFClNjZW5lIDEgZHVyYXRpb24gaW4gc2Vjb25kczogMjcuNjIKCjEKMDA6MDA6MDEuMjczIC0tPiAwMDowMDowNS4xNTAKUmlnaHQsIEkndmUgZ290IHRvIGdldCB1cHN0YWlycyBmb3IgdGhlIG1lZGljYXRpb24gcm91bmQsIHNvIHRlYXRpbWUncyB5b3VycyBub3cuCgoyCjAwOjAwOjA1LjE1MCAtLT4gMDA6MDA6MDkuMTEzCkl0J3MganVzdCB5b3UgYW5kIERhbmllbDsgaGlzIGhvdXNlbWF0ZSdzIGF0IHRoZSB0YWJsZSBhcyB3ZWxsLgoKMwowMDowMDowOS4xMTMgLS0+IDAwOjAwOjE0LjEwNgpCZWZvcmUgeW91IGdvIG92ZXIsIHRha2UgYSBwcm9wZXIgbG9vayBhdCB3aGF0IHdlIGhvbGQgb24gRGFuaWVsLCBoaXMgbWVhbHRpbWUgcGxhbiwgaGlzIHJlY29yZHMsIHRoZQoKNAowMDowMDoxNC4xMDYgLS0+IDAwOjAwOjE1LjM3MApyZWZlcmVuY2UgdG9vbHMuCgo1CjAwOjAwOjE1LjM3MCAtLT4gMDA6MDA6MTcuNTgzClRoZXkncmUgYWxsIHRoZXJlIG9uIHRoZSByaWdodC4KCjYKMDA6MDA6MTcuNTgzIC0tPiAwMDowMDoxOS42MDMKTm90aGluZydzIGZsYWdnZWQgZm9yIHlvdSwgdGhvdWdoLgoKNwowMDowMDoxOS42MDMgLS0+IDAwOjAwOjIzLjUyMwpQYXJ0IG9mIHRoaXMgc2ltdWxhdGlvbiBpcyBzcG90dGluZyB3aGljaCBvbmVzIGFjdHVhbGx5IG1hdHRlciB0b2RheS4KCjgKMDA6MDA6MjMuNTIzIC0tPiAwMDowMDoyNS44MjMKV2hlbiB5b3UncmUgc2V0LCBnbyB0byB0aGUgdGFibGUuCgo5CjAwOjAwOjI1LjgyMyAtLT4gMDA6MDA6MjcuMDI2CllvdSd2ZSBnb3QgdGhpcy4K';
 function danielChipAvatar(){
   return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
     +'<circle cx="22" cy="22" r="21" class="il-chip-bg"/>'
@@ -1020,6 +1031,20 @@ function render(){
   app.innerHTML = topbar() + view + (showDisc?disclaimerModal():'') + (S.modal?docModal(S.modal.id):'');
   window.scrollTo(0,0);
   if(showDisc){ setupDisclaimer(); }
+  if(S.stage==='handover'){ setupHandoverVideo(); }
+}
+/* Handover clip: captions on, autoplay (we arrive via a click so sound is
+   allowed), and playback position preserved across re-renders so opening a
+   document doesn't restart it. */
+var handoverT=0, handoverEnded=false;
+function setupHandoverVideo(){
+  var v=document.querySelector('.handover-video'); if(!v) return;
+  function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
+  showCaps(); v.addEventListener('loadeddata', showCaps);
+  v.addEventListener('loadedmetadata', function(){ if(handoverT>0 && handoverT < v.duration-0.3){ try{ v.currentTime=handoverT; }catch(e){} } });
+  v.addEventListener('timeupdate', function(){ handoverT=v.currentTime; });
+  v.addEventListener('ended', function(){ handoverEnded=true; });
+  if(!handoverEnded){ var p=v.play(); if(p && p.catch){ p.catch(function(){}); } }
 }
 /* Disclaimer lightbox: the SME-owned caveat, shown once per browser and
    requiring acknowledgement before the shift can begin. */
@@ -1114,7 +1139,7 @@ function viewHandover(){
     + superstrip()
     + '<div class="scene">'
     +   '<div class="moment">'
-    +     vslot('Handover video &mdash; the colleague briefs you','',true)
+    +     captionVideo('handover-video','assets/frontline/handover.mp4',HANDOVER_VTT,true)
     +     '<div class="m-pad">'
     +     '<span class="eyebrow">17:40 &middot; Handover</span>'
     +     '<p class="scene-text">You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.</p>'
@@ -1560,7 +1585,7 @@ function crossTrackReveal(){
 }
 
 /* ---------- Reducers / actions ---------- */
-function beginShift(){ AUDIO.unlock(); S.stage='handover'; save(); render(); }
+function beginShift(){ AUDIO.unlock(); handoverT=0; handoverEnded=false; S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
   stopBuzzSequence();
