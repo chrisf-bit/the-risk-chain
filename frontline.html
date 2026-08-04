@@ -798,14 +798,15 @@ const AUDIO = (function(){
       case 'back':    glide(500,360,t,0.10,0.035); break;                              // restart / back
       case 'open':    glide(320,660,t,0.12,0.045); break;                              // open a document
       case 'close':   glide(600,320,t,0.11,0.04); break;                               // close a document
-      case 'confirm': note(659,t,0.10,0.045); note(988,t+0.075,0.18,0.04); break;      // flag / commit
+      case 'confirm': note(659,t,0.11,0.075); note(988,t+0.08,0.20,0.06); break;        // flag / commit
       case 'toggle':  note(720,t,0.04,0.03); break;                                    // theme / sound
       case 'good':    note(523,t,0.13,0.045); note(659,t+0.085,0.13,0.045); note(988,t+0.17,0.30,0.04); break;   // prevention
       case 'warn':    note(392,t,0.16,0.045,'triangle'); note(294,t+0.11,0.22,0.038); break;                     // near miss / emergency
       case 'somber':  note(147,t,0.55,0.05); note(110,t+0.20,0.8,0.045); break;        // fatal — low, slow, respectful
     }
   }
-  return {unlock:unlock, buzzer:buzzer, phone:phone, ambienceStart:ambienceStart, ambienceStop:ambienceStop, setMuted:setMuted, sfx:sfx};
+  function prime(){ if(!ensure()) return; if(ctx.state==='suspended'){ ctx.resume(); } }
+  return {unlock:unlock, buzzer:buzzer, phone:phone, ambienceStart:ambienceStart, ambienceStop:ambienceStop, setMuted:setMuted, sfx:sfx, prime:prime};
 })();
 /* Buzzer: sound + a red flash on the intercom light, getting more
    insistent (shorter gaps) like an impatient delivery driver. */
@@ -1864,6 +1865,10 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape' && S.modal
 /* ---------- Boot ---------- */
 applyTheme();
 render();
+/* Wake the audio engine on the first (and any) user interaction, so UI cues
+   play even on the pre-shift disclaimer screen (browsers block audio until a
+   gesture; priming on pointerdown gives the context time to resume). */
+['pointerdown','keydown'].forEach(function(ev){ window.addEventListener(ev, function(){ try{ AUDIO.prime(); }catch(e){} }); });
 </script>
 </body>
 </html>
