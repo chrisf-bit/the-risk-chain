@@ -789,7 +789,11 @@ const AUDIO = (function(){
     o.connect(g).connect(lp).connect(master); o.start(t0); o.stop(t0+dur+0.02);
   }
   function sfx(name){
-    if(S.muted||!ensure()) return; if(ctx.state==='suspended') ctx.resume();
+    if(S.muted||!ensure()) return;
+    if(ctx.state==='suspended'){ var p=ctx.resume(); if(p&&p.then){ p.then(function(){ playSfx(name); }); } else { playSfx(name); } return; }
+    playSfx(name);
+  }
+  function playSfx(name){
     var t=ctx.currentTime;
     switch(name){
       case 'tap':     note(523,t,0.05,0.035); break;                                   // soft key press
