@@ -131,7 +131,7 @@ body{
     radial-gradient(760px 460px at 8% -6%,rgba(15,157,180,.12),transparent 60%),
     radial-gradient(680px 440px at 100% 2%,rgba(28,58,104,.10),transparent 60%),
     radial-gradient(760px 520px at 50% 112%,rgba(245,127,32,.06),transparent 60%),
-    radial-gradient(1300px 680px at 50% -220px,var(--ground-2),var(--ground));
+    var(--ground);
   font-family:var(--sans);font-size:var(--t-body);line-height:1.55;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   font-variant-numeric:tabular-nums;
@@ -162,7 +162,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* ---------- Generic ---------- */
 .eyebrow{font-size:var(--t-cap);font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong)}
-.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--go);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 8px 18px rgba(245,127,32,.32)}
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--go);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 8px 18px rgba(245,127,32,.32);transition:filter .15s ease,transform .1s ease,box-shadow .15s ease}
 .btn-go:hover{filter:brightness(1.05)}
 .btn-go:active{transform:translateY(1px);box-shadow:0 4px 12px rgba(245,127,32,.28)}
 .btn-go svg{width:18px;height:18px}
@@ -173,20 +173,30 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow)}
 
 /* ---------- Landing ---------- */
-.landing{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:36px 22px;background:
-  radial-gradient(1100px 460px at 82% -8%,rgba(176,122,36,.14),transparent 60%),var(--ground)}
-.land-card{max-width:760px;width:100%;text-align:left}
+.landing{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:40px 24px;background:
+  radial-gradient(900px 460px at 84% -8%,rgba(15,157,180,.10),transparent 60%),
+  radial-gradient(760px 420px at 8% 2%,rgba(28,58,104,.08),transparent 60%),var(--ground)}
+.land-card{max-width:1000px;width:100%;text-align:left}
+.land-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center}
+.land-copy{min-width:0}
+.land-media{position:relative}
+.land-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow-lg);display:block}
+.land-media .lm-tag{position:absolute;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:7px;background:rgba(16,35,64,.78);color:#fff;backdrop-filter:blur(4px);border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:700}
+.land-media .lm-tag svg{width:15px;height:15px}
 .land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line);border-radius:100px;padding:6px 14px;font-size:var(--t-cap);font-weight:750;letter-spacing:.04em}
 .land-kicker svg{width:15px;height:15px}
-.land-card h1{font-size:var(--t-hero);letter-spacing:-.025em;margin:20px 0 0;line-height:1.02}
-.land-card .lead{font-family:var(--serif);font-size:var(--t-h3);line-height:1.55;color:var(--ink-2);margin-top:16px;max-width:60ch}
-.land-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}
-.land-facts .lf{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
-.land-facts .lf .lf-ic{width:48px;height:48px;border-radius:11px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:12px}
-.land-facts .lf .lf-ic svg{width:27px;height:27px}
+.land-card h1{font-size:var(--t-hero);letter-spacing:-.025em;margin:18px 0 0;line-height:1.02}
+.land-card .lead{font-family:var(--serif);font-size:var(--t-h3);line-height:1.55;color:var(--ink-2);margin-top:16px}
+.land-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}
+.land-facts .lf{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+.land-facts .lf .lf-ic{width:46px;height:46px;border-radius:12px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:12px}
+.land-facts .lf:nth-child(1) .lf-ic{background:var(--z-do-tint);color:var(--go)}
+.land-facts .lf:nth-child(2) .lf-ic{background:var(--zn-records);color:var(--z-read)}
+.land-facts .lf:nth-child(3) .lf-ic{background:var(--zn-tools);color:var(--violet)}
+.land-facts .lf .lf-ic svg{width:26px;height:26px}
 .land-facts .lf h4{font-size:var(--t-h3)}
-.land-facts .lf p{font-size:var(--t-sm);color:var(--ink-3);margin-top:5px;line-height:1.45}
-.land-actions{margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.land-facts .lf p{font-size:var(--t-sm);color:var(--ink-2);margin-top:5px;line-height:1.45}
+.land-actions{margin-top:26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .land-note{font-size:var(--t-cap);color:var(--ink-4);max-width:44ch}
 
 /* ---------- Scene shell ---------- */
@@ -297,9 +307,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .sec-tools .evi-grp{color:var(--violet)}
 .sec-tools .doc-row .di{background:var(--violet)}
 .evi-grp{font-size:var(--t-cap);font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--z-read-2);padding:6px 6px 8px}
-.doc-row{width:100%;text-align:left;display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:inset 0 1px 0 var(--sheen),0 1px 3px rgba(20,38,74,.09);margin-bottom:8px}
+.doc-row{width:100%;text-align:left;display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:inset 0 1px 0 var(--sheen),0 1px 3px rgba(20,38,74,.09);margin-bottom:8px;transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease}
 .doc-row:last-child{margin-bottom:0}
-.doc-row:hover{border-color:var(--teal);box-shadow:var(--shadow)}
+.doc-row:hover{border-color:var(--teal);box-shadow:var(--shadow-lg);transform:translateY(-1px)}
 .doc-row .di{width:40px;height:40px;border-radius:8px;background:var(--chip-bg);color:var(--chip-ink);display:grid;place-items:center;flex:none}
 .doc-row .di svg{width:23px;height:23px}
 .doc-row .dt{font-size:var(--t-sm);font-weight:650;line-height:1.25;flex:1}
@@ -308,10 +318,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .doc-row.opened .di{background:var(--good);color:#fff}
 
 /* modal */
-.backdrop{position:fixed;inset:0;background:rgba(10,22,36,.55);backdrop-filter:blur(2px);z-index:80;display:grid;place-items:center;padding:24px;animation:fade .15s}
+.backdrop{position:fixed;inset:0;background:rgba(10,22,36,.55);backdrop-filter:blur(2px);z-index:80;display:grid;place-items:center;padding:24px;animation:fade .3s ease}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);max-width:560px;width:100%;max-height:86vh;overflow:auto;animation:pop .18s}
-@keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);max-width:560px;width:100%;max-height:86vh;overflow:auto;animation:pop .42s cubic-bezier(.2,.72,.28,1.04)}
+@keyframes pop{from{transform:translateY(22px) scale(.94);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.modal,.backdrop{animation:none}}
 .doc-modal .dm-top{display:flex;align-items:flex-start;gap:14px;padding:22px 24px 16px;border-bottom:1px solid var(--line-2)}
 .doc-modal .dm-emblem{width:46px;height:46px;border-radius:10px;background:var(--z-read-tint);color:var(--z-read);display:grid;place-items:center;flex:none}
 .doc-modal .dm-emblem svg{width:25px;height:25px}
@@ -421,6 +432,12 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
   .conf-pill{animation:rise .3s cubic-bezier(.22,.61,.36,1) both}
   .conf-pill:nth-child(2){animation-delay:.06s} .conf-pill:nth-child(3){animation-delay:.12s}
   .oc-badge,.r-chip{animation:settle .5s cubic-bezier(.22,.61,.36,1) both}
+  .land-media{animation:settle .55s cubic-bezier(.22,.61,.36,1) both;animation-delay:.06s}
+  .land-facts .lf{animation:rise .44s cubic-bezier(.22,.61,.36,1) both}
+  .land-facts .lf:nth-child(2){animation-delay:.09s}
+  .land-facts .lf:nth-child(3){animation-delay:.18s}
+  .evi-sec{animation:rise .42s cubic-bezier(.22,.61,.36,1) both}
+  .evi-sec.sec-tools{animation-delay:.09s}
 }
 
 /* SME-owned learning caveat (landing + emergency outcomes) */
@@ -488,6 +505,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
   .scene{grid-template-columns:1fr;overflow:auto}
   .db-grid{grid-template-columns:1fr}
   .land-facts{grid-template-columns:1fr}
+  .land-hero{grid-template-columns:1fr;gap:22px}
   #app{height:auto;min-height:100%}
   .stage,.landing,.outcome,.debrief{overflow:visible}
   /* instrument strip: clock full-width, gauges 2x2 so the arcs never overflow */
@@ -680,7 +698,7 @@ function captionVideo(cls,src,vtt,flush){
     +'<track kind="captions" srclang="en" label="English" default src="'+vtt+'">'
     +'</video></div>';
 }
-const HANDOVER_VTT='data:text/vtt;base64,V0VCVlRUCgpOT1RFClNjZW5lIDEgZHVyYXRpb24gaW4gc2Vjb25kczogMjcuNjIKCjEKMDA6MDA6MDEuMjczIC0tPiAwMDowMDowNS4xNTAKUmlnaHQsIEkndmUgZ290IHRvIGdldCB1cHN0YWlycyBmb3IgdGhlIG1lZGljYXRpb24gcm91bmQsIHNvIHRlYXRpbWUncyB5b3VycyBub3cuCgoyCjAwOjAwOjA1LjE1MCAtLT4gMDA6MDA6MDkuMTEzCkl0J3MganVzdCB5b3UgYW5kIERhbmllbDsgaGlzIGhvdXNlbWF0ZSdzIGF0IHRoZSB0YWJsZSBhcyB3ZWxsLgoKMwowMDowMDowOS4xMTMgLS0+IDAwOjAwOjE0LjEwNgpCZWZvcmUgeW91IGdvIG92ZXIsIHRha2UgYSBwcm9wZXIgbG9vayBhdCB3aGF0IHdlIGhvbGQgb24gRGFuaWVsLCBoaXMgbWVhbHRpbWUgcGxhbiwgaGlzIHJlY29yZHMsIHRoZQoKNAowMDowMDoxNC4xMDYgLS0+IDAwOjAwOjE1LjM3MApyZWZlcmVuY2UgdG9vbHMuCgo1CjAwOjAwOjE1LjM3MCAtLT4gMDA6MDA6MTcuNTgzClRoZXkncmUgYWxsIHRoZXJlIG9uIHRoZSByaWdodC4KCjYKMDA6MDA6MTcuNTgzIC0tPiAwMDowMDoxOS42MDMKTm90aGluZydzIGZsYWdnZWQgZm9yIHlvdSwgdGhvdWdoLgoKNwowMDowMDoxOS42MDMgLS0+IDAwOjAwOjIzLjUyMwpQYXJ0IG9mIHRoaXMgc2ltdWxhdGlvbiBpcyBzcG90dGluZyB3aGljaCBvbmVzIGFjdHVhbGx5IG1hdHRlciB0b2RheS4KCjgKMDA6MDA6MjMuNTIzIC0tPiAwMDowMDoyNS44MjMKV2hlbiB5b3UncmUgc2V0LCBnbyB0byB0aGUgdGFibGUuCgo5CjAwOjAwOjI1LjgyMyAtLT4gMDA6MDA6MjcuMDI2CllvdSd2ZSBnb3QgdGhpcy4K';
+const HANDOVER_VTT='data:text/vtt;base64,V0VCVlRUCgpOT1RFClNjZW5lIDEgZHVyYXRpb24gaW4gc2Vjb25kczogMjYuMDYwMDAwMDAwMDAwMDAyCgoxCjAwOjAwOjAxLjI3MyAtLT4gMDA6MDA6MDQuOTA3ClJpZ2h0LCBJJ3ZlIGdvdCB0byBnZXQgdXBzdGFpcnMgZm9yIHRoZSBtZWRpY2F0aW9uIHJvdW5kLCBzbyB0ZWF0aW1lJ3MgeW91cnMgbm93LgoKMgowMDowMDowNC45MDcgLS0+IDAwOjAwOjA4LjY5MwpJdCdzIGp1c3QgeW91IGFuZCBEYW5pZWw7IGhpcyBob3VzZW1hdGUncyBhdCB0aGUgdGFibGUgYXMgd2VsbC4KCjMKMDA6MDA6MDguNjkzIC0tPiAwMDowMDoxMy4yNjgKQmVmb3JlIHlvdSBnbyBvdmVyLCB0YWtlIGEgcHJvcGVyIGxvb2sgYXQgd2hhdCB3ZSBob2xkIG9uIERhbmllbCwgaGlzIG1lYWx0aW1lIHBsYW4sIGhpcyByZWNvcmRzLCB0aGUKCjQKMDA6MDA6MTMuMjY4IC0tPiAwMDowMDoxMy45OTgKcmVmZXJlbmNlIHRvb2xzLgoKNQowMDowMDoxMy45OTggLS0+IDAwOjAwOjE1Ljk2MwpUaGV5J3JlIGFsbCB0aGVyZSBvbiB0aGUgcmlnaHQuCgo2CjAwOjAwOjE1Ljk2MyAtLT4gMDA6MDA6MTcuOTgzCk5vdGhpbmcncyBmbGFnZ2VkIGZvciB5b3UsIHRob3VnaC4KCjcKMDA6MDA6MTcuOTgzIC0tPiAwMDowMDoyMS44NTMKUGFydCBvZiB0aGlzIHNpbXVsYXRpb24gaXMgc3BvdHRpbmcgd2hpY2ggb25lcyBhY3R1YWxseSBtYXR0ZXIgdG9kYXkuCgo4CjAwOjAwOjIxLjg1MyAtLT4gMDA6MDA6MjQuMjYzCldoZW4geW91J3JlIHJlYWR5LCBnbyB0byB0aGUgdGFibGUuCgo5CjAwOjAwOjI0LjI2MyAtLT4gMDA6MDA6MjUuNDc4CllvdSd2ZSBnb3QgdGhpcy4K';
 function danielChipAvatar(){
   return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
     +'<circle cx="22" cy="22" r="21" class="il-chip-bg"/>'
@@ -1090,8 +1108,8 @@ function setupHandoverVideo(){
 }
 /* Disclaimer lightbox: the SME-owned caveat, shown once per browser and
    requiring acknowledgement before the shift can begin. */
-function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v5')==='1'; }catch(e){ return true; } }
-function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v5','1'); }catch(e){} goFullscreen(); render(); }
+function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v6')==='1'; }catch(e){ return true; } }
+function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v6','1'); }catch(e){} goFullscreen(); render(); }
 function disclaimerModal(){
   return '<div class="backdrop disc-back"><div class="modal disc-modal" data-stop="1">'
     +'<div class="vband disc-vband">'
@@ -1167,16 +1185,19 @@ function topbar(){
 /* ---------- Landing ---------- */
 function viewLanding(){
   return '<div class="landing"><div class="land-card">'
-    +'<span class="land-kicker">'+svg(I.person)+'You are the support worker on shift</span>'
-    +'<h1>The Teatime Shift</h1>'
-    +'<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
+    +'<div class="land-hero">'
+    +  '<div class="land-copy">'
+    +    '<span class="land-kicker">'+svg(I.person)+'You are the support worker on shift</span>'
+    +    '<h1>The Teatime Shift</h1>'
+    +    '<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
+    +    '<div class="land-actions"><button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button></div>'
+    +  '</div>'
+    +  '<div class="land-media"><img src="assets/frontline/scene-handover.jpg" alt="A support worker beside a resident at a care-home dining table" loading="eager"><span class="lm-tag">'+svg(I.clock)+'Larkfield House &middot; 17:40</span></div>'
+    +'</div>'
     +'<div class="land-facts">'
     +landFact('person','You lead the shift','For fifteen minutes you support Daniel through his meal on your own. What you do is what happens.')
     +landFact('clipboard','The evidence is open','Daniel’s plan, his records and the reference tools are all there to consult. Nothing flags which ones matter.')
     +landFact('target','Readiness, not revision','No coaching, no hints, no single right answer. The shift shows how you would really practise.')
-    +'</div>'
-    +'<div class="land-actions">'
-    +'<button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button>'
     +'</div>'
     +'</div></div>';
 }
