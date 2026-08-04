@@ -1792,7 +1792,7 @@ function openDoc(id){
 function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); AUDIO.sfx('confirm'); save(); render(); }
 function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); render(); }
 
-function restart(){ const keep={theme:S.theme,muted:S.muted}; stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }
+function restart(){ const keep={theme:S.theme,muted:S.muted}; stopBuzzSequence(); AUDIO.ambienceStop(); try{ localStorage.removeItem('teatime_disc_v6'); }catch(e){} S=Object.assign(initState(),keep); applyTheme(); save(); render(); }   // restart re-shows the intro/disclaimer
 function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); if(!S.muted){ AUDIO.sfx('toggle'); } save(); render(); }
 
 /* ---------- Full screen ---------- */
