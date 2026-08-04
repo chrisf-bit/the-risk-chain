@@ -514,6 +514,8 @@ const I = {
   target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".4"/>',
   sound:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a8 8 0 0 1 0 11"/>',
   mute:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M22 9.5l-5 5M17 9.5l5 5"/>',
+  expand:'<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  compress:'<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>',
 };
 function svg(p,cls){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'+(cls?' class="'+cls+'"':'')+' aria-hidden="true">'+p+'</svg>';}
 
@@ -1049,7 +1051,7 @@ function setupHandoverVideo(){
 /* Disclaimer lightbox: the SME-owned caveat, shown once per browser and
    requiring acknowledgement before the shift can begin. */
 function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v5')==='1'; }catch(e){ return true; } }
-function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v5','1'); }catch(e){} render(); }
+function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v5','1'); }catch(e){} goFullscreen(); render(); }
 function disclaimerModal(){
   return '<div class="backdrop disc-back"><div class="modal disc-modal" data-stop="1">'
     +'<div class="vband disc-vband">'
@@ -1109,6 +1111,7 @@ function topbar(){
     +'<div class="tb-spacer"></div>'
     +(showReset?'<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>':'')
     +'<button class="tb-btn" data-act="mute" aria-label="'+(S.muted?'Unmute':'Mute')+'">'+svg(S.muted?I.mute:I.sound)+'</button>'
+    +'<button class="tb-btn" data-act="fullscreen" aria-label="'+(isFs()?'Exit full screen':'Full screen')+'">'+svg(isFs()?I.compress:I.expand)+'</button>'
     +'<button class="tb-btn" data-act="theme">'+svg(themeIc)+'</button>'
     +'</header>';
 }
@@ -1585,7 +1588,7 @@ function crossTrackReveal(){
 }
 
 /* ---------- Reducers / actions ---------- */
-function beginShift(){ AUDIO.unlock(); handoverT=0; handoverEnded=false; S.stage='handover'; save(); render(); }
+function beginShift(){ AUDIO.unlock(); goFullscreen(); handoverT=0; handoverEnded=false; S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
   stopBuzzSequence();
@@ -1708,6 +1711,22 @@ function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); 
 function restart(){ const keep={theme:S.theme,muted:S.muted}; stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }
 function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); if(!S.muted){ AUDIO.sfx('toggle'); } save(); render(); }
 
+/* ---------- Full screen ---------- */
+/* Cannot be triggered on load (browsers require a gesture), so we request it
+   on the first interaction — acknowledging the intro, or Begin — and offer a
+   top-bar toggle. Fails quietly if the host (e.g. an LMS iframe) disallows it. */
+function isFs(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function goFullscreen(){
+  if(isFs()) return;
+  var el=document.documentElement, fn=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(!fn) return;
+  try{ var p=fn.call(el); if(p && p.catch){ p.catch(function(){}); } }catch(e){}
+}
+function toggleFullscreen(){
+  if(isFs()){ try{ (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }catch(e){} }
+  else { goFullscreen(); }
+}
+
 /* ---------- Theme ---------- */
 function applyTheme(){
   if(S.theme){ document.documentElement.setAttribute('data-theme',S.theme); }
@@ -1750,8 +1769,11 @@ document.addEventListener('click', function(e){
     case 'restart': restart(); break;
     case 'theme': toggleTheme(); break;
     case 'mute': toggleMute(); break;
+    case 'fullscreen': toggleFullscreen(); break;
   }
 });
+document.addEventListener('fullscreenchange', render);
+document.addEventListener('webkitfullscreenchange', render);
 
 /* ---------- Boot ---------- */
 applyTheme();
