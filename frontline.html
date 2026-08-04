@@ -1832,7 +1832,7 @@ document.addEventListener('click', function(e){
   // Navigation / selection cues. Document, flag, toggle and outcome cues are
   // fired inside their own handlers so they stay precise (e.g. the modal
   // close-guard, or the outcome tone matched to the path).
-  const nav={begin:'forward','to-table':'forward',confidence:'select',choose:'select','next-node':'forward','to-debrief':'forward',restart:'back'};
+  const nav={begin:'forward','to-table':'forward',confidence:'select',choose:'select','next-node':'forward','to-debrief':'forward',restart:'back','ack-disclaimer':'confirm'};
   if(nav[act]){ AUDIO.sfx(nav[act]); }
   switch(act){
     case 'begin': beginShift(); break;
