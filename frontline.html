@@ -188,7 +188,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .sv-clock .cl{font-family:var(--mono);font-size:var(--t-h2);font-weight:600;letter-spacing:1px}
 .sv-clock .cw{font-size:var(--t-nano);letter-spacing:.09em;text-transform:uppercase;color:rgba(232,238,242,.6);font-weight:700}
 .sv-gauge{flex:1;min-width:0;background:linear-gradient(180deg,var(--hud-1),var(--hud-2));border:1px solid rgba(255,255,255,.07);border-radius:var(--r);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 4px 12px rgba(10,20,34,.20);padding:9px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.sv-gauge svg{width:118px;height:auto;display:block}
+.sv-gauge svg{width:100%;max-width:118px;height:auto;display:block}
 .sv-gauge .gv{transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1),stroke .3s}
 .sv-gauge .g-num{font-family:var(--sans);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
 .sv-gauge .g-cap{display:flex;flex-direction:column;align-items:center;line-height:1.1}
@@ -455,12 +455,27 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .tk-row .tkref{font-weight:400;color:var(--ink-4)}
 .tk-row p{font-size:var(--t-cap);color:var(--ink-3);margin-top:2px;line-height:1.4}
 
+/* mobile scene/records tabs (hidden on desktop) */
+.mob-tabs{display:none}
+.mob-tab{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:11px 10px;font-weight:700;font-size:var(--t-sm);color:var(--ink-2);box-shadow:var(--shadow)}
+.mob-tab svg{width:17px;height:17px}
+.mob-tab.on{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.mob-tab .mt-n{font-weight:800;font-size:var(--t-cap);opacity:.85}
 @media(max-width:900px){
   .scene{grid-template-columns:1fr;overflow:auto}
   .db-grid{grid-template-columns:1fr}
   .land-facts{grid-template-columns:1fr}
   #app{height:auto;min-height:100%}
   .stage,.landing,.outcome,.debrief{overflow:visible}
+  /* instrument strip: clock full-width, gauges 2x2 so the arcs never overflow */
+  .superstrip{flex-wrap:wrap;gap:8px}
+  .sv-clock{flex:1 1 100%;flex-direction:row;justify-content:center;gap:12px;min-width:0;padding:8px 14px}
+  .sv-gauge{flex:1 1 calc(50% - 4px);min-width:0}
+  /* tabbed scene vs records so there is no scrolling past one to reach the other */
+  .mob-tabs{display:flex;gap:8px;margin-bottom:12px}
+  .scene[data-tab="scene"] .evi{display:none}
+  .scene[data-tab="records"] .moment{display:none}
+  .scene-illo.has-img{height:210px;min-height:210px}
 }
 </style>
 </head>
@@ -1140,13 +1155,14 @@ function landFact(ic,h,p){
 function viewHandover(){
   return '<div class="stage">'
     + superstrip()
-    + '<div class="scene">'
+    + mobTabBar()
+    + '<div class="scene" data-tab="'+mobTab+'">'
     +   '<div class="moment">'
     +     captionVideo('handover-video','assets/frontline/handover.mp4',HANDOVER_VTT,true)
     +     '<div class="m-pad">'
     +     '<span class="eyebrow">17:40 &middot; Handover</span>'
     +     '<p class="scene-text">You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.</p>'
-    +     '<p class="m-q">Open anything on the right. When you are ready, go to the table.</p>'
+    +     '<p class="m-q">Open any of the records. When you are ready, go to the table.</p>'
     +     '<div class="opts"><div style="margin-top:8px"><button class="btn-go" data-act="to-table">'+svg(I.arrowR)+'Go to the table</button></div></div>'
     +     '</div>'
     +   '</div>'
@@ -1159,11 +1175,22 @@ function viewHandover(){
    Each node is a single screen. It moves through: decide -> (confidence,
    inline, on confidence nodes) -> consequence, without ever leaving the
    panel or the scene photo. */
+/* On mobile the scene and the records are tabbed (see mobTabBar) so neither
+   requires scrolling past the other; on desktop both show side by side. */
+var mobTab='scene';
+function mobTabBar(){
+  var opened=DOC_ORDER.filter(function(id){return S.opened[id];}).length;
+  return '<div class="mob-tabs">'
+    +'<button class="mob-tab'+(mobTab==='scene'?' on':'')+'" data-act="mob-tab" data-tab="scene">'+svg(I.utensils)+'The moment</button>'
+    +'<button class="mob-tab'+(mobTab==='records'?' on':'')+'" data-act="mob-tab" data-tab="records">'+svg(I.eye)+'Records <span class="mt-n">'+opened+'/'+DOC_ORDER.length+'</span></button>'
+    +'</div>';
+}
 function viewScene(){
   const node=currentNode();
   return '<div class="stage">'
     + superstrip()
-    + '<div class="scene">'+momentCard(node)+eviRail()+'</div>'
+    + mobTabBar()
+    + '<div class="scene" data-tab="'+mobTab+'">'+momentCard(node)+eviRail()+'</div>'
     + '</div>';
 }
 function momentCard(node){
@@ -1588,10 +1615,11 @@ function crossTrackReveal(){
 }
 
 /* ---------- Reducers / actions ---------- */
-function beginShift(){ AUDIO.unlock(); goFullscreen(); handoverT=0; handoverEnded=false; S.stage='handover'; save(); render(); }
+function beginShift(){ AUDIO.unlock(); goFullscreen(); mobTab='scene'; handoverT=0; handoverEnded=false; S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
   stopBuzzSequence();
+  mobTab='scene';                // land on the moment when a new node opens
   S.sub='decide';               // decide first; confidence is asked inline after the choice
   S.pendingChoice=null;
   save(); render();
@@ -1770,6 +1798,7 @@ document.addEventListener('click', function(e){
     case 'theme': toggleTheme(); break;
     case 'mute': toggleMute(); break;
     case 'fullscreen': toggleFullscreen(); break;
+    case 'mob-tab': mobTab=el.getAttribute('data-tab'); render(); break;
   }
 });
 document.addEventListener('fullscreenchange', render);
