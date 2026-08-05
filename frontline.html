@@ -1218,7 +1218,7 @@ function topbar(){
   const themeIc = document.documentElement.getAttribute('data-theme')==='dark'?I.sun:I.moon;
   return '<header class="topbar">'
     +'<div class="brand">'
-    +(S.stage==='landing'?'':'<img class="brand-mark" src="assets/frontline/brand-icon.png" alt="PracticE Ready" width="38" height="38">')
+    +'<img class="brand-mark" src="assets/frontline/brand-icon.png" alt="PracticE Ready" width="38" height="38">'
     +'<span>PracticE Ready<small>Frontline &middot; The Teatime Shift</small></span></div>'
     +'<div class="tb-spacer"></div>'
     +(showReset?'<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>':'')
