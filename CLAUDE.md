@@ -155,28 +155,80 @@ When something looks wrong, grep for competing rules on the same selector.
 ## Frontline sim (`frontline.html`) — separate sim, same repo
 
 `frontline.html` is a SECOND, standalone sim (F1 "The Teatime Shift"; first‑person
-support worker; person **Daniel**), deployed from the same repo/Render at
-`<render-url>/frontline.html`. Independent of The Risk Chain — do **not** couple them.
-Same hard design rules apply (no em dashes, no handles, no visible scrollbars,
-selection = fill, don't lead the player).
+support worker; person **Daniel** at Larkfield House), deployed from the same repo/Render
+at `<render-url>/frontline.html`. Independent of The Risk Chain — do **not** couple them.
+Single file, no build step. Verify brace/paren balance before every push:
+`node -e "const s=require('fs').readFileSync('frontline.html','utf8');for(const[c,o,cl]of[['{}','{','}'],['()','(',')']]){const a=s.split(o).length-1,b=s.split(cl).length-1;console.log(c,a===b?'ok':'MISMATCH')}"`.
+There is also a static mobile *mockup* `frontline-mobile.html` (one screen, design ref only).
 
-**Text / decision changes (2026‑07‑30):**
-- **N2 "The door" node** rewritten. The defensible answer is now fuller — *move the
-  housemate's toast out of Daniel's reach + answer on the **in‑room** intercom + keep
-  eyes on Daniel* — so it secures the food AND keeps line of sight, matching the F1 build
-  script's defensible option (the old version only used the intercom and left the food).
-  Consequence copy now states both Daniel's meal and the toast are set out of reach.
-- **Almost‑correct distractor:** N2's risky option secures the food too but still steps to
-  the door — the supervision break is the *only* thing separating it from correct — and it
-  is placed **first**, so "pick the top / most cautious option" no longer games the node.
-- **Option display order varied across nodes (N1–N5)** so the correct answer is not always
-  first. Scoring and outcomes key on the option **`id`** (`m={a:100,b:55,c:15}`, and
-  `resolve()` checks `N5==='a'||'b'`), **not** on array position — so reordering the
-  options array is display‑only and safe.
-- **Scenario body font** moved off the Palatino serif to a clean humanist sans via a new
-  `--scene` token (used by `.scene-text`).
-- Real scene photos are in `assets/frontline/scene-*.jpg` (re‑encoded small; preloaded).
-- **Colour palette is still being iterated — deliberately NOT recorded here yet.**
+### Brand & design system (FINALISED this session — client‑approved hex)
+Locked to the official PracticE Ready brand palette in both themes (`:root` light default,
+`@media dark`, `[data-theme]`). Values live on the token lines; edit those, not components.
+- **Navy `#072A6B`** (`--ink` main text, `--navy` header chrome), **Dark Navy `#0B1F5D`**.
+- **Teal `#16AFC2`** (`--teal`, records / primary accent), **Cyan `#21B8D9`** (`--z-monitor`).
+- **Orange `#FF7A1A`** (`--go`) = **CTAs ONLY** (firm user rule — not for decoration).
+- **Purple `#8A3CCB`** (`--violet`, tools zone), **Magenta `#D94A8A`** (accent).
+- **Amber `#D99A2B`** (warn — kept a darker variant for WCAG), grey lines `#C9CDD4`.
+  Green/red are semantic status only (the brand has neither).
+- **Font: Source Sans 3, self‑hosted inline** (base64 `@font-face`, offline/SCORM‑safe),
+  aliased to `--sans/--serif/--scene/--mono`. It is the free substitute for
+  Frutiger/Helvetica/Clearview (proprietary — only render if licensed `.woff2` are embedded).
+- **9‑step type scale** `--t-hero…--t-nano`. `--sheen` = white top‑highlight token used for gloss.
+
+**Zone system** — each function tinted from the palette so panels read distinctly: metrics
+(neutral white‑glass tiles), **records = teal** (`.sec-records`), **tools = violet**
+(`.sec-tools`), **actions = orange** (currently the `.opt` accent — see OPEN DECISIONS).
+Landing fact‑tile icons are solid glossy chips (magenta / dark‑teal `#0f8a9e` / purple,
+white glyphs; teal had to be darkened so the white shows).
+
+**Look:** glassy cards everywhere (gradient surface‑2→surface + `--sheen` inset + soft
+shadow + `#C9CDD4` borders), rounded `--r-lg:18px`. **Floating header** constrained to the
+1200px content column. **Gauges are soft circular rings** now (`meter()` draws ring + centre
+number + label). Records rail is **de‑nested**: a plain "Records & tools" title over two
+tinted panels of outlined **pill** items (`.doc-row`). Landing = **hero of two tiles** (copy
+tile + image tile, matched height) over three fact tiles, top‑aligned on the plain page
+background at 1200px (same width as sim screens). Dark theme = deep‑navy depth (dark ground,
+elevated glassy panels, teal‑tinted records rail). Subtle entrance/hover animations
+throughout, all gated by `prefers-reduced-motion`.
+
+### Content / flow (validated with SME "Emma")
+- **Four outcome paths:** A prevention · B near‑miss recovered · C emergency **survived** ·
+  D emergency **fatal**. The full emergency path (incl. worst‑case fatal) is BUILT, gated
+  behind a *credible three‑failure chain* (a critical control fails → N5 not recognised →
+  N6 not run); A always reachable, never forced. New node **N6** (emergency response) drives
+  C vs D. Post‑incident steps split worker‑owned vs manager/org‑led. Emergency wording held
+  at "recognise → call 999 → follow choking first‑aid guidance" (no technique taught). Emma
+  owns the clinical wording; full sourcing in `docs/F1-emergency-path-for-validation.md`.
+- **Talking‑head videos** (`assets/frontline/intro.mp4`, `handover.mp4`) with **captions
+  inlined as data‑URI `<track>`** (a `.vtt` file won't load over `file://`). Intro plays in
+  a **gated disclaimer lightbox** ("Before you begin") — autoplays, custom pause control, and
+  the acknowledge button only unlocks at **90%** of the video; **Restart re‑shows it**
+  (clears the `teatime_disc_v6` localStorage key). SME‑owned caveat = `SIM_CAVEAT`. Scripts:
+  `docs/F1-video-scripts.md` (12 modular clips; handover + debrief presenter slots outstanding).
+- **Fullscreen** on first interaction + top‑bar toggle. **Mobile:** fluid ring gauges + a
+  **[The moment]/[Records] tab** so records aren't buried below the scene. Synthesised UI
+  **sound effects** (`AUDIO.sfx`, primed on first gesture; play *after* the context resumes).
+- Scene photos: `assets/frontline/scene-*.jpg`. Options key on `id` not array position
+  (`m={a:100,b:55,c:15}`), so reordering is display‑only and safe.
+
+### OPEN DECISIONS (waiting on the user)
+1. **Orange CTA buttons fail WCAG** — white on `#FF7A1A` ≈ 2.8:1. Choose: **navy text on the
+   orange** (keeps brand orange, passes AA) OR a **darker orange** with white text.
+2. **Option buttons (`.opt`) are still orange**, but "orange = CTAs only" — likely switch
+   their accent to **teal**. Watch the dark‑theme white‑on‑light‑accent problem: define an
+   on‑accent colour (white in light / dark ink in dark) rather than always white.
+
+### OPEN THREADS
+- Full **WCAG 2.1 AA** close‑out (axe/Lighthouse + screen‑reader + modal focus‑trap). Done
+  so far: captions, video pause, reduced‑motion, focus outline, Esc‑closes‑modal, ARIA
+  labels, aria‑pressed tabs, several contrast fixes. NOT certified — don't claim AA yet.
+- Carry the ring/glass language into the **debrief** (domain bars → rings).
+- **Audit copy for em dashes** (hard rule) — a lot of outcome/debrief copy still uses them.
+
+### IMPORTANT working note
+The user's screenshots have failed to load **all session** because they exceed **2000px**
+(API image limit). Ask them to crop/resize under 2000px so you can actually see them —
+otherwise you are iterating blind on their word alone.
 
 ## The user
 
