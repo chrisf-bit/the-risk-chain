@@ -211,12 +211,16 @@ throughout, all gated by `prefers-reduced-motion`.
 - Scene photos: `assets/frontline/scene-*.jpg`. Options key on `id` not array position
   (`m={a:100,b:55,c:15}`), so reordering is display‑only and safe.
 
-### OPEN DECISIONS (waiting on the user)
-1. **Orange CTA buttons fail WCAG** — white on `#FF7A1A` ≈ 2.8:1. Choose: **navy text on the
-   orange** (keeps brand orange, passes AA) OR a **darker orange** with white text.
-2. **Option buttons (`.opt`) are still orange**, but "orange = CTAs only" — likely switch
-   their accent to **teal**. Watch the dark‑theme white‑on‑light‑accent problem: define an
-   on‑accent colour (white in light / dark ink in dark) rather than always white.
+### AGREED PLAN — implement next session (user approved)
+1. **Orange CTA buttons → navy text.** Use **navy `#072A6B` text on the `#FF7A1A` orange**
+   (keeps exact brand orange, passes WCAG ≈ 4.7:1). Applies to `.btn-go` everywhere
+   (Begin / Go to the table / Carry on / See how it ends / acknowledge, etc.).
+2. **Option buttons (`.opt`) → teal accent.** Switch icon `.ob`, hover border and selected
+   fill/tint from orange (`--go`) to **teal**; reserve orange for CTAs only. Glyphs on a
+   filled accent need an **on‑accent** colour (white in light theme, dark ink in dark) —
+   the dark‑theme accents are light, so plain white‑on‑accent fails. Add a `--on-accent`
+   token (light `#fff` / dark `#04252b`), or fill with `--teal-strong` and flip the glyph
+   colour per theme.
 
 ### OPEN THREADS
 - Full **WCAG 2.1 AA** close‑out (axe/Lighthouse + screen‑reader + modal focus‑trap). Done
