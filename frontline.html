@@ -155,6 +155,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .brand .emblem{width:30px;height:30px;border-radius:7px;background:linear-gradient(160deg,#e0a659,#a9741f);display:grid;place-items:center;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
 .brand .emblem svg{width:18px;height:18px}
 .brand .brand-mark{width:38px;height:38px;flex:none;border-radius:9px;object-fit:contain;box-shadow:0 1px 3px rgba(0,0,0,.30)}
+.pr-e{color:#16afc2;font-style:normal}
 .brand small{display:block;font-weight:600;font-size:var(--t-eyebrow);letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 .tb-spacer{margin-left:auto}
 .tb-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#eaf1fb;border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:650}
@@ -184,8 +185,10 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .land-media .lm-tag{position:absolute;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:7px;background:rgba(16,35,64,.78);color:#fff;backdrop-filter:blur(4px);border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:700}
 .land-media .lm-tag svg{width:15px;height:15px}
 .land-logo{display:block;width:auto;height:56px;margin:0 0 20px;object-fit:contain;object-position:left center}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .land-logo{background:#fff;padding:12px 16px;border-radius:12px;margin-left:-16px;box-shadow:var(--shadow)}}
-[data-theme="dark"] .land-logo{background:#fff;padding:12px 16px;border-radius:12px;margin-left:-16px;box-shadow:var(--shadow)}
+.ll-dark{display:none}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ll-light{display:none}:root:not([data-theme="light"]) .ll-dark{display:block}}
+[data-theme="dark"] .ll-light{display:none}
+[data-theme="dark"] .ll-dark{display:block}
 .land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line);border-radius:100px;padding:6px 14px;font-size:var(--t-cap);font-weight:750;letter-spacing:.04em}
 .land-kicker svg{width:15px;height:15px}
 .land-card h1{font-size:var(--t-hero);letter-spacing:-.025em;margin:18px 0 0;line-height:1.02}
@@ -521,6 +524,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
   .scene[data-tab="scene"] .evi{display:none}
   .scene[data-tab="records"] .moment{display:none}
   .scene-illo.has-img{height:210px;min-height:210px}
+  /* header: keep the brand on one line so nothing clips; drop the subtitle */
+  .topbar{gap:8px;padding:0 12px}
+  .brand{min-width:0;gap:9px}
+  .brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .brand small{display:none}
+  .brand .brand-mark{width:32px;height:32px}
+  /* video captions: bump size so they are legible on a phone */
+  .vplayer::cue{font-size:1.45em}
 }
 </style>
 </head>
@@ -1219,7 +1230,7 @@ function topbar(){
   return '<header class="topbar">'
     +'<div class="brand">'
     +'<img class="brand-mark" src="assets/frontline/brand-icon.png" alt="PracticE Ready" width="38" height="38">'
-    +'<span>PracticE Ready<small>Frontline &middot; The Teatime Shift</small></span></div>'
+    +'<span>Practic<span class="pr-e">E</span> Ready<small>Frontline &middot; The Teatime Shift</small></span></div>'
     +'<div class="tb-spacer"></div>'
     +(showReset?'<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>':'')
     +'<button class="tb-btn" data-act="mute" aria-label="'+(S.muted?'Unmute':'Mute')+'">'+svg(S.muted?I.mute:I.sound)+'</button>'
@@ -1233,7 +1244,8 @@ function viewLanding(){
   return '<div class="landing"><div class="land-card">'
     +'<div class="land-hero">'
     +  '<div class="land-copy">'
-    +    '<img class="land-logo" src="assets/frontline/brand-logo.png" alt="PracticE Ready">'
+    +    '<img class="land-logo ll-light" src="assets/frontline/brand-logo.png" alt="PracticE Ready">'
+    +    '<img class="land-logo ll-dark" src="assets/frontline/brand-logo-dark.png" alt="PracticE Ready" aria-hidden="true">'
     +    '<span class="land-kicker">'+svg(I.person)+'You are the support worker on shift</span>'
     +    '<h1>The Teatime Shift</h1>'
     +    '<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
@@ -1715,7 +1727,7 @@ function crossTrackReveal(){
     + '<span class="ct-arr">'+svg(I.arrowR)+'</span>'
     + ctNode('home','The shift you were handed')
     +'</div>'
-    +'<p style="margin-top:16px">In the full PracticE Ready programme you would take the Manager and Director shifts that built this one. For now, this is a teaser for that connected view.</p>'
+    +'<p style="margin-top:16px">In the full Practic<span class="pr-e">E</span> Ready programme you would take the Manager and Director shifts that built this one. For now, this is a teaser for that connected view.</p>'
     +'</div>';
 }
 
