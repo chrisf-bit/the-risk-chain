@@ -16,14 +16,27 @@
 
 ---
 
-## 1. WELCOME + disclaimer  ·  EDUCATOR  ·  ~35s
-*Plays inside the "Before you begin" lightbox. The caveat is SME-owned — deliver the bracketed sentence **verbatim**, word for word.*
+## 1. WELCOME (introduction only)  ·  EDUCATOR  ·  ~22s
+*Plays as the opening introduction. Pure welcome. The disclaimer has been moved to the end of the shift (see section 1b) at the client's request, so this clip no longer contains it and there is no acknowledge gate.*
 
-> Welcome to The Teatime Shift. For the next fifteen minutes you're going to lead a real teatime at a care home, supporting a man called Daniel through his meal — on your own. There are no hints and no single right answer. What happens is whatever your choices make happen.
+> Welcome to The Teatime Shift.
 >
-> One important thing before we start. **[VERBATIM: This simulation is for learning and reflection. It does not replace or override a person's individual eating, drinking and swallowing plan, professional or clinical guidance, your organisation's own policies and procedures, accredited first-aid training, or the instructions of the emergency services.]**
+> For the next fifteen minutes, you're going to lead a real teatime at a care home, supporting a man called Daniel through his meal, on your own.
 >
-> When you're ready, acknowledge that below, and begin your shift.
+> There are no hints, and no single right answer. What happens is whatever your choices make happen.
+>
+> Nothing about this shift looks dramatic, and that is exactly the point. This is how real practice feels, and it is where real judgement is made.
+>
+> When you're ready, begin your shift.
+
+*Alternative closing line, if you'd rather hand straight to the colleague: "When you're ready, begin your shift. Your colleague is about to hand over to you."*
+
+---
+
+## 1b. DISCLAIMER at the end  ·  on-screen text (no video)
+*The SME-owned caveat now appears verbatim on the **summary / debrief** screen, rendered on-screen (the `caveatBox()` component), not spoken. No recording needed. Wording is locked and must stay word for word:*
+
+> **[VERBATIM: This simulation is for learning and reflection. It does not replace or override a person's individual eating, drinking and swallowing plan, professional or clinical guidance, your organisation's own policies and procedures, accredited first-aid training, or the instructions of the emergency services.]**
 
 ---
 
