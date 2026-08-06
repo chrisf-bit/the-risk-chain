@@ -211,6 +211,19 @@ throughout, all gated by `prefers-reduced-motion`.
 - Scene photos: `assets/frontline/scene-*.jpg`. Options key on `id` not array position
   (`m={a:100,b:55,c:15}`), so reordering is display‑only and safe.
 
+### Brand marks, logo & mobile tweaks
+- **Header chip + favicon** are the SAME file: `assets/frontline/brand-icon.png` (the
+  "PR Chip", 720×720 square). Class `.brand-mark` (38px; 32px mobile; 9px radius;
+  `object-fit:contain`). To swap both, just overwrite that one file. Favicons cache hard —
+  reopen the tab to see a new one.
+- **Landing wordmark** = `brand-logo.png` (light) / `brand-logo-dark.png` (white wordmark for
+  dark backgrounds), shown via `.land-logo.ll-light` / `.ll-dark`.
+- The word **"PracticE Ready" renders its E in brand teal `#16afc2`** wherever it appears.
+- **Mobile (`@media max-width:900px`):** header keeps the brand on one line (nowrap +
+  ellipsis) and hides the subtitle; **video captions enlarged** via
+  `.vplayer::cue{font-size:2em}`. If captions still read small, note that some browsers
+  ignore native `::cue` styling — the robust fix is a custom caption overlay synced to the VTT.
+
 ### AGREED PLAN — implement next session (user approved)
 1. **Orange CTA buttons → navy text.** Use **navy `#072A6B` text on the `#FF7A1A` orange**
    (keeps exact brand orange, passes WCAG ≈ 4.7:1). Applies to `.btn-go` everywhere
