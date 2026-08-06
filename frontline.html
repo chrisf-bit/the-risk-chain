@@ -182,6 +182,10 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .land-copy{min-width:0;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:30px 32px}
 .land-media{position:relative;min-height:0}
 .land-media img{width:100%;height:100%;min-height:280px;object-fit:cover;border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);display:block}
+/* Inline intro video sits in the hero's right tile: a true 16:9 frame, centred
+   in the column so it never stretches/crops the talking head. */
+.land-media.land-video{align-self:center;aspect-ratio:16/9;min-height:0;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+.land-media.land-video video{width:100%;height:100%;object-fit:cover;display:block;background:#0b1016;border-radius:inherit}
 .land-media .lm-tag{position:absolute;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:7px;background:rgba(16,35,64,.78);color:#fff;backdrop-filter:blur(4px);border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:700}
 .land-media .lm-tag svg{width:15px;height:15px}
 .land-logo{display:block;width:auto;height:56px;margin:0 0 20px;object-fit:contain;object-position:left center}
@@ -720,6 +724,10 @@ const HANDOVER_VTT_MOBILE='data:text/vtt;base64,V0VCVlRUCgpOT1RFClNjZW5lIDEgZHVy
 /* Match the CSS mobile breakpoint (max-width:900px) so the handover clip and
    its captions match where the records actually live. */
 function isMobileView(){ try{ return window.matchMedia('(max-width:900px)').matches; }catch(e){ return false; } }
+/* Welcome-only intro clip (plays inline in the landing hero). Captions inlined
+   as a data-URI so they load over file:// too. The disclaimer now lives at the
+   end of the debrief (caveatBox), not here. */
+const INTRO_VTT='data:text/vtt;base64,V0VCVlRUCgpTVFlMRQo6OmN1ZSB7CiAgICBjb2xvcjogd2hpdGU7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjMzgzOTQzQTM7Cn0KCjAwOjAwOjAwLjYwMCAtLT4gMDA6MDA6MDIuMzYwCldlbGNvbWUgdG8gVGhlIFRlYXRpbWUgU2hpZnQuCgowMDowMDowMi4zNjAgLS0+IDAwOjAwOjA3LjI0MApGb3IgdGhlIG5leHQgZmlmdGVlbiBtaW51dGVzLCB5b3UncmUgZ29pbmcgdG8gbGVhZAphIHJlYWwgdGVhdGltZSBhdCBhIGNhcmUgaG9tZSwgc3VwcG9ydGluZyBhIG1hbiBjYWxsZWQKCjAwOjAwOjA3LjI0MCAtLT4gMDA6MDA6MDkuMTU2CkRhbmllbCB0aHJvdWdoIGhpcyBtZWFsLCBvbiB5b3VyIG93bi4KCjAwOjAwOjA5LjMwNiAtLT4gMDA6MDA6MTIuNTg2ClRoZXJlIGFyZSBubyBoaW50cywgYW5kIG5vIHNpbmdsZSByaWdodCBhbnN3ZXIuCgowMDowMDoxMi41ODYgLS0+IDAwOjAwOjE1LjQ2NgpXaGF0IGhhcHBlbnMgaXMgd2hhdGV2ZXIgeW91ciBjaG9pY2VzIG1ha2UgaGFwcGVuLgoKMDA6MDA6MTUuNDY2IC0tPiAwMDowMDoxOC44NDkKTm90aGluZyBhYm91dCB0aGlzIHNoaWZ0IGxvb2tzIGRyYW1hdGljLCBhbmQgdGhhdAppcyBleGFjdGx5IHRoZSBwb2ludC4KCjAwOjAwOjE4Ljk5OSAtLT4gMDA6MDA6MjMuOTU5ClRoaXMgaXMgaG93IHJlYWwgcHJhY3RpY2UgZmVlbHMsIGFuZCBpdCBpcyB3aGVyZSByZWFsCmp1ZGdlbWVudCBpcyBtYWRlLgoKMDA6MDA6MjMuOTU5IC0tPiAwMDowMDoyNS42ODcKV2hlbiB5b3UncmUgcmVhZHksIGJlZ2luIHlvdXIgc2hpZnQu';
 function danielChipAvatar(){
   return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
     +'<circle cx="22" cy="22" r="21" class="il-chip-bg"/>'
@@ -1143,11 +1151,22 @@ function render(){
   else if(S.stage==='node') view=viewScene();
   else if(S.stage==='outcome') view=viewOutcome();
   else if(S.stage==='debrief') view=viewDebrief();
-  const showDisc = (S.stage==='landing' && !disclaimerAcked());
-  app.innerHTML = topbar() + view + (showDisc?disclaimerModal():'') + (S.modal?docModal(S.modal.id):'');
+  app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
   window.scrollTo(0,0);
-  if(showDisc){ setupDisclaimer(); }
+  if(S.stage==='landing'){ setupIntroVideo(); }
   if(S.stage==='handover'){ setupHandoverVideo(); startShiftClock(); }
+}
+/* Welcome intro clip on the landing: captions on, position preserved across
+   re-renders (e.g. a theme toggle), and an autoplay attempt. Native controls
+   provide the pause/play fallback if the browser blocks autoplaying sound. */
+var introT=0;
+function setupIntroVideo(){
+  var v=document.querySelector('.intro-video'); if(!v) return;
+  function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
+  showCaps(); v.addEventListener('loadeddata', showCaps);
+  v.addEventListener('loadedmetadata', function(){ if(introT>0 && introT < v.duration-0.3){ try{ v.currentTime=introT; }catch(e){} } });
+  v.addEventListener('timeupdate', function(){ introT=v.currentTime; });
+  var p=v.play(); if(p && p.catch){ p.catch(function(){}); }
 }
 /* Handover clip: captions on, autoplay (we arrive via a click so sound is
    allowed), and playback position preserved across re-renders so opening a
@@ -1162,67 +1181,10 @@ function setupHandoverVideo(){
   v.addEventListener('ended', function(){ handoverEnded=true; });
   if(!handoverEnded){ var p=v.play(); if(p && p.catch){ p.catch(function(){}); } }
 }
-/* Disclaimer lightbox: the SME-owned caveat, shown once per browser and
-   requiring acknowledgement before the shift can begin. */
-function disclaimerAcked(){ try{ return localStorage.getItem('teatime_disc_v6')==='1'; }catch(e){ return true; } }
-function ackDisclaimer(){ try{ localStorage.setItem('teatime_disc_v6','1'); }catch(e){} goFullscreen(); render(); }
-function disclaimerModal(){
-  return '<div class="backdrop disc-back"><div class="modal disc-modal" data-stop="1">'
-    +'<div class="vband disc-vband">'
-    +  '<video class="vplayer disc-video" aria-label="Introduction video" playsinline preload="auto">'
-    +    '<source src="assets/frontline/intro.mp4" type="video/mp4">'
-    +    '<track kind="captions" srclang="en" label="English" default src="data:text/vtt;base64,V0VCVlRUCgpOT1RFClNjZW5lIDEgZHVyYXRpb24gaW4gc2Vjb25kczogMzkuNzY5OTk5OTk5OTk5OTk2CgoxCjAwOjAwOjAxLjI3MyAtLT4gMDA6MDA6MDMuMzkzCldlbGNvbWUgdG8gVGhlIFRlYXRpbWUgU2hpZnQuCgoyCjAwOjAwOjAzLjM5MyAtLT4gMDA6MDA6MDguMTI5CkZvciB0aGUgbmV4dCBmaWZ0ZWVuIG1pbnV0ZXMgeW91J3JlIGdvaW5nIHRvIGxlYWQgYSByZWFsIHRlYXRpbWUgYXQgYSBjYXJlIGhvbWUsIHN1cHBvcnRpbmcgYSBtYW4gY2FsbGVkCgozCjAwOjAwOjA4LjEyOSAtLT4gMDA6MDA6MTAuODQzCkRhbmllbCB0aHJvdWdoIGhpcyBtZWFsLCBvbiB5b3VyIG93bi4KCjQKMDA6MDA6MTAuODQzIC0tPiAwMDowMDoxMy4yMDAKVGhlcmUgYXJlIG5vIGhpbnRzIGFuZCBubyBzaW5nbGUgcmlnaHQgYW5zd2VyLgoKNQowMDowMDoxMy4yMDAgLS0+IDAwOjAwOjE2LjI1MwpXaGF0IGhhcHBlbnMgaXMgd2hhdGV2ZXIgeW91ciBjaG9pY2VzIG1ha2UgaGFwcGVuLgoKNgowMDowMDoxNi4yNTMgLS0+IDAwOjAwOjE3LjY4MQpPbmUgaW1wb3J0YW50IHRoaW5nIGJlZm9yZSB3ZSBzdGFydC4KCjcKMDA6MDA6MTcuNjgxIC0tPiAwMDowMDoyMC4zNjMKVGhpcyBzaW11bGF0aW9uIGlzIGZvciBsZWFybmluZyBhbmQgcmVmbGVjdGlvbi4KCjgKMDA6MDA6MjAuMzYzIC0tPiAwMDowMDoyNS45NTMKSXQgZG9lcyBub3QgcmVwbGFjZSBvciBvdmVycmlkZSBhIHBlcnNvbidzIGluZGl2aWR1YWwgZWF0aW5nLCBkcmlua2luZywgYW5kIHN3YWxsb3dpbmcgcGxhbi4KCjkKMDA6MDA6MjUuOTUzIC0tPiAwMDowMDozMS4yODMKTm9yIGRvZXMgaXQgb3ZlcnJpZGUgcHJvZmVzc2lvbmFsIG9yIGNsaW5pY2FsIGd1aWRhbmNlLCB5b3VyIG9yZ2FuaXNhdGlvbidzIG93biBwb2xpY2llcyBhbmQgcHJvY2VkdXJlcywKCjEwCjAwOjAwOjMxLjI4MyAtLT4gMDA6MDA6MzUuODgzCmFjY3JlZGl0ZWQgZmlyc3QtYWlkIHRyYWluaW5nLCBvciB0aGUgaW5zdHJ1Y3Rpb25zIG9mIHRoZSBlbWVyZ2VuY3kgc2VydmljZXMuCgoxMQowMDowMDozNS44ODMgLS0+IDAwOjAwOjM5LjEzMApXaGVuIHlvdSdyZSByZWFkeSwgYWNrbm93bGVkZ2UgdGhhdCBiZWxvdywgYW5kIGJlZ2luIHlvdXIgc2hpZnQuCg==">'
-    +  '</video>'
-    +  '<button class="disc-playoverlay" type="button" hidden><span>'+svg(I.play)+'</span>Play introduction</button>'
-    +  '<button class="disc-vctrl" type="button" aria-label="Pause">'+svg(I.pause)+'</button>'
-    +  '<div class="disc-progress"><i></i></div>'
-    +'</div>'
-    +'<div class="disc-wait">Please watch the introduction to continue.</div>'
-    +'<div class="disc-gate">'
-    +  '<div class="disc-top"><span class="disc-emblem">'+svg(I.info)+'</span><h3>Before you begin</h3></div>'
-    +  '<div class="disc-body"><p>'+SIM_CAVEAT+'</p></div>'
-    +  '<div class="disc-actions"><button class="btn-go" data-act="ack-disclaimer">'+svg(I.check)+'I understand &mdash; continue</button></div>'
-    +'</div>'
-    +'</div></div>';
-}
-/* Autoplay the intro; unlock the caveat + acknowledge button only once the
-   learner has watched ~90%. Falls back to a Play button if the browser blocks
-   autoplaying sound, and never traps the learner if the video can't load. */
-function setupDisclaimer(){
-  var v=document.querySelector('.disc-video'); if(!v) return;
-  function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
-  showCaps(); v.addEventListener('loadeddata', showCaps);
-  var gate=document.querySelector('.disc-gate');
-  var wait=document.querySelector('.disc-wait');
-  var overlay=document.querySelector('.disc-playoverlay');
-  var bar=document.querySelector('.disc-progress > i');
-  var revealed=false;
-  function reveal(){ if(revealed) return; revealed=true; if(gate) gate.classList.add('show'); if(wait) wait.style.display='none'; }
-  function showOverlay(){ if(overlay) overlay.removeAttribute('hidden'); }
-  function hideOverlay(){ if(overlay) overlay.setAttribute('hidden',''); }
-  v.addEventListener('timeupdate', function(){
-    if(v.duration && !isNaN(v.duration)){
-      var f=v.currentTime/v.duration;
-      if(bar) bar.style.width=Math.min(100,f*100)+'%';
-      if(f>=0.9) reveal();
-    }
-  });
-  v.addEventListener('ended', reveal);
-  v.addEventListener('error', reveal);
-  v.addEventListener('play', hideOverlay);
-  if(overlay){ overlay.addEventListener('click', function(){ hideOverlay(); v.play(); }); }
-  // WCAG 1.4.2 / 2.2.2: audio that plays automatically must be pausable.
-  var ctrl=document.querySelector('.disc-vctrl');
-  if(ctrl){
-    ctrl.addEventListener('click', function(){ if(v.paused){ v.play(); } else { v.pause(); } });
-    v.addEventListener('play', function(){ ctrl.innerHTML=svg(I.pause); ctrl.setAttribute('aria-label','Pause'); });
-    v.addEventListener('pause', function(){ ctrl.innerHTML=svg(I.playtri); ctrl.setAttribute('aria-label','Play'); });
-  }
-  var p=v.play();
-  if(p && p.catch){ p.catch(showOverlay); }
-  setTimeout(function(){ if(v.paused){ showOverlay(); } }, 1200);          // autoplay blocked → offer Play
-  setTimeout(function(){ if(!revealed && (!v.duration || isNaN(v.duration))){ reveal(); } }, 40000); // safety net
-}
+/* Disclaimer lightbox REMOVED (2026-08): the intro is now a welcome-only clip
+   inline on the landing (setupIntroVideo), and the SME caveat moved to the end
+   of the debrief (caveatBox). The old modal, gate, autoplay-90%-unlock and the
+   teatime_disc localStorage flag were all deleted with it. */
 
 function topbar(){
   const showReset = S.stage!=='landing';
@@ -1251,7 +1213,12 @@ function viewLanding(){
     +    '<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
     +    '<div class="land-actions"><button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button></div>'
     +  '</div>'
-    +  '<div class="land-media"><img src="assets/frontline/scene-handover.jpg" alt="A support worker beside a resident at a care-home dining table" loading="eager"><span class="lm-tag">'+svg(I.clock)+'Larkfield House &middot; 17:40</span></div>'
+    +  '<div class="land-media land-video">'
+    +    '<video class="vplayer intro-video" aria-label="Introduction video" playsinline preload="auto" controls>'
+    +      '<source src="assets/frontline/intro.mp4" type="video/mp4">'
+    +      '<track kind="captions" srclang="en" label="English" default src="'+INTRO_VTT+'">'
+    +    '</video>'
+    +  '</div>'
     +'</div>'
     +'<div class="land-facts">'
     +landFact('person','You lead the shift','For fifteen minutes you support Daniel through his meal on your own. What you do is what happens.')
@@ -1854,7 +1821,7 @@ function openDoc(id){
 function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); AUDIO.sfx('confirm'); save(); render(); }
 function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); render(); }
 
-function restart(){ const keep={theme:S.theme,muted:S.muted}; resetShiftClock(); stopBuzzSequence(); AUDIO.ambienceStop(); try{ localStorage.removeItem('teatime_disc_v6'); }catch(e){} S=Object.assign(initState(),keep); applyTheme(); save(); render(); }   // restart re-shows the intro/disclaimer
+function restart(){ const keep={theme:S.theme,muted:S.muted}; resetShiftClock(); stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); applyTheme(); save(); render(); }   // back to the landing (intro plays inline there)
 function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); if(!S.muted){ AUDIO.sfx('toggle'); } save(); render(); }
 
 /* ---------- Full screen ---------- */
@@ -1894,7 +1861,7 @@ document.addEventListener('click', function(e){
   // Navigation / selection cues. Document, flag, toggle and outcome cues are
   // fired inside their own handlers so they stay precise (e.g. the modal
   // close-guard, or the outcome tone matched to the path).
-  const nav={begin:'forward','to-table':'forward',confidence:'select',choose:'select','next-node':'forward','to-debrief':'forward',restart:'back','ack-disclaimer':'confirm'};
+  const nav={begin:'forward','to-table':'forward',confidence:'select',choose:'select','next-node':'forward','to-debrief':'forward',restart:'back'};
   if(nav[act]){ AUDIO.sfx(nav[act]); }
   switch(act){
     case 'begin': beginShift(); break;
@@ -1911,7 +1878,6 @@ document.addEventListener('click', function(e){
       if(el.classList.contains('backdrop') && e.target.closest('.modal')){ break; }
       closeModal();
       break;
-    case 'ack-disclaimer': ackDisclaimer(); break;
     case 'restart': restart(); break;
     case 'theme': toggleTheme(); break;
     case 'mute': toggleMute(); break;
