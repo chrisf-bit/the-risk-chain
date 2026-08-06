@@ -1,40 +1,34 @@
 WEBVTT
 
-NOTE
-Scene 1 duration in seconds: 26.060000000000002
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
 
-1
-00:00:01.273 --> 00:00:04.907
-Right, I've got to get upstairs for the medication round, so teatime's yours now.
+00:00:00.600 --> 00:00:04.040
+I need to head upstairs for the medication round,
+so you'll be in charge of teatime.
 
-2
-00:00:04.907 --> 00:00:08.693
-It's just you and Daniel; his housemate's at the table as well.
+00:00:04.200 --> 00:00:06.114
+It's just you and two housemates at the table.
 
-3
-00:00:08.693 --> 00:00:13.268
-Before you go over, take a proper look at what we hold on Daniel, his mealtime plan, his records, the
+00:00:06.264 --> 00:00:10.824
+Before you start, make sure to check the information
+we have, like the mealtime plan, patient records,
 
-4
-00:00:13.268 --> 00:00:13.998
-reference tools.
+00:00:10.824 --> 00:00:12.184
+and reference tools.
 
-5
-00:00:13.998 --> 00:00:15.963
-They're all there on the right.
+00:00:12.184 --> 00:00:13.010
+They're all on the right.
 
-6
-00:00:15.963 --> 00:00:17.983
-Nothing's flagged for you, though.
+00:00:13.160 --> 00:00:17.240
+There's nothing urgent for you, but it's important
+to notice what matters today.
 
-7
-00:00:17.983 --> 00:00:21.853
-Part of this simulation is spotting which ones actually matter today.
+00:00:17.240 --> 00:00:19.160
+Once you're ready, head over to the table.
 
-8
-00:00:21.853 --> 00:00:24.263
-When you're ready, go to the table.
-
-9
-00:00:24.263 --> 00:00:25.478
+00:00:19.160 --> 00:00:19.742
 You've got this.
