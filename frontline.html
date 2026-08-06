@@ -207,6 +207,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .land-facts .lf h4{font-size:var(--t-h3)}
 .land-facts .lf p{font-size:var(--t-sm);color:var(--ink-2);margin-top:5px;line-height:1.45}
 .land-actions{margin-top:26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+/* Final CTA: its own full-width card below the fact tiles, so the button is the
+   last thing after all the content (and the hero copy tile is shorter). */
+.land-cta{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:14px;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 24px;box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+.land-cta .lc-prompt{margin:0;font-size:var(--t-h3);color:var(--ink-2);font-weight:600}
+.land-cta .lc-prompt b{color:var(--ink);font-weight:800}
 .land-note{font-size:var(--t-cap);color:var(--ink-4);max-width:44ch}
 
 /* ---------- Scene shell ---------- */
@@ -516,6 +521,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
   .db-grid{grid-template-columns:1fr}
   .land-facts{grid-template-columns:1fr}
   .land-hero{grid-template-columns:1fr;gap:14px}
+  .land-cta{flex-direction:column;align-items:stretch;text-align:center}
+  .land-cta .btn-go{justify-content:center}
   .land-media img{height:auto;min-height:0;aspect-ratio:4/3}
   #app{height:auto;min-height:100%}
   .stage,.landing,.outcome,.debrief{overflow:visible}
@@ -1211,7 +1218,6 @@ function viewLanding(){
     +    '<span class="land-kicker">'+svg(I.person)+'You are the support worker on shift</span>'
     +    '<h1>The Teatime Shift</h1>'
     +    '<p class="lead">It is 17:40 at Larkfield House. Your teatime colleague has called in sick and the shift leader is upstairs on a medication round. For the next fifteen minutes, you are supporting Daniel through his meal, on your own. Nothing about this is dramatic. That is exactly how a choking incident begins.</p>'
-    +    '<div class="land-actions"><button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button></div>'
     +  '</div>'
     +  '<div class="land-media land-video">'
     +    '<video class="vplayer intro-video" aria-label="Introduction video" playsinline preload="auto" controls>'
@@ -1224,6 +1230,10 @@ function viewLanding(){
     +landFact('person','You lead the shift','For fifteen minutes you support Daniel through his meal on your own. What you do is what happens.')
     +landFact('clipboard','The evidence is open','Daniel’s plan, his records and the reference tools are all there to consult. Nothing flags which ones matter.')
     +landFact('target','Readiness, not revision','No coaching, no hints, no single right answer. The shift shows how you would really practise.')
+    +'</div>'
+    +'<div class="land-cta">'
+    +  '<p class="lc-prompt">When you are ready, click <b>Begin your shift</b>.</p>'
+    +  '<button class="btn-go" data-act="begin">'+svg(I.play)+'Begin your shift</button>'
     +'</div>'
     +'</div></div>';
 }
