@@ -235,6 +235,23 @@ throughout, all gated by `prefers-reduced-motion`.
    token (light `#fff` / dark `#04252b`), or fill with `--teal-strong` and flip the glyph
    colour per theme.
 
+### AGREED — intro video relocation (waiting on new asset)
+Client wants the intro to be **welcome‑only** (no disclaimer, no gate), with the
+SME disclaimer **moved to the end**. Status:
+- **Done:** verbatim `SIM_CAVEAT` now renders at the end of the debrief via
+  `caveatBox()` (was defined but unused). New welcome‑only intro script written into
+  `docs/F1-video-scripts.md` §1 (§1b documents the end disclaimer as on‑screen text).
+- **Waiting on user:** they will record a new welcome‑only **`intro.mp4`** (keep it the
+  **same 16:9 / 1920×1080** talking‑head format as the other clips; same EDUCATOR framing).
+- **Then implement in one pass (agreed):** embed the new intro **inline in the landing
+  hero's right tile** (replace `scene-handover.jpg` in `.land-media` with a 16:9 inline
+  player + caption track, autoplay on arrival, keep a pause control for a11y); **delete the
+  "Before you begin" lightbox** entirely — `disclaimerModal()`, `setupDisclaimer()`,
+  `disclaimerAcked()`/`ackDisclaimer()`, the `teatime_disc_v6` localStorage key, and the
+  `ack-disclaimer` action. The landing "Begin your shift" button becomes the only gate.
+  NOTE: don't wire the CURRENT `intro.mp4` inline — it still speaks the disclaimer, which
+  would then play at the start AND show at the end.
+
 ### OPEN THREADS
 - Full **WCAG 2.1 AA** close‑out (axe/Lighthouse + screen‑reader + modal focus‑trap). Done
   so far: captions, video pause, reduced‑motion, focus outline, Esc‑closes‑modal, ARIA
