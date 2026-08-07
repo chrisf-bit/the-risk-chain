@@ -186,8 +186,10 @@ shadow + `#C9CDD4` borders), rounded `--r-lg:18px`. **Floating header** constrai
 1200px content column. **Gauges are soft circular rings** now (`meter()` draws ring + centre
 number + label). Records rail is **de‑nested**: a plain "Records & tools" title over two
 tinted panels of outlined **pill** items (`.doc-row`). Landing = **hero of two tiles** (copy
-tile + image tile, matched height) over three fact tiles, top‑aligned on the plain page
-background at 1200px (same width as sim screens). Dark theme = deep‑navy depth (dark ground,
+tile + inline **intro‑video** tile, 16:9) over three fact tiles, then a **full‑width CTA card**
+(`.land-cta` — "When you're ready, click **Begin your shift**" + the orange button) as the
+final element after all content. Hero grid `1.05fr 1fr`; copy‑tile vertical padding trimmed
+(22px) so it sits roughly level with the video. Dark theme = deep‑navy depth (dark ground,
 elevated glassy panels, teal‑tinted records rail). Subtle entrance/hover animations
 throughout, all gated by `prefers-reduced-motion`.
 
@@ -199,12 +201,22 @@ throughout, all gated by `prefers-reduced-motion`.
   C vs D. Post‑incident steps split worker‑owned vs manager/org‑led. Emergency wording held
   at "recognise → call 999 → follow choking first‑aid guidance" (no technique taught). Emma
   owns the clinical wording; full sourcing in `docs/F1-emergency-path-for-validation.md`.
-- **Talking‑head videos** (`assets/frontline/intro.mp4`, `handover.mp4`) with **captions
-  inlined as data‑URI `<track>`** (a `.vtt` file won't load over `file://`). Intro plays in
-  a **gated disclaimer lightbox** ("Before you begin") — autoplays, custom pause control, and
-  the acknowledge button only unlocks at **90%** of the video; **Restart re‑shows it**
-  (clears the `teatime_disc_v6` localStorage key). SME‑owned caveat = `SIM_CAVEAT`. Scripts:
-  `docs/F1-video-scripts.md` (12 modular clips; handover + debrief presenter slots outstanding).
+- **Talking‑head videos** with **captions inlined as data‑URI `<track>`** (a `.vtt` won't
+  load over `file://`; base64 constants live near `isMobileView()`). Current state:
+  - **Intro** (`intro.mp4`, welcome‑only, captions `INTRO_VTT`) plays **inline in the landing
+    hero's right tile** — NO lightbox, NO acknowledge gate (see DONE section below).
+  - **Handover is device‑specific** (chosen by `isMobileView()` at render): desktop
+    `handover.mp4` + `HANDOVER_VTT` ("they're all on the right"); mobile `handover-mobile.mp4`
+    + `HANDOVER_VTT_MOBILE` ("in the tab above this video"). **NOTE:** the mobile handover is
+    still the OLDER recording/wording — the desktop clip was re‑recorded (new presenter/script)
+    but no matching mobile cut exists yet. Swap `handover-mobile.mp4` + its VTT when one does.
+  - SME‑owned caveat `SIM_CAVEAT` now shows at the **end of the debrief** (`caveatBox()`),
+    not up front. Scripts: `docs/F1-video-scripts.md` (§1 = welcome‑only intro; §1b = end
+    disclaimer as on‑screen text).
+- **Shift countdown:** the HUD clock is a live **15:00 countdown** ("Time left"), started when
+  the handover screen first loads (`startShiftClock()`), runs across the nodes, clamps at
+  `00:00`; non‑persisted so a reload restarts it; reset on Restart/begin. Replaced the old
+  wall‑clock time in `superstrip()`.
 - **Fullscreen** on first interaction + top‑bar toggle. **Mobile:** fluid ring gauges + a
   **[The moment]/[Records] tab** so records aren't buried below the scene. Synthesised UI
   **sound effects** (`AUDIO.sfx`, primed on first gesture; play *after* the context resumes).
@@ -212,17 +224,23 @@ throughout, all gated by `prefers-reduced-motion`.
   (`m={a:100,b:55,c:15}`), so reordering is display‑only and safe.
 
 ### Brand marks, logo & mobile tweaks
-- **Header chip + favicon** are the SAME file: `assets/frontline/brand-icon.png` (the
-  "PR Chip", 720×720 square). Class `.brand-mark` (38px; 32px mobile; 9px radius;
-  `object-fit:contain`). To swap both, just overwrite that one file. Favicons cache hard —
-  reopen the tab to see a new one.
+- **Header chip + favicon** are the SAME file: `assets/frontline/brand-icon.png` (the PR
+  app‑icon, a self‑contained rounded square; produced by chroma‑keying the green background
+  out of the source `PR-icon-transparent.png` + de‑spill, cropped, ~128px). Class
+  `.brand-mark` (38px; 32px mobile; 9px radius; `object-fit:contain`; sits directly on the
+  navy header, no white plate). Shown on every screen incl. the landing. To swap both,
+  overwrite that one file. Favicons cache hard — reopen the tab to see a new one.
 - **Landing wordmark** = `brand-logo.png` (light) / `brand-logo-dark.png` (white wordmark for
   dark backgrounds), shown via `.land-logo.ll-light` / `.ll-dark`.
 - The word **"PracticE Ready" renders its E in brand teal `#16afc2`** wherever it appears.
 - **Mobile (`@media max-width:900px`):** header keeps the brand on one line (nowrap +
   ellipsis) and hides the subtitle; **video captions enlarged** via
-  `.vplayer::cue{font-size:2em}`. If captions still read small, note that some browsers
-  ignore native `::cue` styling — the robust fix is a custom caption overlay synced to the VTT.
+  `.vplayer::cue{font-size:1.45em}`. If captions still read small, note that some browsers
+  (esp. iOS Safari in native fullscreen) ignore native `::cue` styling and use the device's
+  own caption size — the robust fix is a custom caption overlay synced to the VTT.
+- The newer intro/handover VTTs ship with their own `STYLE ::cue{background-color:#383943A3}`
+  block baked into the caption file (Colossyan export), so those captions carry a dark pill
+  regardless of the app `::cue` rule.
 
 ### AGREED PLAN — implement next session (user approved)
 1. **Orange CTA buttons → navy text.** Use **navy `#072A6B` text on the `#FF7A1A` orange**
