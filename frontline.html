@@ -326,6 +326,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 @media(prefers-reduced-motion:reduce){.ft-spoon svg{animation:none;transform:rotate(52deg)}.ft-drip .ft-stream{animation:none}}
 @media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-verdict{grid-template-columns:1fr}.ft-visual{flex-direction:column;align-items:stretch}.ft-spoon{width:72px;height:72px;align-self:center}}
 
+/* ---------- On-call exchange (S4 signature interaction) ---------- */
+.oncall{display:flex;flex-direction:column;gap:10px;margin:6px 0 10px}
+.oc-line{display:flex;gap:11px;align-items:flex-start}
+.oc-av{flex:none;width:36px;height:36px;border-radius:50%;background:var(--kicker-bg);color:var(--teal-strong);display:grid;place-items:center}
+.oc-av svg{width:18px;height:18px}
+.oc-av.oc-on{background:linear-gradient(160deg,var(--teal),#0a5f70);color:#fff}
+.oc-bubble{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:12px;border-top-left-radius:3px;padding:12px 15px;font-size:var(--t-sm);color:var(--ink);font-style:italic;box-shadow:inset 0 1px 0 var(--sheen)}
+
 /* ---------- Scene shell ---------- */
 .stage{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 20px 18px;max-width:1240px;width:100%;margin:0 auto}
 
@@ -1310,6 +1318,8 @@ function initState(){
     alignCorrect:0,             // fields reconciled to the correct source
     flow:{scoops:1},            // flow-test widget: {tin, scoops, tested, verdict}
     flowServed:false, flowScore:0, flowTextureOk:false,
+    oncall:{phase:'start',qi:0,answers:[]},   // on-call exchange widget
+    oncallDone:false, oncallScore:0, oncallBailed:false, planToHand:false,
     theme:null,
     muted:false,                // sound on by default
   };
@@ -1591,6 +1601,7 @@ function momentCard(node){
   let body;
   if(node.type==='reconcile') body=reconcileBody(node);
   else if(node.type==='flowtest') body=flowtestBody(node);
+  else if(node.type==='oncall') body=oncallBody(node);
   else if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
   else body=decideBody(node);
@@ -1688,6 +1699,63 @@ function flowServe(){
   if(!textureOk){ S.cc1=true; S.primed=true; }
   AUDIO.sfx(textureOk?'confirm':'warn');
   nextNode();
+}
+/* On-call exchange (deep signature interaction, S4). Manager first (voicemail),
+   then on-call, who asks questions you can only answer well from the documents
+   you brought to hand (DOC_PLAN / DOC_EDAR). Deciding alone trips CC2. Config in
+   SC.build.oncall; scored at finish into Team coordination + Capacity and consent. */
+function oncallOpts(q){ return (q.opts||[]).filter(function(op){ return !op.needDoc || S.opened[op.needDoc]; }); }
+function oncallBody(node){
+  var cfg=(SC.build&&SC.build.oncall)||{questions:[]}, o=S.oncall||{phase:'start',qi:0,answers:[]};
+  var head='<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>';
+  var callLine=function(av,txt){ return '<div class="oncall"><div class="oc-line"><span class="oc-av '+av+'">'+svg(I.phone)+'</span><div class="oc-bubble">'+txt+'</div></div></div>'; };
+  var optBtn=function(act,extra,txt){ return '<button class="opt" data-act="'+act+'"'+extra+'><span class="ob">'+svg(I.arrowR)+'</span><span class="ot">'+txt+'</span></button>'; };
+  if(o.phase==='start'){
+    return head+'<p class="scene-text">'+(cfg.intro||'')+'</p>'
+      +'<div class="opts">'
+      + optBtn('oncall-nav',' data-to="manager"','Step away and call the manager first.')
+      + optBtn('oncall-bail','','Decide it yourself. The family are waiting.')
+      +'</div>';
+  }
+  if(o.phase==='voicemail'){
+    return head+callLine('',cfg.voicemail||'No answer.')
+      +'<div class="opts">'
+      + optBtn('oncall-nav',' data-to="oncall"','Call the on-call number.')
+      + optBtn('oncall-bail','','Give up on the call and decide it yourself.')
+      +'</div>';
+  }
+  if(o.phase==='q'){
+    var q=cfg.questions[o.qi]||{opts:[]}, opts=oncallOpts(q);
+    var chips=opts.map(function(op,i){ return optBtn('oncall-answer',' data-i="'+i+'"',op.t); }).join('');
+    return head+callLine('oc-on',q.ask)+'<p class="m-q">Your answer</p><div class="opts">'+chips+'</div>';
+  }
+  return head+callLine('oc-on',cfg.close||'')
+    +'<div class="micro-actions"><button class="btn-go" data-act="oncall-finish">'+svg(I.arrowR)+'Agree the plan and return to the table</button></div>';
+}
+function oncallNav(to){
+  S.oncall=S.oncall||{phase:'start',qi:0,answers:[]};
+  if(to==='manager'){ try{AUDIO.phone();}catch(e){} S.oncall.phase='voicemail'; }
+  else if(to==='oncall'){ S.oncall.phase='q'; S.oncall.qi=0; AUDIO.sfx('select'); }
+  save(); render();
+}
+function oncallAnswer(i){
+  var cfg=(SC.build&&SC.build.oncall)||{questions:[]}, o=S.oncall;
+  var q=cfg.questions[o.qi]||{opts:[]}, opt=oncallOpts(q)[i]; if(!opt) return;
+  o.answers.push(opt.score);
+  if(o.qi+1>=cfg.questions.length){ o.phase='done'; } else { o.qi++; }
+  AUDIO.sfx('select'); save(); render();
+}
+function oncallBail(){
+  S.oncallBailed=true; S.cc2=true; S.oncallDone=true; S.oncallScore=15; S.planToHand=!!S.opened.DOC_PLAN;
+  log('ESCALATION',{type:'none',reached:false}); log('BEST_INTERESTS_PROCESS',{followed:false});
+  AUDIO.sfx('warn'); nextNode();
+}
+function oncallFinish(){
+  var a=(S.oncall&&S.oncall.answers)||[];
+  var mean=a.length?Math.round(a.reduce(function(x,y){return x+y;},0)/a.length):40;
+  S.oncallDone=true; S.oncallScore=clamp(mean); S.planToHand=!!S.opened.DOC_PLAN;
+  log('ESCALATION',{type:'oncall',reached:true}); log('BEST_INTERESTS_PROCESS',{followed:true}); log('PLAN_TO_HAND',{available:S.planToHand});
+  AUDIO.sfx('confirm'); nextNode();
 }
 function decideBody(node){
   const sceneText = node.recog ? recogSceneText() : node.scene;
@@ -2176,6 +2244,7 @@ function scoreForNode(nodeId){
     var c=S.alignCorrect||0; return c>=3?100:c===2?70:c===1?40:15;
   }
   if(n && n.type==='flowtest'){ return S.flowServed?S.flowScore:null; }
+  if(n && n.type==='oncall'){ return S.oncallDone?S.oncallScore:null; }
   var o=chosenOpt(nodeId); if(!o) return null; return o.kind==='defensible'?100:o.kind==='risky'?55:15;
 }
 function scoreProfileGeneric(){
@@ -2663,6 +2732,193 @@ SCENARIOS.S3.build = {
   ],
 };
 
+/* ============================================================
+   Scenario 4 content: "Happy Birthday" (Marcus)
+   ============================================================ */
+var DOCS_S4 = {
+  DOC_PLAN:{group:'marcus', title:'Marcus’s mealtime plan', ref:'TK6.4', icon:'clipboard',
+    kicker:'Record on file', prov:'Marcus’s current support plan',
+    list:[{ic:'utensils',t:'Level 5, Minced & Moist food. Level 2, Mildly Thick fluids.'},{ic:'check',t:'Upright, unhurried, small portions, verbal pacing. Manage access to others’ food.'}] },
+  DOC_EDAR:{group:'marcus', title:'EDAR decision record', ref:'TK1.4b', icon:'file',
+    kicker:'Record on file', prov:'Eating & Drinking Risk Arrangements',
+    list:[{ic:'check',t:'Acknowledged-risk arrangements agreed on a best-interests basis.'},{ic:'clipboard',t:'Marcus lacks capacity for eating and drinking risk decisions. Review date recorded.'}],
+    note:'Because Marcus lacks capacity here, a change to his plan is a best-interests decision, not his or the family’s to consent to in the moment.' },
+  DOC_EDAR_ER:{group:'marcus', title:'Easy-read “what this means”', ref:'TK6.6', icon:'eye',
+    kicker:'Record on file', prov:'Accessible version, for involving Marcus',
+    list:[{ic:'eye',t:'“You can say yes, no, or not today.”'},{ic:'users',t:'His views still matter and are part of the decision.'}] },
+  DOC_FAMILY:{group:'marcus', title:'Family information leaflet', ref:'TK7.7', icon:'users',
+    kicker:'Record on file', prov:'For partnering with the family',
+    list:[{ic:'utensils',t:'What is safe, and how his textures are prepared.'},{ic:'check',t:'Kind expectations: when checks are needed and why.'}] },
+  DOC_CALL:{group:'marcus', title:'Who to call / on-call', ref:'TK7.2', icon:'phone',
+    kicker:'Record on file', prov:'Escalation contacts away from base',
+    list:[{ic:'phone',t:'Manager first; if no answer, the on-call number.'},{ic:'alertT',t:'999 for a choking emergency with an obstructed airway.'}] },
+  DOC_IDDSI:{group:'ref', title:'IDDSI texture guide', ref:'TK2.4', icon:'book',
+    kicker:'Reference tool', prov:'IDDSI framework, texture standards',
+    list:[{ic:'utensils',t:'Level 5, Minced & Moist: soft, moist lumps no larger than 4mm.'},{ic:'check',t:'Level 2, Mildly Thick: coats a spoon and flows slowly off it.'}] },
+  DOC_REDFLAG:{group:'ref', title:'Choking red flags', ref:'TK7.1', icon:'alertT',
+    kicker:'Reference tool', prov:'Recognising deterioration',
+    list:[{ic:'alertT',t:'Cough, wet voice, distress, and a sudden quiet.'},{ic:'eye',t:'In a noisy room the quiet phase is easy to miss. Do not wait it out.'}] },
+  DOC_MENU:{group:'ref', title:'The restaurant menu', ref:'', icon:'book',
+    kicker:'Prop on the table', prov:'A standard restaurant menu',
+    list:[{ic:'utensils',t:'Large portions; nothing is labelled for texture.'},{ic:'info',t:'You have to match dishes to Marcus’s plan yourself.'}] },
+};
+var DOC_ORDER_S4 = ['DOC_PLAN','DOC_EDAR','DOC_EDAR_ER','DOC_FAMILY','DOC_CALL','DOC_IDDSI','DOC_REDFLAG','DOC_MENU'];
+var NODES_S4 = {
+  N1:{ order:1, time:'18:20', label:'The order', icon:'utensils', confidence:true, inject:true,
+    scene:'Dad orders Marcus fish and chips, “he loves it”, regular texture, not Level 5. The waitress is hovering to take the order.',
+    q:'The family are excited and the waitress is waiting. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',events:[{t:'ORDER_VERIFIED',p:{verified:true}}],
+       text:'Order Marcus’s Level 5 option, ask the waitress for a minute, and explain kindly to Dad using the family leaflet.',
+       tag:'good', note:'You take a moment, order him a safe option that fits his plan, and bring Dad alongside you rather than against you.'},
+      {id:'b',kind:'risky',
+       text:'Order quickly to keep the waitress and Dad happy, meaning to manage it.',
+       tag:'warn', note:'You order quickly to smooth things over, planning to sort it out at the table. A wrong order is already in train.'},
+      {id:'c',kind:'failing',cc:'CC1',
+       text:'Go along with Dad’s fish and chips.',
+       tag:'bad', note:'You accept the fish and chips. Regular-texture food for someone with an aspiration risk is now on its way.'},
+    ]},
+  N2:{ order:2, time:'18:28', label:'Compliance is not consent', icon:'person', confidence:true,
+    scene:'Marcus nods along to please Dad, who says “one day won’t hurt”. Marcus is happy and wants to agree with everyone.',
+    q:'Marcus is saying yes. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',events:[{t:'COMPLIANCE_NOTED',p:{noted:true}}],
+       text:'Recognise he lacks capacity here and is agreeing to please Dad. Do not treat the nod as consent; move to a best-interests decision.',
+       tag:'good', note:'You hold the legal frame: his happy “yes” is compliance, not informed consent, and this is a best-interests decision.'},
+      {id:'b',kind:'risky',
+       text:'Take his “yes” as settling it and carry on.',
+       tag:'warn', note:'You treat his agreement as the decision. Compliance has quietly been mistaken for consent.'},
+      {id:'c',kind:'failing',cc:'CC2',
+       text:'Serve him what he asked for, because he wanted it.',
+       tag:'bad', note:'You give him the off-plan food because he said yes. The decision has been made without the authority to make it.'},
+    ]},
+  N3:{ order:3, time:'18:35', label:'Manager, then on-call', icon:'phone', type:'oncall' },
+  N4:{ order:4, time:'18:52', label:'The cake and the toast', icon:'users', inject:true,
+    scene:'A birthday cake and a fizzy drink for a “toast” arrive. Dad is upset that you will not simply bend the rules. The pressure peaks.',
+    q:'It is his birthday and everyone is watching. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',
+       text:'A discreet best-interests hold: a cake portion checked to texture and a mildly-thick “toast”, and acknowledge Dad’s feelings. No scene.',
+       tag:'good', note:'You find the safe middle: Marcus is included in every part of the celebration, with a texture-checked cake portion and a mildly-thick toast, and Dad feels heard.'},
+      {id:'b',kind:'risky',
+       text:'Allow “just a bit” of cake and the fizzy drink to keep the peace.',
+       tag:'warn', note:'You let a little cake and the fizzy drink through to avoid a scene. It is off-plan intake, taken under pressure.'},
+      {id:'c',kind:'failing',cc:'CC1',
+       text:'Serve the cake and the fizzy drink as they are.',
+       tag:'bad', note:'You serve the unsafe cake and the thin fizzy drink. It is exactly the intake his plan is built to prevent.'},
+    ]},
+  N5:{ order:5, time:'19:02', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
+    recogText:{ primed:'Eating fast in the noisy room, Marcus coughs, then goes quiet. In the celebration, the sudden quiet is easy to miss.', calm:'Marcus enjoys his birthday meal at a steady pace, included in every part of it, and stays comfortable.' },
+    q:'What do you do, right now?',
+    options:[
+      {id:'a',kind:'defensible', text:'Stop the meal, support him upright, and manage the public setting calmly. Shout for help if needed.', tag:'good'},
+      {id:'b',kind:'risky', text:'Wait and see in the noise, hoping it settles.', tag:'warn'},
+      {id:'c',kind:'failing', text:'Carry on so as not to spoil the party.', tag:'bad'},
+    ]},
+  N6:{ order:6, time:'19:03', label:'The emergency', icon:'alertT', emergency:true,
+    scene:'Marcus cannot breathe, speak or cough. The restaurant is busy and loud, the family are distressed, and paramedic access is not immediate.',
+    q:'He cannot clear it. What do you do?',
+    options:[
+      {id:'a',kind:'defensible', text:'Shout for help, call 999, and follow choking first-aid guidance straight away.'},
+      {id:'b',kind:'risky', text:'Start first aid, and get to the 999 call when you can.'},
+      {id:'c',kind:'failing', text:'Take him outside to the quiet first, away from the crowd.'},
+    ]},
+};
+Object.assign(SCENARIOS.S4, {
+  built:true,
+  kicker:'You are the support worker on shift',
+  lead:'It is Marcus’s birthday and you are supporting him at a busy restaurant with his Mum, Dad and sibling. You are lone-working in a public place. Marcus is happy and excited and wants to please his family. He lacks capacity for eating and drinking risk decisions, so any change to his plan is a best-interests decision, and his eager “yes” to his Dad is not informed agreement.',
+  facts:[
+    ['person','Compliance is not consent','Marcus lacks capacity for this decision. A happy “yes” to please his Dad is not the same as informed agreement.'],
+    ['users','The family love him','They want a proper birthday and do not want the rules in the way. The safe path partners with them, not against them.'],
+    ['target','Readiness, not revision','No hints and no single right answer. What you bring with you, and who you involve, is what happens.'],
+  ],
+});
+SCENARIOS.S4.build = {
+  nodes:NODES_S4, docs:DOCS_S4, docOrder:DOC_ORDER_S4, base:['N1','N2','N3','N4','N5'],
+  sceneImg:{}, recovery:RECOVERY_STEPS_S1, worker:WORKER_STEPS_S1, org:ORG_STEPS_S1,
+  orgFatal:'CQC is notified of Marcus’s death.',
+  recogNode:'N5', emergencyNode:'N6', recordsLabel:'Marcus’s records',
+  handover:{ eyebrow:'18:10 &middot; Before the meal',
+    text:'You are taking Marcus out for his birthday meal with his family. Before the food is ordered, this is your chance to check what you have brought with you. Away from base, his plan and the on-call number only help if they are to hand.',
+    q:'Open any of the records. When you are ready, go to the table.',
+    cta:'Go to the table' },
+  oncall:{
+    intro:'Marcus lacks capacity for this decision, and the family are pushing. You step away from the table to escalate before anything is agreed.',
+    voicemail:'The manager’s phone rings out to voicemail. No answer.',
+    close:'On-call talks it through with you: keep Marcus included, offer a safe birthday, and record a best-interests decision. You have a defensible way forward, agreed with the right person.',
+    questions:[
+      { ask:'“Talk me through his eating and drinking plan.”',
+        opts:[
+          {t:'Level 5, Minced & Moist food and Level 2 fluids. I have his plan here.', score:100, needDoc:'DOC_PLAN'},
+          {t:'Regular food, I think. I haven’t got his plan with me.', score:25},
+        ]},
+      { ask:'“Is there a best-interests decision on record for this?”',
+        opts:[
+          {t:'Yes. There is a current EDAR on a best-interests basis, with a review date.', score:100, needDoc:'DOC_EDAR'},
+          {t:'I’m not sure, I don’t have that with me.', score:30},
+        ]},
+      { ask:'“And what exactly are the family asking for?”',
+        opts:[
+          {t:'Off-plan birthday food. I want to agree a safe way to include him.', score:100},
+          {t:'Fish and chips and cake. Dad’s upset, so I said maybe.', score:35},
+        ]},
+    ],
+  },
+  meters:function(){
+    var au=S.oncallDone?S.oncallScore:80;
+    var mv=S.primed?45:100;
+    return [ {v:au, w:(au>=70?'Authorised':au>=40?'Unclear':'Acting alone'), label:'Best-interests authority'},
+             {v:mv, w:(mv>=70?'Settled':'Unsettled'), label:'Marcus'} ];
+  },
+  domains:[
+    {k:'Information use', nodes:['N1']},
+    {k:'Person-centred practice', nodes:['N4']},
+    {k:'Capacity and consent', nodes:['N2','N4']},
+    {k:'Team coordination', nodes:['N3']},
+    {k:'Dynamic judgement', nodes:['N3','N4']},
+    {k:'Response & learning', nodes:['N5','N6']},
+  ],
+  ccHold:{ CC1:'Everything Marcus was served met his Level 5 and Level 2 plan.',
+           CC2:'You did not treat compliance as consent, and you reached a best-interests decision with the right authority.' },
+  outcomes:{
+    A:{badge:'Prevention', h:'Marcus has a safe, dignified birthday',
+       body:'Marcus was included in every part of his birthday: his Level 5 meal, a texture-appropriate cake portion and a mildly-thick “toast”. You held the harder middle, safe inclusion, rather than caving to the family or excluding him with a blanket refusal. The family were reassured, and the best-interests decision was recorded.'},
+    B:{badge:'Near miss, recovered', h:'Marcus coughs eating fast, then recovers',
+       body:'An unsafe mouthful was taken and Marcus coughed. You recognised it in the noise, stopped, supported him upright and called for help, and he cleared it. Recording the near miss and initiating an EDAR and best-interests review is the right close. A recognised near miss is success, not failure.'},
+    C:{badge:'Emergency, survived', h:'Marcus is stabilised and taken to hospital',
+       body:'The obstruction was serious, in a busy public venue with the family distressed. The emergency response was run and the paramedics took over. Marcus is alive. Reaching an emergency at all means the safe controls had already been lost under the family pressure.'},
+    D:{badge:'Emergency', h:'Marcus does not survive',
+       body:'The airway stayed blocked, and with the response not run in time, Marcus could not be resuscitated. This is the outcome the whole meal was working to prevent. It came from a chain: family pressure treated as consent, off-plan intake allowed, and an emergency not answered in time. Any one link, held, would have changed the ending.'},
+  },
+  reveal:function(){
+    return (S.oncallDone && !S.oncallBailed && S.planToHand)
+      ? '<div class="reveal-box ok"><h5>'+svg(I.check)+'You brought his details, and used them</h5><p>Because Marcus’s plan and EDAR were to hand, the on-call conversation could reach a defensible best-interests decision. Away from base, the plan only protects him if it comes with you.</p></div>'
+      : '<div class="reveal-box"><h5>'+svg(I.alertT)+'The decision needed more than the moment</h5><p>'+(S.oncallBailed?'A decision this size was taken under family pressure without escalating. ':(S.planToHand?'':'His plan was not to hand, so the on-call call could not be grounded in his actual arrangements. '))+'Two poles are both wrong here: caving to the family, and a blanket refusal that shuts Marcus out of his own birthday. The safe path is the harder middle, agreed through a best-interests process.</p></div>';
+  },
+  crossTrack:function(){
+    return '<div class="crosstrack">'
+      +'<div class="ct-k">Cross-track &middot; where this shift came from</div>'
+      +'<h3>Here is the trip the service sent Marcus on</h3>'
+      +'<p>The pressure you held tonight was set before you left the house. Whether there was a plan for eating out at all, whether on-call was briefed and available, and whether the family had been engaged in the best-interests process before today, were all decided upstream.</p>'
+      +'<div class="ct-chain">'
+      + ctNode('home','No plan for the community')+'<span class="ct-arr">'+svg(I.arrowR)+'</span>'
+      + ctNode('users','Family not pre-engaged')+'<span class="ct-arr">'+svg(I.arrowR)+'</span>'
+      + ctNode('phone','On-call not briefed')
+      +'</div>'
+      +'<p style="margin-top:16px">In the full Practic<span class="pr-e">E</span> Ready programme you would take the Manager and Director shifts that built this one.</p>'
+      +'</div>';
+  },
+  toolkitBase:[
+    {ic:'book',ref:'TK5.2',t:'Structured debrief',p:'Work back through the meal against Marcus’s plan, EDAR and the best-interests process.'},
+    {ic:'users',ref:'TK7.7',t:'Family partnership',p:'How to set kind expectations and keep the family alongside safe care.'},
+  ],
+  toolkitFail:[
+    {ic:'clipboard',ref:'TK1.4',t:'EDAR and best interests',p:'When and how a best-interests decision is made, recorded and reviewed.'},
+    {ic:'eye',ref:'TK6.6',t:'Easy-read involvement',p:'Involving Marcus accessibly, so his own views are part of the decision.'},
+  ],
+};
+
 /* ---------- Reducers / actions ---------- */
 function beginShift(){ AUDIO.unlock(); goFullscreen(); mobTab='scene'; handoverT=0; handoverEnded=false; resetShiftClock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
@@ -2838,6 +3094,10 @@ document.addEventListener('click', function(e){
     case 'flow-test': flowRunTest(); break;
     case 'flow-verdict': flowVerdict(el.getAttribute('data-val')); break;
     case 'flow-serve': flowServe(); break;
+    case 'oncall-nav': oncallNav(el.getAttribute('data-to')); break;
+    case 'oncall-answer': oncallAnswer(parseInt(el.getAttribute('data-i'),10)); break;
+    case 'oncall-bail': oncallBail(); break;
+    case 'oncall-finish': oncallFinish(); break;
     case 'begin': beginShift(); break;
     case 'to-table': toTable(); break;
     case 'confidence': setConfidence(el.getAttribute('data-val')); break;
