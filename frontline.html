@@ -289,6 +289,43 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .recon-chip.sel .rc-src{color:var(--teal-strong)}
 @media(max-width:900px){.recon-row{grid-template-columns:1fr;gap:8px}.recon-field{margin-bottom:2px}}
 
+/* ---------- Flow / spoon-tilt test (S3 signature interaction) ---------- */
+.flowt{display:flex;flex-direction:column;gap:16px;margin:8px 0 2px}
+.ft-step-h{font-size:var(--t-cap);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:800;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.ft-step-h .fsn{width:20px;height:20px;border-radius:50%;background:var(--kicker-bg);color:var(--teal-strong);display:grid;place-items:center;font-size:.7rem;font-weight:800}
+.ft-tins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ft-tin{text-align:left;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:background .14s ease,border-color .14s ease,transform .12s ease;font:inherit}
+.ft-tin:hover{border-color:var(--teal);transform:translateY(-1px)}
+.ft-tin:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.ft-tin .ftt-name{font-size:var(--t-sm);font-weight:700;color:var(--ink)}
+.ft-tin .ftt-sub{font-size:var(--t-cap);color:var(--ink-4)}
+.ft-tin.sel{background:var(--kicker-bg);border-color:var(--teal)}
+.ft-scoop{display:flex;align-items:center;gap:14px}
+.ft-stepper{display:inline-flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:100px;overflow:hidden;background:var(--surface)}
+.ft-stepper button{width:40px;height:40px;border:0;background:transparent;color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:grid;place-items:center}
+.ft-stepper button:hover{background:var(--kicker-bg);color:var(--teal-strong)}
+.ft-stepper .ft-val{min-width:44px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.ft-scoop-lbl{font-size:var(--t-sm);color:var(--ink-2)}
+.ft-scoop-lbl b{color:var(--ink)}
+.ft-visual{display:flex;align-items:center;gap:20px;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
+.ft-spoon{flex:none;width:96px;height:96px;position:relative}
+.ft-spoon svg{width:100%;height:100%;transform-origin:30% 40%;animation:spoonTilt 1.6s ease forwards}
+@keyframes spoonTilt{0%{transform:rotate(0deg)}45%{transform:rotate(0deg)}100%{transform:rotate(58deg)}}
+.ft-drip{flex:1;height:64px;position:relative;overflow:hidden;border-radius:8px;background:repeating-linear-gradient(90deg,transparent,transparent 22px,rgba(120,134,156,.08) 22px,rgba(120,134,156,.08) 23px)}
+.ft-stream{position:absolute;top:0;left:14px;border-radius:0 0 6px 6px}
+.ft-drip.thin .ft-stream{width:4px;height:100%;background:linear-gradient(var(--cyan),transparent);animation:streamFall .5s linear infinite}
+.ft-drip.level2 .ft-stream{width:12px;height:78%;background:linear-gradient(var(--teal),rgba(22,175,194,.5));animation:streamFall 1.5s ease-in infinite}
+.ft-drip.thick .ft-stream{width:22px;height:44%;background:linear-gradient(var(--violet),rgba(138,60,203,.4));border-radius:0 0 12px 12px;animation:streamFall 2.6s ease-in infinite}
+@keyframes streamFall{0%{opacity:.2;transform:translateY(-10%)}50%{opacity:1}100%{opacity:.4;transform:translateY(4%)}}
+.ft-caption{font-size:var(--t-sm);color:var(--ink-2);margin:0}
+.ft-verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ft-vchip{text-align:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:11px 10px;cursor:pointer;font:inherit;font-size:var(--t-sm);font-weight:700;color:var(--ink);transition:background .14s ease,border-color .14s ease}
+.ft-vchip:hover{border-color:var(--teal)}
+.ft-vchip:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.ft-vchip.sel{background:var(--kicker-bg);border-color:var(--teal);color:var(--teal-strong)}
+@media(prefers-reduced-motion:reduce){.ft-spoon svg{animation:none;transform:rotate(52deg)}.ft-drip .ft-stream{animation:none}}
+@media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-verdict{grid-template-columns:1fr}.ft-visual{flex-direction:column;align-items:stretch}.ft-spoon{width:72px;height:72px;align-self:center}}
+
 /* ---------- Scene shell ---------- */
 .stage{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 20px 18px;max-width:1240px;width:100%;margin:0 auto}
 
@@ -1271,6 +1308,8 @@ function initState(){
     reconcile:{},               // reconcile widget picks (field -> source id)
     alignmentDone:false,        // reconcile step completed
     alignCorrect:0,             // fields reconciled to the correct source
+    flow:{scoops:1},            // flow-test widget: {tin, scoops, tested, verdict}
+    flowServed:false, flowScore:0, flowTextureOk:false,
     theme:null,
     muted:false,                // sound on by default
   };
@@ -1551,6 +1590,7 @@ function momentCard(node){
   const warnScene = node.inject || node.emergency || (node.recog && S.primed);
   let body;
   if(node.type==='reconcile') body=reconcileBody(node);
+  else if(node.type==='flowtest') body=flowtestBody(node);
   else if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
   else body=decideBody(node);
@@ -1585,6 +1625,68 @@ function confirmReconcile(){
   log('ALIGNMENT_DONE',{completed:true});
   if(cfg.fields.length && correct===cfg.fields.length){ log('DOC_RELIED',{id:'DOC_DISCHARGE'}); }
   AUDIO.sfx('confirm');
+  nextNode();
+}
+/* Flow / spoon-tilt test (deep signature interaction, S3). Pick the tin, set the
+   scoops to that tin's stated ratio, run the tilt test, then judge the result.
+   actual consistency = scoops vs the chosen tin's Level 2 ratio. Scored at serve;
+   an off-Level-2 drink trips CC1. Config in SC.build.flowtest. */
+function ftTin(){ var cfg=SC.build.flowtest; return (cfg.tins||[]).find(function(t){return t.id===(S.flow||{}).tin;}); }
+function ftActual(){ var t=ftTin(); if(!t) return null; var s=(S.flow||{}).scoops; return s<t.ratio?'thin':s===t.ratio?'level2':'thick'; }
+function flowtestBody(node){
+  var cfg=SC.build.flowtest, f=S.flow||{scoops:1};
+  var tins=(cfg.tins||[]).map(function(t){
+    var sel=f.tin===t.id;
+    return '<button class="ft-tin'+(sel?' sel':'')+'" data-act="flow-tin" data-id="'+t.id+'" aria-pressed="'+sel+'">'
+      +'<span class="ftt-name">'+t.name+'</span><span class="ftt-sub">'+t.sub+'</span></button>';
+  }).join('');
+  var setup='<div><p class="ft-step-h"><span class="fsn">1</span>Choose the tin</p><div class="ft-tins">'+tins+'</div></div>'
+    +'<div><p class="ft-step-h"><span class="fsn">2</span>Set the scoops per 100ml</p>'
+    +'<div class="ft-scoop"><div class="ft-stepper">'
+    +'<button data-act="flow-scoop" data-dir="-1" aria-label="Fewer scoops">&minus;</button>'
+    +'<span class="ft-val">'+(f.scoops||0)+'</span>'
+    +'<button data-act="flow-scoop" data-dir="1" aria-label="More scoops">+</button></div>'
+    +'<span class="ft-scoop-lbl">scoops for <b>Level 2, Mildly Thick</b></span></div></div>';
+  if(!f.tested){
+    return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+      +'<p class="scene-text">'+(cfg.lead||'')+'</p>'
+      +'<div class="flowt">'+setup
+      +'<div class="micro-actions"><button class="btn-go" data-act="flow-test"'+(f.tin?'':' disabled')+'>'+svg(I.gauge2)+'Tilt the spoon to test</button></div></div>';
+  }
+  var actual=ftActual();
+  var verdicts=[['thin','Too thin'],['level2','Level 2, right'],['thick','Too thick']].map(function(v){
+    var sel=f.verdict===v[0];
+    return '<button class="ft-vchip'+(sel?' sel':'')+'" data-act="flow-verdict" data-val="'+v[0]+'" aria-pressed="'+sel+'">'+v[1]+'</button>';
+  }).join('');
+  return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+    +'<p class="scene-text">You tilt the spoon and watch how it runs off.</p>'
+    +'<div class="flowt">'
+    +'<div class="ft-visual"><div class="ft-spoon">'+ftSpoonSvg()+'</div>'
+    +'<div style="flex:1"><div class="ft-drip '+actual+'"><span class="ft-stream"></span></div>'
+    +'<p class="ft-caption" style="margin-top:10px">How does it run off the spoon?</p></div></div>'
+    +'<div><p class="ft-step-h"><span class="fsn">3</span>Judge the consistency</p><div class="ft-verdict">'+verdicts+'</div></div>'
+    +'<div class="micro-actions"><button class="btn-go" data-act="flow-serve"'+(f.verdict?'':' disabled')+'>'+svg(I.arrowR)+'Use this drink</button></div></div>';
+}
+function ftSpoonSvg(){
+  return '<svg viewBox="0 0 60 60" fill="none" aria-hidden="true">'
+    +'<ellipse cx="20" cy="20" rx="15" ry="11" fill="var(--z-monitor,#21B8D9)" opacity="0.25" stroke="var(--teal)" stroke-width="2"/>'
+    +'<rect x="30" y="24" width="26" height="5" rx="2.5" transform="rotate(32 30 24)" fill="var(--ink-3)"/>'
+    +'</svg>';
+}
+function flowTin(id){ S.flow=S.flow||{scoops:1}; S.flow.tin=id; AUDIO.sfx('select'); save(); render(); }
+function flowScoop(dir){ S.flow=S.flow||{scoops:1}; S.flow.scoops=Math.max(0,Math.min(3,(S.flow.scoops||0)+dir)); AUDIO.sfx('select'); save(); render(); }
+function flowRunTest(){ S.flow=S.flow||{scoops:1}; if(!S.flow.tin) return; S.flow.tested=true; log('FLOWTEST_DONE',{level:'L2',done:true}); AUDIO.sfx('toggle'); save(); render(); }
+function flowVerdict(val){ S.flow=S.flow||{}; S.flow.verdict=val; AUDIO.sfx('select'); save(); render(); }
+function flowServe(){
+  var actual=ftActual(), f=S.flow||{};
+  var textureOk=(actual==='level2');
+  var judgedOk=(f.verdict===actual);
+  S.flowTextureOk=textureOk;
+  S.flowScore = textureOk ? (judgedOk?100:72) : (judgedOk?38:22);
+  S.flowServed=true;
+  log('PRODUCT_VERIFIED',{verified:textureOk});
+  if(!textureOk){ S.cc1=true; S.primed=true; }
+  AUDIO.sfx(textureOk?'confirm':'warn');
   nextNode();
 }
 function decideBody(node){
@@ -2073,6 +2175,7 @@ function scoreForNode(nodeId){
     if(!S.alignmentDone) return null;
     var c=S.alignCorrect||0; return c>=3?100:c===2?70:c===1?40:15;
   }
+  if(n && n.type==='flowtest'){ return S.flowServed?S.flowScore:null; }
   var o=chosenOpt(nodeId); if(!o) return null; return o.kind==='defensible'?100:o.kind==='risky'?55:15;
 }
 function scoreProfileGeneric(){
@@ -2387,6 +2490,179 @@ SCENARIOS.S2.build = {
   ],
 };
 
+/* ============================================================
+   Scenario 3 content: "Preparation Under Pressure" (Aaron)
+   ============================================================ */
+var DOCS_S3 = {
+  DOC_PLAN:{group:'aaron', title:'Aaron’s mealtime plan', ref:'TK6.3', icon:'clipboard',
+    kicker:'Record on file', prov:'Aaron’s current support plan',
+    list:[{ic:'utensils',t:'Level 3, Liquidised food. Smooth, no lumps, pours off a spoon.'},{ic:'utensils',t:'Level 2, Mildly Thick fluids.'},{ic:'check',t:'Components prepared separately, not over-diluted. Upright, unhurried, verbal pacing.'}] },
+  DOC_HANDOVER:{group:'aaron', title:'Shift handover note', ref:'', icon:'message',
+    kicker:'Record on file', prov:'Written at the start of the shift',
+    list:[{ic:'alertT',t:'Aaron drowsy since a seizure yesterday.'},{ic:'users',t:'Two of three staff on shift are agency, not briefed on Aaron.'},{ic:'info',t:'Breakfast running late; contractors on site.'}],
+    note:'The drowsiness line is easy to skim past. Yesterday’s seizure means today’s risk may be higher than the plan states.', flag:true },
+  DOC_THICKENER:{group:'aaron', title:'Two thickener tins', ref:'', icon:'pill',
+    kicker:'On the worktop', prov:'Two products left by the kettle',
+    list:[{ic:'pill',t:'Two different products, each with its own scoop ratio for Level 2.'},{ic:'alertT',t:'Grabbing the nearer tin and using a remembered ratio makes the drink too thin or too thick.'}],
+    note:'Read the ratio on the tin you are actually using, and check it against IDDSI before serving.' },
+  DOC_IDDSI:{group:'ref', title:'IDDSI texture guide', ref:'TK2.4', icon:'book',
+    kicker:'Reference tool', prov:'IDDSI framework, texture standards',
+    list:[{ic:'utensils',t:'Level 3, Liquidised: smooth, pours off a spoon, no chewing.'},{ic:'check',t:'Level 2, Mildly Thick: coats a spoon and flows slowly off it.'}] },
+  DOC_TEST:{group:'ref', title:'IDDSI testing guide', ref:'TK2.5', icon:'gauge2',
+    kicker:'Reference tool', prov:'How to test a texture',
+    list:[{ic:'gauge2',t:'Fluids: the spoon-tilt / flow test for Level 2 before serving.'},{ic:'utensils',t:'Food: spoon-tilt and fork-drip for a smooth Level 3.'}] },
+  DOC_COMPETENCY:{group:'ref', title:'Staff competency note', ref:'TK3.2', icon:'users',
+    kicker:'Reference tool', prov:'Induction and competence',
+    list:[{ic:'check',t:'Completed e-learning is not the same as an individual briefing.'},{ic:'eye',t:'Observed competence on this person’s plan is what safe delegation needs.'}] },
+  DOC_REDFLAG:{group:'ref', title:'Choking red flags', ref:'TK7.1', icon:'alertT',
+    kicker:'Reference tool', prov:'Recognising deterioration',
+    list:[{ic:'alertT',t:'Cough, wet or gurgly voice, visible distress.'},{ic:'eye',t:'A quiet phase after coughing can mean the airway is blocking. Do not wait it out.'}] },
+  DOC_CALL:{group:'ref', title:'Who to call', ref:'TK7.2', icon:'phone',
+    kicker:'Reference tool', prov:'Emergency and escalation contacts',
+    list:[{ic:'phone',t:'Choking emergency with an obstructed airway: call 999.'},{ic:'users',t:'GP or SALT referral for a new swallowing concern; manager for a near miss.'}] },
+};
+var DOC_ORDER_S3 = ['DOC_PLAN','DOC_HANDOVER','DOC_THICKENER','DOC_IDDSI','DOC_TEST','DOC_COMPETENCY','DOC_REDFLAG','DOC_CALL'];
+var NODES_S3 = {
+  N1:{ order:1, time:'08:12', label:'The agency colleague', icon:'users', confidence:true, inject:true,
+    scene:'One of the agency staff offers to “sort Aaron’s breakfast”, reaching for the nearer thickener tin. They have not been briefed on Aaron.',
+    q:'They want to help, and breakfast is late. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',events:[{t:'COMPETENCE_CHECKED',p:{checked:true}}],
+       text:'Check their briefing and observed competence, brief them on Aaron, and keep the specialist preparation yourself.',
+       tag:'good', note:'You take a moment to brief them and keep Aaron’s preparation in your own hands. Nothing about his meal is left to an unverified guess.'},
+      {id:'b',kind:'risky',
+       text:'Accept “I’ve done the e-learning” and let them get on with light oversight.',
+       tag:'warn', note:'You let them proceed on the strength of the e-learning. Their knowledge of Aaron specifically is untested.'},
+      {id:'c',kind:'failing',cc:'CC2',
+       text:'Hand Aaron’s modified preparation over to them.',
+       tag:'bad', note:'You pass Aaron’s specialist preparation to an unbriefed colleague and turn to other jobs.'},
+    ]},
+  N2:{ order:2, time:'08:18', label:'Thicken the drink', icon:'gauge2', type:'flowtest' },
+  N3:{ order:3, time:'08:25', label:'The blender', icon:'utensils', inject:true,
+    scene:'Aaron’s Level 3 breakfast needs preparing. A colleague says “just blend the lot, it’s quicker” and reaches to tip the whole plate and a jug of milk into one blender.',
+    q:'How do you prepare his breakfast?',
+    options:[
+      {id:'a',kind:'defensible',events:[{t:'SEPARATE_PREP',p:{separate:true}}],
+       text:'Blend the components separately to a smooth Level 3, keep them apart on the plate, and do not over-dilute.',
+       tag:'good', note:'You prepare each part separately to a smooth Level 3. His breakfast keeps its flavours and its dignity.'},
+      {id:'b',kind:'risky',
+       text:'Blend it all together, but carefully.',
+       tag:'warn', note:'You blend it together with some care. The textures mix into one uncertain consistency.'},
+      {id:'c',kind:'failing',cc:'CC1',events:[{t:'OVERDILUTED',p:{overdiluted:true}}],
+       text:'Tip the whole plate and the milk into one blender.',
+       tag:'bad', note:'The whole plate goes in with the milk. What comes out is thin, mixed and nutritionally diluted, and it is not dignified.'},
+    ]},
+  N4:{ order:4, time:'08:33', label:'The environment', icon:'home', inject:true,
+    scene:'Contractor drills start up, a fire door is propped open, and the TV pulls the agency worker’s attention. Breakfast is in the lounge and Aaron is slumping in his chair.',
+    q:'The room is chaotic and Aaron is drowsy. What do you do?',
+    options:[
+      {id:'a',kind:'defensible',events:[{t:'ENVIRONMENT_SETTLED',p:{settled:true}}],
+       text:'Re-establish a calm space, reduce the noise and distraction, and seat Aaron upright before he eats.',
+       tag:'good', note:'You settle the room, cut the distractions, and get Aaron sitting properly upright before anything goes near his mouth.'},
+      {id:'b',kind:'risky',
+       text:'Press on in the lounge, rushing a little because breakfast is late.',
+       tag:'warn', note:'You carry on in the disrupted room, moving quickly to make up time. The distraction and pace both add risk.'},
+      {id:'c',kind:'failing',
+       text:'Feed him where he is, drowsy and slumped, with the noise going on around you.',
+       tag:'bad', note:'You start feeding him slumped and drowsy in the chaotic room. Nothing about the set-up is protecting him.'},
+    ]},
+  N5:{ order:5, time:'08:41', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
+    recogText:{ primed:'Post-drowsiness, Aaron coughs, then his voice turns wet and gurgly after a few spoonfuls.', calm:'Aaron eats slowly but steadily, and stays comfortable and clear-voiced throughout.' },
+    q:'What do you do, right now?',
+    options:[
+      {id:'a',kind:'defensible', text:'Stop the meal, reposition him upright, let him recover, and escalate.', tag:'good'},
+      {id:'b',kind:'risky', text:'Tell yourself “he’s just drowsy” and carry on.', tag:'warn'},
+      {id:'c',kind:'failing', text:'Offer more to help him clear it.', tag:'bad'},
+    ]},
+  N6:{ order:6, time:'08:42', label:'The emergency', icon:'alertT', emergency:true,
+    scene:'Aaron cannot breathe, speak or cough. The room is still noisy with contractors and the agency staff are unsure what to do.',
+    q:'He cannot clear it. What do you do?',
+    options:[
+      {id:'a',kind:'defensible', text:'Shout for help, call 999, and follow choking first-aid guidance straight away.'},
+      {id:'b',kind:'risky', text:'Start first aid, and get to the 999 call when you can.'},
+      {id:'c',kind:'failing', text:'Go to find the contractor to turn the drills off first.'},
+    ]},
+};
+Object.assign(SCENARIOS.S3, {
+  built:true,
+  kicker:'You are the experienced worker on shift',
+  lead:'It is a disrupted breakfast at Bramble Close. Contractors are replacing a boiler, breakfast has moved to the lounge, and two of the three staff on shift are agency and unbriefed. Aaron was drowsy after a seizure yesterday. His breakfast needs preparing to Level 3 and his drinks to Level 2, and two tins of thickener sit by the kettle with different scoop ratios.',
+  facts:[
+    ['gauge2','Texture is the skill','A true, smooth Level 3 with components done separately, and Level 2 fluids checked before serving. Over-modifying is its own harm.'],
+    ['users','Unbriefed hands','Two agency colleagues want to help. E-learning is not the same as being briefed on Aaron.'],
+    ['target','Readiness, not revision','No hints and no single right answer. What you prepare and verify is what he is served.'],
+  ],
+});
+SCENARIOS.S3.build = {
+  nodes:NODES_S3, docs:DOCS_S3, docOrder:DOC_ORDER_S3, base:['N1','N2','N3','N4','N5'],
+  sceneImg:{}, recovery:RECOVERY_STEPS_S1, worker:WORKER_STEPS_S1, org:ORG_STEPS_S1,
+  orgFatal:'CQC is notified of Aaron’s death.',
+  recogNode:'N5', emergencyNode:'N6', recordsLabel:'Aaron’s records',
+  handover:{ eyebrow:'08:05 &middot; Disrupted breakfast',
+    text:'You are leading a breakfast with two unbriefed agency colleagues, contractors on site, and Aaron drowsy after yesterday’s seizure. Before you prepare anything, read what the service holds about him and how his textures are checked.',
+    q:'Open any of the records. When you are ready, start the preparation.',
+    cta:'Start the preparation' },
+  flowtest:{
+    lead:'Two thickener tins sit by the kettle, each with its own scoop ratio. Prepare Aaron’s drink to Level 2, Mildly Thick, and test it before serving.',
+    tins:[
+      {id:'his', name:'Aaron’s prescribed thickener', sub:'Label: 2 scoops per 100ml for Level 2', ratio:2},
+      {id:'spare', name:'A spare tin by the kettle', sub:'Label: 1 scoop per 100ml for Level 2', ratio:1},
+    ],
+  },
+  meters:function(){
+    var tx=S.flowServed?(S.flowTextureOk?100:35):80;
+    var av=S.primed?45:100;
+    return [ {v:tx, w:(tx>=70?'On plan':tx>=40?'Uncertain':'Off Level'), label:'Texture'},
+             {v:av, w:(av>=70?'Settled':'Unsettled'), label:'Aaron'} ];
+  },
+  domains:[
+    {k:'Information use', nodes:['N2']},
+    {k:'Preparation', nodes:['N2','N3']},
+    {k:'Person-centred practice', nodes:['N3']},
+    {k:'Capacity and consent', nodes:['N3']},
+    {k:'Dynamic judgement', nodes:['N4']},
+    {k:'Team coordination', nodes:['N1']},
+    {k:'Response & learning', nodes:['N5','N6']},
+  ],
+  ccHold:{ CC1:'The food and fluids you served met Aaron’s Level 3 and Level 2 plan.',
+           CC2:'You checked competence and kept Aaron’s specialist preparation rather than handing it to an unbriefed colleague.' },
+  outcomes:{
+    A:{badge:'Prevention', h:'Aaron has a safe, dignified breakfast',
+       body:'Nothing dramatic happened, which is the point. His breakfast was a true, smooth Level 3 with the components kept separate, his drink was checked to Level 2 before serving, and the room was settled and unhurried. His food kept its identity and his dignity was intact.'},
+    B:{badge:'Near miss, recovered', h:'Aaron coughs after a few spoonfuls, then recovers',
+       body:'An emerging sign appeared and Aaron’s voice turned wet. You recognised it, stopped, repositioned him upright, let him recover and escalated, and he cleared it. Recording the near miss and adding an Early Watch entry for yesterday’s seizure is the right close. A recognised near miss is success.'},
+    C:{badge:'Emergency, survived', h:'Aaron is stabilised and taken to hospital',
+       body:'The obstruction was serious, made more likely by the wrong texture, the disrupted room or the post-seizure drowsiness. The emergency response was run and the paramedics took over. Aaron is alive. Reaching an emergency at all means the safe margins had already gone.'},
+    D:{badge:'Emergency', h:'Aaron does not survive',
+       body:'The airway stayed blocked, and with the response not run in time, Aaron could not be resuscitated. This is the outcome the whole shift was working to prevent. It came from a chain: a texture that was not right, a room that was never settled, and an emergency not answered in time. Any one link, held, would have changed the ending.'},
+  },
+  reveal:function(){
+    return S.flowServed && S.flowTextureOk
+      ? '<div class="reveal-box ok"><h5>'+svg(I.check)+'You tested the texture, not assumed it</h5><p>You matched the scoops to the tin you were actually using and ran the flow test before serving. That is the difference between a checked Level 2 and a guess that is too thin or too thick.</p></div>'
+      : '<div class="reveal-box"><h5>'+svg(I.alertT)+'The texture was not verified</h5><p>The two tins carried different scoop ratios, and the drink went out without a flow test confirming Level 2. Over-thin fluids and over-diluted food are as much a risk as under-modified ones.</p></div>';
+  },
+  crossTrack:function(){
+    return '<div class="crosstrack">'
+      +'<div class="ct-k">Cross-track &middot; where this shift came from</div>'
+      +'<h3>Here is the breakfast the rota and the maintenance schedule produced</h3>'
+      +'<p>The pressure you worked against was booked in before breakfast. Agency staff arrived without briefing time, contractors were scheduled over the meal, and the thickener products were left non-standardised by the kettle.</p>'
+      +'<div class="ct-chain">'
+      + ctNode('users','Agency, unbriefed')+'<span class="ct-arr">'+svg(I.arrowR)+'</span>'
+      + ctNode('home','Contractors over breakfast')+'<span class="ct-arr">'+svg(I.arrowR)+'</span>'
+      + ctNode('pill','Thickeners not standardised')
+      +'</div>'
+      +'<p style="margin-top:16px">In the full Practic<span class="pr-e">E</span> Ready programme you would take the Manager and Director shifts that built this one.</p>'
+      +'</div>';
+  },
+  toolkitBase:[
+    {ic:'book',ref:'TK5.2',t:'Structured debrief',p:'Work back through the preparation against Aaron’s plan and the IDDSI standards.'},
+    {ic:'gauge2',ref:'TK2.5',t:'IDDSI testing guide',p:'The spoon-tilt and flow tests for food and fluids before serving.'},
+  ],
+  toolkitFail:[
+    {ic:'utensils',ref:'TK2.4',t:'IDDSI texture guide',p:'Re-check Level 3 Liquidised and Level 2 Mildly Thick, and how to verify them.'},
+  ],
+};
+
 /* ---------- Reducers / actions ---------- */
 function beginShift(){ AUDIO.unlock(); goFullscreen(); mobTab='scene'; handoverT=0; handoverEnded=false; resetShiftClock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
@@ -2557,6 +2833,11 @@ document.addEventListener('click', function(e){
     case 'to-picker': toPicker(); break;
     case 'reconcile-pick': reconcilePick(el.getAttribute('data-field'), el.getAttribute('data-val')); break;
     case 'reconcile-confirm': confirmReconcile(); break;
+    case 'flow-tin': flowTin(el.getAttribute('data-id')); break;
+    case 'flow-scoop': flowScoop(parseInt(el.getAttribute('data-dir'),10)); break;
+    case 'flow-test': flowRunTest(); break;
+    case 'flow-verdict': flowVerdict(el.getAttribute('data-val')); break;
+    case 'flow-serve': flowServe(); break;
     case 'begin': beginShift(); break;
     case 'to-table': toTable(); break;
     case 'confidence': setConfidence(el.getAttribute('data-val')); break;
