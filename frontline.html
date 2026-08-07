@@ -272,6 +272,23 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .brief-foot p svg{width:16px;height:16px;color:var(--ink-4)}
 @media(max-width:820px){.scn-grid{grid-template-columns:1fr}.brief-hero{grid-template-columns:1fr}.brief-panels{grid-template-columns:1fr}}
 
+/* ---------- Reconcile widget (S2 signature interaction) ---------- */
+.recon{display:flex;flex-direction:column;gap:12px;margin:8px 0 2px}
+.recon-row{display:grid;grid-template-columns:160px 1fr;gap:16px;align-items:center}
+.recon-field{display:flex;align-items:center;gap:10px;min-width:0}
+.recon-field .rf-ic{flex:none;width:36px;height:36px;border-radius:10px;background:linear-gradient(160deg,var(--teal),#0a5f70);color:#fff;display:grid;place-items:center}
+.recon-field .rf-ic svg{width:20px;height:20px}
+.recon-field b{font-size:var(--t-sm)}
+.recon-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0}
+.recon-chip{text-align:left;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:background .14s ease,border-color .14s ease,transform .12s ease;font:inherit}
+.recon-chip:hover{border-color:var(--teal);transform:translateY(-1px)}
+.recon-chip:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.recon-chip .rc-src{font-size:var(--t-cap);color:var(--ink-4);font-weight:750;text-transform:uppercase;letter-spacing:.05em}
+.recon-chip .rc-val{font-size:var(--t-sm);color:var(--ink);font-weight:600}
+.recon-chip.sel{background:var(--kicker-bg);border-color:var(--teal)}
+.recon-chip.sel .rc-src{color:var(--teal-strong)}
+@media(max-width:900px){.recon-row{grid-template-columns:1fr;gap:8px}.recon-field{margin-bottom:2px}}
+
 /* ---------- Scene shell ---------- */
 .stage{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 20px 18px;max-width:1240px;width:100%;margin:0 auto}
 
@@ -1251,6 +1268,9 @@ function initState(){
     pendingChoice:null,         // option selected, awaiting confidence
     modal:null,                 // {id}
     outcome:null,               // 'A' | 'B' | 'C' | 'D'
+    reconcile:{},               // reconcile widget picks (field -> source id)
+    alignmentDone:false,        // reconcile step completed
+    alignCorrect:0,             // fields reconciled to the correct source
     theme:null,
     muted:false,                // sound on by default
   };
@@ -1530,10 +1550,42 @@ function momentCard(node){
   const key=flow()[S.nodeIdx];
   const warnScene = node.inject || node.emergency || (node.recog && S.primed);
   let body;
-  if(S.sub==='consequence') body=consequenceBody(node);
+  if(node.type==='reconcile') body=reconcileBody(node);
+  else if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
   else body=decideBody(node);
   return '<div class="moment">'+sceneIllo(key,warnScene)+'<div class="m-pad">'+body+'</div></div>';
+}
+/* Reconcile widget (deep signature interaction, S2). Active "which source is
+   current for each field" step. Config in SC.build.reconcile; picks held in
+   S.reconcile; correctness scored at confirm (never revealed mid-run, rule 6). */
+function reconcileBody(node){
+  var cfg=(SC.build&&SC.build.reconcile)||{fields:[]};
+  var picks=S.reconcile||{};
+  var rows=cfg.fields.map(function(f){
+    var opts=f.opts.map(function(o){
+      var sel=picks[f.key]===o.val;
+      return '<button class="recon-chip'+(sel?' sel':'')+'" data-act="reconcile-pick" data-field="'+f.key+'" data-val="'+o.val+'" aria-pressed="'+sel+'">'
+        +'<span class="rc-src">'+o.src+'</span><span class="rc-val">'+o.v+'</span></button>';
+    }).join('');
+    return '<div class="recon-row"><div class="recon-field"><span class="rf-ic">'+svg(I[f.ic])+'</span><b>'+f.label+'</b></div>'
+      +'<div class="recon-opts">'+opts+'</div></div>';
+  }).join('');
+  var all=cfg.fields.length>0 && cfg.fields.every(function(f){return picks[f.key];});
+  return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+    +'<p class="scene-text">'+(cfg.lead||'')+'</p>'
+    +'<div class="recon">'+rows+'</div>'
+    +'<div class="micro-actions"><button class="btn-go" data-act="reconcile-confirm"'+(all?'':' disabled')+'>'+svg(I.check)+(cfg.cta||'Confirm the reconciliation')+'</button></div>';
+}
+function reconcilePick(field,val){ S.reconcile=S.reconcile||{}; S.reconcile[field]=val; AUDIO.sfx('select'); save(); render(); }
+function confirmReconcile(){
+  var cfg=(SC.build&&SC.build.reconcile)||{fields:[]}, picks=S.reconcile||{};
+  var correct=cfg.fields.filter(function(f){return picks[f.key]===f.correct;}).length;
+  S.alignmentDone=true; S.alignCorrect=correct;
+  log('ALIGNMENT_DONE',{completed:true});
+  if(cfg.fields.length && correct===cfg.fields.length){ log('DOC_RELIED',{id:'DOC_DISCHARGE'}); }
+  AUDIO.sfx('confirm');
+  nextNode();
 }
 function decideBody(node){
   const sceneText = node.recog ? recogSceneText() : node.scene;
@@ -2015,7 +2067,14 @@ function superstripGeneric(){
     +'<div class="sv-clock"><div class="cl">'+fmtCountdown(shiftRemaining())+'</div><div class="cw">Time left</div></div>'
     + meter(rk, rz.c, rz.l, 'Mealtime risk') + m + '</div>';
 }
-function scoreForNode(nodeId){ var o=chosenOpt(nodeId); if(!o) return null; return o.kind==='defensible'?100:o.kind==='risky'?55:15; }
+function scoreForNode(nodeId){
+  var n=NODES[nodeId];
+  if(n && n.type==='reconcile'){
+    if(!S.alignmentDone) return null;
+    var c=S.alignCorrect||0; return c>=3?100:c===2?70:c===1?40:15;
+  }
+  var o=chosenOpt(nodeId); if(!o) return null; return o.kind==='defensible'?100:o.kind==='risky'?55:15;
+}
 function scoreProfileGeneric(){
   return ((SC.build&&SC.build.domains)||[]).map(function(d){
     var vs=d.nodes.map(scoreForNode).filter(function(v){return v!=null;});
@@ -2031,14 +2090,18 @@ function outcomeMeta(o){
 }
 function viewOutcomeGeneric(){
   var o=S.outcome, oc=((SC.build&&SC.build.outcomes)||{})[o]||{}, meta=outcomeMeta(o);
-  var extra='';
+  var extra='', body=oc.body||'';
+  var rf=(SC.build&&SC.build.reconcile&&SC.build.reconcile.fields)||[];
+  if((o==='A'||o==='B') && S.alignmentDone && rf.length && S.alignCorrect===rf.length){
+    body+=' You also reconciled the records and escalated, so the next shift inherits the corrected plan, not the conflict.';
+  }
   if(o==='B'){ extra=stepBlock('The safe response, step by step', RECOVERY_STEPS, 1); }
   else if(o==='C'){ extra=postIncidentBlocks(false); }
   else if(o==='D'){ extra=fatalAftermath()+postIncidentBlocks(true); }
   return '<div class="outcome"><div class="oc-card">'
     +'<span class="oc-badge '+meta.cls+'">'+svg(meta.ic)+(oc.badge||meta.label)+'</span>'
     +'<h1>'+(oc.h||'')+'</h1>'
-    +'<p class="oc-body">'+(oc.body||'')+'</p>'
+    +'<p class="oc-body">'+body+'</p>'
     + extra
     +'<div class="oc-actions"><button class="btn-go" data-act="to-debrief">'+svg(I.arrowR)+'Go to the debrief</button></div>'
     +'</div></div>';
@@ -2049,6 +2112,10 @@ function summariseEventsGeneric(){
   out.push({k:'DOC_OPENED', d:opened+' of '+DOC_ORDER.length+' documents opened'});
   var esc=S.events.filter(function(e){return e.t==='ESCALATION';}).length;
   out.push({k:'ESCALATION', d:esc?'Escalated / called for help':'Not escalated'});
+  if(SC.build&&SC.build.reconcile){
+    var rt=(SC.build.reconcile.fields||[]).length;
+    out.push({k:'ALIGNMENT_DONE', d:S.alignmentDone?(S.alignCorrect+' of '+rt+' fields reconciled to the correct source'):'Records not reconciled'});
+  }
   var en=SC.build&&SC.build.emergencyNode;
   if(en && S.choices[en]){
     var n6=S.choices[en];
@@ -2231,6 +2298,7 @@ var NODES_S2 = {
       {id:'b',kind:'risky', text:'Start first aid, and get to the 999 call when you can.'},
       {id:'c',kind:'failing', text:'Leave her to go and find the bank worker.'},
     ]},
+  NR:{ order:7, time:'12:58', label:'Reconcile the records', icon:'route', type:'reconcile' },
 };
 /* Wire S2 into the registry as a fully playable scenario. */
 Object.assign(SCENARIOS.S2, {
@@ -2247,7 +2315,19 @@ SCENARIOS.S2.build = {
   nodes:NODES_S2, docs:DOCS_S2, docOrder:DOC_ORDER_S2, base:['N1','N2','N3','N4','N5'],
   sceneImg:{}, recovery:RECOVERY_STEPS_S1, worker:WORKER_STEPS_S1, org:ORG_STEPS_S1,
   orgFatal:'CQC is notified of Priya’s death.',
-  recogNode:'N5', emergencyNode:'N6', recordsLabel:'Priya’s records',
+  recogNode:'N5', emergencyNode:'N6', closingNode:'NR', recordsLabel:'Priya’s records',
+  reconcile:{
+    lead:'Before the next shift inherits the same trap, set which source is current for each part of Priya’s plan.',
+    cta:'Confirm the reconciliation',
+    fields:[
+      {key:'food', ic:'utensils', label:'Food texture', correct:'discharge',
+       opts:[{val:'prompt',src:'Prompt in the flat',v:'Regular diet'},{val:'discharge',src:'Discharge summary',v:'Level 5, Minced & Moist'}]},
+      {key:'fluids', ic:'utensils', label:'Fluids', correct:'discharge',
+       opts:[{val:'prompt',src:'Prompt in the flat',v:'No restriction'},{val:'discharge',src:'Discharge summary',v:'Level 2, Mildly Thick'}]},
+      {key:'supervision', ic:'eye', label:'Supervision', correct:'discharge',
+       opts:[{val:'prompt',src:'Prompt in the flat',v:'Independent'},{val:'discharge',src:'Discharge summary',v:'Upright, unhurried, pacing'}]},
+    ],
+  },
   handover:{ eyebrow:'12:30 &middot; First shift home',
     text:'It is your first shift since Priya came home to her flat after hospital. Before you go through to the meal, read what the flat holds about her. The prompt on the wall is the easiest to reach for. It may not be the one that matters.',
     q:'Open any of the records. When you are ready, go through to the meal.',
@@ -2260,12 +2340,12 @@ SCENARIOS.S2.build = {
              {v:pv, w:(pv>=70?'Settled':'Unsettled'), label:'Priya'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1']},
+    {k:'Information use', nodes:['N1','NR']},
     {k:'Preparation', nodes:['N2']},
     {k:'Person-centred practice', nodes:['N3','N4']},
     {k:'Capacity and consent', nodes:['N4']},
     {k:'Dynamic judgement', nodes:['N5']},
-    {k:'Response & learning', nodes:['N5','N6']},
+    {k:'Response & learning', nodes:['N5','N6','NR']},
   ],
   ccHold:{ CC1:'Every mouthful served met Priya’s Level 5 plan.',
            CC2:'You verified the discharge summary rather than taking the stale prompt at face value.' },
@@ -2475,6 +2555,8 @@ document.addEventListener('click', function(e){
   switch(act){
     case 'pick-scenario': setScenario(el.getAttribute('data-id')); break;
     case 'to-picker': toPicker(); break;
+    case 'reconcile-pick': reconcilePick(el.getAttribute('data-field'), el.getAttribute('data-val')); break;
+    case 'reconcile-confirm': confirmReconcile(); break;
     case 'begin': beginShift(); break;
     case 'to-table': toTable(); break;
     case 'confidence': setConfidence(el.getAttribute('data-val')); break;
