@@ -1250,6 +1250,7 @@ const SCENARIOS = {
       sceneImg:SCENE_IMG_S1, recovery:RECOVERY_STEPS_S1, worker:WORKER_STEPS_S1,
       org:ORG_STEPS_S1, orgFatal:ORG_STEP_FATAL_S1,
       recogNode:'N5', emergencyNode:'N6', recordsLabel:'Daniel’s records',
+      intro:{ video:'assets/frontline/intro.mp4', vtt:INTRO_VTT },
       handover:{ eyebrow:'17:40 &middot; Handover',
         text:'You take the teatime handover. Before you go to the table, this is your chance to read what the service knows about Daniel. The learning is in finding the right records and judging them. Nothing tells you which ones matter.',
         q:'Open any of the records. When you are ready, go to the table.',
@@ -1561,14 +1562,17 @@ function viewLanding(){
     +    '<h1>'+SC.title+'</h1>'
     +    '<p class="lead">'+SC.lead+'</p>'
     +  '</div>'
-    +  (S.scenario==='S1'
-    ?  '<div class="land-media land-video">'
-    +    '<video class="vplayer intro-video" aria-label="Introduction video" playsinline preload="auto" controls>'
-    +      '<source src="assets/frontline/intro.mp4" type="video/mp4">'
-    +      '<track kind="captions" srclang="en" label="English" default src="'+INTRO_VTT+'">'
-    +    '</video>'
-    +  '</div>'
-    :  '<div class="land-media land-video">'+vslot('Welcome &middot; '+SC.person,null,false)+'</div>')
+    +  (function(){
+         var intro=(SC.build&&SC.build.intro);   // per-scenario intro; teases up that scenario
+         if(intro && intro.video){
+           return '<div class="land-media land-video">'
+             +'<video class="vplayer intro-video" aria-label="Introduction video" playsinline preload="auto" controls>'
+             +'<source src="'+intro.video+'" type="video/mp4">'
+             +(intro.vtt?'<track kind="captions" srclang="en" label="English" default src="'+intro.vtt+'">':'')
+             +'</video></div>';
+         }
+         return '<div class="land-media land-video">'+vslot('Intro &middot; '+SC.title,null,false)+'</div>';
+       })()
     +'</div>'
     +'<div class="land-facts">'
     + SC.facts.map(function(f){ return landFact(f[0],f[1],f[2]); }).join('')

@@ -8,11 +8,15 @@ These cover the three new frontline scenarios now built and playable:
 - **S3 — Preparation Under Pressure** (Aaron, shared house)
 - **S4 — Happy Birthday** (Marcus, restaurant)
 
-Each scenario needs, at minimum, **one handover clip**. A single **track-level welcome**
-(section 0) can be reused across all four scenarios and replaces the current
-Daniel-specific intro. Debrief opening clips (section 4) are optional for now: the
-debrief currently shows a placeholder slot and renders its reveal as on-screen text,
-so record the handovers first and the debrief openers when convenient.
+**Decision (client):** each scenario keeps its **own** intro, because a scenario-specific
+welcome tees that shift up. So the intro is a per-scenario asset (like the handover): S1
+already has one, and S2/S3/S4 need one each (section 0). Each scenario also needs its
+**handover clip**. Debrief opening clips (section 4) are optional for now: the debrief shows
+a placeholder slot and renders its reveal as on-screen text, so record the intros and
+handovers first and the debrief openers when convenient.
+
+The build reads the intro from each scenario's data, so a recorded clip drops straight in
+(add `intro:{video, vtt}` to that scenario's build). Until then S2/S3/S4 show a placeholder.
 
 **Personas (keep consistent with F1):**
 - **EDUCATOR** — calm practice educator / assessor. One recurring face. Used for the
@@ -32,20 +36,33 @@ so record the handovers first and the debrief openers when convenient.
 
 ---
 
-## 0. TRACK WELCOME (reusable across all four scenarios) · EDUCATOR · ~22s
-*Replaces the Daniel-specific intro so one welcome fits every scenario. Plays inline on the landing.*
+## 0. PER-SCENARIO INTROS · EDUCATOR · ~20s each
+*Each plays inline on that scenario's landing and tees the shift up. Keep the shared spine
+("no hints / no single right answer / what happens is whatever your choices make happen" +
+"when you're ready, begin your shift") consistent with the existing S1 intro, and change
+only the scenario-specific set-up. S1 (The Teatime Shift) is already recorded — see
+`F1-video-scripts.md` section 1. Record the three below to match its framing.*
 
-> Welcome to the Prevention of Choking frontline track.
->
-> In each scenario you lead a real shift, supporting one person through a meal, on your own, under time pressure.
+**S2 — New Arrival, Old Plan (Priya)**
+> Welcome to New Arrival, Old Plan. This is your first shift since Priya came home to her own flat, after a spell in hospital. You are on your own, and the meal left ready for her may not be the one she needs now.
 >
 > There are no hints, and no single right answer. What happens is whatever your choices make happen.
 >
-> Nothing about these shifts looks dramatic, and that is exactly the point. This is how real practice feels, and it is where real judgement is made.
->
-> When you are ready, begin.
+> The hardest risks here are the quiet ones, sitting in the paperwork. When you are ready, begin your shift.
 
-*If you would rather keep a per-scenario welcome, swap the second line for the scenario's own one-line set-up (e.g. "Today you support Priya, home from hospital, on your own").*
+**S3 — Preparation Under Pressure (Aaron)**
+> Welcome to Preparation Under Pressure. It is a disrupted breakfast: contractors on site, agency staff who have not been briefed, and Aaron drowsy after a seizure yesterday. His food and drink have to be exactly right, and it would be easy to cut a corner.
+>
+> There are no hints, and no single right answer. What happens is whatever your choices make happen.
+>
+> Getting the texture right, and checking it, is the whole job. When you are ready, begin your shift.
+
+**S4 — Happy Birthday (Marcus)**
+> Welcome to Happy Birthday. You are taking Marcus out for his birthday meal, with a family who love him and would like the rules to bend, just for today. But Marcus cannot weigh these risks for himself, so the safe path is the harder one.
+>
+> There are no hints, and no single right answer. What happens is whatever your choices make happen.
+>
+> Including him safely, without a scene, is what this shift asks of you. When you are ready, begin your shift.
 
 ---
 
@@ -116,9 +133,9 @@ so record the handovers first and the debrief openers when convenient.
 ## Clip count summary
 | Group | Clips | Notes |
 |---|---|---|
-| Track welcome | 1 | reusable across all four; replaces the Daniel-specific intro |
+| Per-scenario intros | 3 | Priya, Aaron, Marcus (S1 intro already exists) |
 | Handovers | 3 | Priya, Aaron, Marcus (one each) |
-| **Minimum to replace current placeholders** | **4** | welcome + 3 handovers |
+| **Minimum to replace current placeholders** | **6** | 3 intros + 3 handovers |
 | Debrief openers (A/B/C/D × 3) | +12 | optional, wire later |
 
 Still outstanding from F1: the **S1 mobile handover** re-cut (the desktop clip was re-recorded; the mobile cut still uses the older script).
