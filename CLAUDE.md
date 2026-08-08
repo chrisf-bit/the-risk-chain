@@ -266,11 +266,23 @@ throughout, all gated by `prefers-reduced-motion`.
 - **Fullscreen** on first interaction + top‑bar toggle. **Mobile:** fluid ring gauges + a
   **[The moment]/[Records] tab** so records aren't buried below the scene. Synthesised UI
   **sound effects** (`AUDIO.sfx`, primed on first gesture; play *after* the context resumes).
-- Scene photos: S1 uses `assets/frontline/scene-*.jpg` via `SCENE_IMG`. **S2–S4 node scene
-  banners are still PLACEHOLDERS** (blank tinted panels; `svgBanner` returns null art for
-  non‑S1). To add real images, set that scenario's `SC.build.sceneImg` to `{Nx:{src,pos}, …}`.
-  Shot list + generation prompts: `docs/frontline-image-shotlist.md`. Handover/landing don't
-  need scene images (their video fills that slot). Keep every image **under 2000px**.
+- Scene photos: set per scenario via `SC.build.sceneImg = {Nx:{src,pos}, …}`; a missing key
+  falls back to a blank placeholder banner (`svgBanner` returns null art for non‑S1). Handover
+  and landing DON'T need scene images (their video fills that slot). **N6 (emergency) reuses
+  the N5 image; S2's reconcile node NR reuses the N1 (documents) image.** `pos` is the
+  `object-position` (banner crops top/bottom). Shot list + prompts + stock terms:
+  `docs/frontline-image-shotlist.md`.
+- **Scene-image STATUS (2026‑08):** **S2 = complete** (`scene-s2-n1..n5.jpg`). **S3 = 4/5**
+  (`scene-s3-n1..n4.jpg` in; **N5 pending** — the emerging‑signs pureed‑bowl shot). **S4 =
+  none yet** (needs N1–N5). User hit their Copilot image limit; next images may come from any
+  source (AI or free stock — Unsplash/Pexels). S1 keeps its original `scene-*.jpg`.
+- **Image intake workflow (do this for every new scene image):** Copilot stamps a "Made with
+  AI" badge in the top‑right — crop it off. `identify`/ImageMagick are NOT installed and the
+  `convert` on PATH is the **Windows disk utility, do NOT run it**. Use **PowerShell +
+  System.Drawing** to crop the top ~100px and re‑encode as JPEG q85 (see the scratchpad
+  scripts this session, or reproduce: load `Image.FromFile`, `DrawImage` a `cropTop=100`
+  source rect onto a `Bitmap`, save with the JPEG encoder). Name `scene-s<n>-n<k>.jpg`, keep
+  **under 2000px** (~1536×924 is what came through), then add to that scenario's `sceneImg`.
 - Options key on `id` not array position (`m={a:100,b:55,c:15}`), so reordering is display‑only.
 
 ### Brand marks, logo & mobile tweaks
@@ -319,11 +331,16 @@ Intro is now **welcome‑only**, inline, with the SME disclaimer **at the end**:
   `<style>` block (harmless; can be cleared later).
 
 ### OPEN THREADS
+- **Scene images (the main remaining asset job):** S3 **N5** + all of **S4 (N1–N5)**. See the
+  scene‑image STATUS + intake workflow above. All videos are DONE.
 - Full **WCAG 2.1 AA** close‑out (axe/Lighthouse + screen‑reader + modal focus‑trap). Done
   so far: captions, video pause, reduced‑motion, focus outline, Esc‑closes‑modal, ARIA
   labels, aria‑pressed tabs, several contrast fixes. NOT certified — don't claim AA yet.
 - Carry the ring/glass language into the **debrief** (domain bars → rings).
 - **Audit copy for em dashes** (hard rule) — a lot of outcome/debrief copy still uses them.
+- Two S2–S4 quality passes not yet done: **bespoke scoring nuance** (they use the generic
+  scorer) and NHS‑level **debrief polish** (they use `debriefShell`, which is functional but
+  plainer than S1's hand‑built debrief).
 
 ### IMPORTANT working note
 The user's screenshots have failed to load **all session** because they exceed **2000px**
