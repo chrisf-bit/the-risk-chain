@@ -2719,7 +2719,13 @@ Object.assign(SCENARIOS.S3, {
 });
 SCENARIOS.S3.build = {
   nodes:NODES_S3, docs:DOCS_S3, docOrder:DOC_ORDER_S3, base:['N1','N2','N3','N4','N5'],
-  sceneImg:{}, recovery:RECOVERY_STEPS_S1, worker:WORKER_STEPS_S1, org:ORG_STEPS_S1,
+  sceneImg:{
+    N1:{src:'assets/frontline/scene-s3-n1.jpg', pos:'50% 55%'},
+    N2:{src:'assets/frontline/scene-s3-n2.jpg', pos:'50% 58%'},
+    N3:{src:'assets/frontline/scene-s3-n3.jpg', pos:'50% 60%'},
+    N4:{src:'assets/frontline/scene-s3-n4.jpg', pos:'50% 55%'},
+  },
+  recovery:RECOVERY_STEPS_S1, worker:WORKER_STEPS_S1, org:ORG_STEPS_S1,
   orgFatal:'CQC is notified of Aaron’s death.',
   recogNode:'N5', emergencyNode:'N6', recordsLabel:'Aaron’s records',
   intro:{ video:'assets/frontline/intro-s3.mp4', vtt:INTRO_S3_VTT },
