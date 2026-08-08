@@ -238,6 +238,10 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .status-pill svg{width:13px;height:13px}
 .status-pill.ready{background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line)}
 .status-pill.build{background:rgba(120,134,156,.14);color:var(--ink-3);border:1px solid var(--line)}
+.status-pill.locked{background:rgba(120,134,156,.14);color:var(--ink-3);border:1px solid var(--line)}
+.scn-card.locked{cursor:default;opacity:.62}
+.scn-card.locked:hover{transform:none;box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);border-color:var(--line)}
+.scn-card .sc-go.sc-locked{color:var(--ink-3);font-weight:700}
 .scn-card .sc-teach{font-size:var(--t-sm);color:var(--ink-2);margin:14px 0 0;line-height:1.45}
 .scn-card .sc-levels{font-size:var(--t-cap);color:var(--ink-4);margin:10px 0 0;display:flex;align-items:center;gap:7px}
 .scn-card .sc-levels svg{width:14px;height:14px}
@@ -1289,6 +1293,18 @@ function bindScenarioData(){
 }
 bindScenarioData();
 
+/* ---------- Scenario progression (locked / unlocked) ----------
+   Completion is persisted separately from the run state (which resets each run),
+   so it survives switching and restarting scenarios. Each scenario after S1
+   unlocks once the previous one in order has been completed (reached its
+   outcome). */
+const SCEN_ORDER=['S1','S2','S3','S4'];
+const PROG_KEY='frontline_progress_v1';
+let PROG; try{ PROG=JSON.parse(localStorage.getItem(PROG_KEY))||{}; }catch(e){ PROG={}; }
+function saveProg(){ try{ localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); }catch(e){} }
+function markComplete(id){ if(id && !PROG[id]){ PROG[id]=true; saveProg(); } }
+function isUnlocked(id){ var i=SCEN_ORDER.indexOf(id); if(i<=0) return true; return !!PROG[SCEN_ORDER[i-1]]; }
+
 /* ---------- State ---------- */
 const KEY='frontline_v2';
 function initState(){
@@ -1335,6 +1351,7 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} 
 /* Choose a scenario from the picker. Resets the run, keeps theme + sound. Built
    scenarios enter their landing; not-yet-built ones show their brief screen. */
 function setScenario(id){
+  if(!SCENARIOS[id] || !isUnlocked(id)) return;   // locked scenarios are not selectable
   const keep={theme:S.theme,muted:S.muted};
   resetShiftClock(); stopBuzzSequence(); AUDIO.ambienceStop();
   S=Object.assign(initState(),keep);
@@ -1410,19 +1427,25 @@ function render(){
 }
 /* ---------- Scenario picker ---------- */
 function viewPicker(){
-  const cards=Object.keys(SCENARIOS).map(function(id){
+  const cards=SCEN_ORDER.map(function(id,i){
     const s=SCENARIOS[id];
-    const pill=s.built
-      ? '<span class="status-pill ready">'+svg(I.check)+'Ready to play</span>'
-      : '<span class="status-pill build">'+svg(I.clipboard)+'In build</span>';
-    return '<button class="scn-card" data-accent="'+s.accent+'" data-act="pick-scenario" data-id="'+id+'">'
+    const unlocked=isUnlocked(id), done=!!PROG[id];
+    const pill = !unlocked ? '<span class="status-pill locked">'+svg(I.lock)+'Locked</span>'
+      : done ? '<span class="status-pill ready">'+svg(I.check)+'Completed</span>'
+      : '<span class="status-pill ready">'+svg(I.play)+'Ready to play</span>';
+    let go;
+    if(!unlocked){ const prev=SCENARIOS[SCEN_ORDER[i-1]]; go='<span class="sc-go sc-locked">'+svg(I.lock)+'Complete '+prev.title+' to unlock</span>'; }
+    else { go='<span class="sc-go">'+(done?'Play again':'Begin scenario')+svg(I.arrowR)+'</span>'; }
+    const open = unlocked ? '<button class="scn-card" data-act="pick-scenario" data-id="'+id+'"' : '<div class="scn-card locked" aria-disabled="true"';
+    const close = unlocked ? '</button>' : '</div>';
+    return open+' data-accent="'+s.accent+'">'
       +'<div class="sc-top"><span class="scn-badge2">'+s.badge+'</span>'
       +'<div class="sc-h"><h3>'+s.title+'</h3><p class="sc-who"><b>'+s.person+'</b> &middot; '+s.setting+'</p></div>'
       + pill +'</div>'
       +'<p class="sc-teach">'+s.teach+'</p>'
       +'<p class="sc-levels">'+svg(I.utensils)+s.levels+'</p>'
-      +'<span class="sc-go">'+(s.built?'Begin scenario':'View the brief')+svg(I.arrowR)+'</span>'
-      +'</button>';
+      + go
+      + close;
   }).join('');
   return '<div class="landing"><div class="land-card">'
     +'<div class="pick-head">'
@@ -3017,6 +3040,7 @@ function resolve(){
   log('OUTCOME',{path:S.outcome});
   AUDIO.ambienceStop();
   AUDIO.sfx({A:'good',B:'confirm',C:'warn',D:'somber'}[S.outcome]);
+  markComplete(S.scenario);   // reaching the outcome completes the scenario, unlocking the next
   S.stage='outcome'; save(); render();
 }
 function toDebrief(){ S.stage='debrief'; save(); render(); }
