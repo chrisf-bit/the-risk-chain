@@ -221,11 +221,18 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .pick-head p{font-family:var(--serif);font-size:var(--t-h3);line-height:1.5;color:var(--ink-2);margin:14px 0 0;max-width:64ch}
 .pick-head .pick-cta{margin-top:10px;font-weight:800;color:var(--ink)}
 .scn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.scn-card{position:relative;text-align:left;display:flex;flex-direction:column;gap:0;background:linear-gradient(180deg,var(--surface-2),var(--surface-3));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;font:inherit;color:inherit;width:100%}
+/* Picker backdrop sits a touch deeper than the ground so the white panel and the
+   cards both lift off it. Theme-aware. */
+.pick-screen{background:#e4eaf4}
+@media(prefers-color-scheme:dark){.pick-screen{background:#04101f}}
+:root[data-theme="dark"] .pick-screen{background:#04101f}
+:root[data-theme="light"] .pick-screen{background:#e4eaf4}
+.scn-card{position:relative;text-align:left;display:flex;flex-direction:column;gap:0;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;font:inherit;color:inherit;width:100%}
 .scn-card:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 var(--sheen),0 10px 28px rgba(7,42,107,.14);border-color:var(--teal)}
 .scn-card:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .scn-card .sc-top{display:flex;align-items:flex-start;gap:14px}
 .scn-badge2{flex:none;width:50px;height:50px;border-radius:13px;display:grid;place-items:center;color:#fff;font-family:var(--mono);font-weight:800;font-size:var(--t-h2);box-shadow:0 5px 12px rgba(7,42,107,.2)}
+.scn-badge2 svg{width:26px;height:26px;stroke-width:1.9}
 .scn-card[data-accent="navy"] .scn-badge2{background:linear-gradient(150deg,#0e3a86,var(--navy))}
 .scn-card[data-accent="teal"] .scn-badge2{background:linear-gradient(150deg,var(--teal),#0a5f70)}
 .scn-card[data-accent="violet"] .scn-badge2{background:linear-gradient(150deg,var(--violet),#6d2fa8)}
@@ -1226,7 +1233,7 @@ const SIM_CAVEAT = 'This simulation is for learning and reflection. It does not 
    next. The engine routes by S.scenario, so adding a full scenario is a data
    object plus its logic hooks. */
 const SCENARIOS = {
-  S1:{ id:'S1', built:true, badge:'S1', accent:'navy',
+  S1:{ id:'S1', built:true, badge:'S1', badgeIcon:'utensils', accent:'navy',
     title:'The Teatime Shift', person:'Daniel',
     setting:'Larkfield House, residential care home',
     levels:'IDDSI Level 6 food · Level 0 fluids',
@@ -1248,7 +1255,7 @@ const SCENARIOS = {
         q:'Open any of the records. When you are ready, go to the table.',
         videoD:'assets/frontline/handover.mp4', videoM:'assets/frontline/handover-mobile.mp4',
         vttD:HANDOVER_VTT, vttM:HANDOVER_VTT_MOBILE } } },
-  S2:{ id:'S2', built:false, badge:'S2', accent:'teal',
+  S2:{ id:'S2', built:false, badge:'S2', badgeIcon:'file', accent:'teal',
     title:'New Arrival, Old Plan', person:'Priya',
     setting:'Meadow Rise, her own supported-living flat',
     levels:'IDDSI Level 5 food · Level 2 fluids',
@@ -1259,7 +1266,7 @@ const SCENARIOS = {
       ['CC2','Unverified handoff','Accepting the stale in-flat prompt at face value, or letting the unbriefed bank worker plate and serve.'],
     ],
     signature:'Documentation alignment check. An active reconcile step: the conflicting records sit side by side and you decide which source is current for each field.' },
-  S3:{ id:'S3', built:false, badge:'S3', accent:'violet',
+  S3:{ id:'S3', built:false, badge:'S3', badgeIcon:'gauge2', accent:'violet',
     title:'Preparation Under Pressure', person:'Aaron',
     setting:'Bramble Close, supported-living shared house',
     levels:'IDDSI Level 3 food · Level 2 fluids',
@@ -1270,7 +1277,7 @@ const SCENARIOS = {
       ['CC2','Unverified handoff','Handing Aaron’s specialist preparation or supervision to an unbriefed agency colleague.'],
     ],
     signature:'IDDSI flow and spoon-tilt test. You pick the tin and scoop, run the test, and judge the texture before serving.' },
-  S4:{ id:'S4', built:false, badge:'S4', accent:'magenta',
+  S4:{ id:'S4', built:false, badge:'S4', badgeIcon:'users', accent:'magenta',
     title:'Happy Birthday', person:'Marcus',
     setting:'A busy restaurant, birthday meal with family',
     levels:'IDDSI Level 5 food · Level 2 fluids',
@@ -1423,6 +1430,7 @@ function render(){
   else if(S.stage==='outcome') view=viewOutcome();
   else if(S.stage==='debrief') view=viewDebrief();
   app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
+  try{ document.title = (S.stage==='picker' ? 'Frontline scenarios' : SC.title) + ' · PracticE Ready'; }catch(e){}
   window.scrollTo(0,0);
   if(S.stage==='landing'){ setupIntroVideo(); }
   if(S.stage==='handover'){ setupHandoverVideo(); startShiftClock(); }
@@ -1441,7 +1449,7 @@ function viewPicker(){
     const open = unlocked ? '<button class="scn-card" data-act="pick-scenario" data-id="'+id+'"' : '<div class="scn-card locked" aria-disabled="true"';
     const close = unlocked ? '</button>' : '</div>';
     return open+' data-accent="'+s.accent+'">'
-      +'<div class="sc-top"><span class="scn-badge2">'+s.badge+'</span>'
+      +'<div class="sc-top"><span class="scn-badge2">'+svg(I[s.badgeIcon]||I.utensils)+'</span>'
       +'<div class="sc-h"><h3>'+s.title+'</h3><p class="sc-who"><b>'+s.person+'</b> &middot; '+s.setting+'</p></div>'
       + pill +'</div>'
       +'<p class="sc-teach">'+s.teach+'</p>'
@@ -1449,7 +1457,7 @@ function viewPicker(){
       + go
       + close;
   }).join('');
-  return '<div class="landing"><div class="land-card">'
+  return '<div class="landing pick-screen"><div class="land-card">'
     +'<div class="pick-head">'
     +  '<img class="land-logo ll-light" src="assets/frontline/brand-logo.png" alt="PracticE Ready">'
     +  '<img class="land-logo ll-dark" src="assets/frontline/brand-logo-dark.png" alt="PracticE Ready" aria-hidden="true">'
