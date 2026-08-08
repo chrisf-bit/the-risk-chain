@@ -215,12 +215,12 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .land-note{font-size:var(--t-cap);color:var(--ink-4);max-width:44ch}
 
 /* ---------- Scenario picker + brief (multi-scenario) ---------- */
-.pick-head{margin:6px 0 20px}
+.pick-head{margin:0 0 18px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:26px 30px}
 .pick-head .land-kicker{margin-bottom:14px}
 .pick-head h1{font-size:var(--t-hero);letter-spacing:-.025em;line-height:1.02;margin:0}
 .pick-head p{font-family:var(--serif);font-size:var(--t-h3);line-height:1.5;color:var(--ink-2);margin:14px 0 0;max-width:64ch}
 .scn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.scn-card{position:relative;text-align:left;display:flex;flex-direction:column;gap:0;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;font:inherit;color:inherit;width:100%}
+.scn-card{position:relative;text-align:left;display:flex;flex-direction:column;gap:0;background:linear-gradient(180deg,var(--surface-2),var(--surface-3));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;font:inherit;color:inherit;width:100%}
 .scn-card:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 var(--sheen),0 10px 28px rgba(7,42,107,.14);border-color:var(--teal)}
 .scn-card:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .scn-card .sc-top{display:flex;align-items:flex-start;gap:14px}
@@ -1429,7 +1429,7 @@ function viewPicker(){
     +  '<img class="land-logo ll-dark" src="assets/frontline/brand-logo-dark.png" alt="PracticE Ready" aria-hidden="true">'
     +  '<span class="land-kicker">'+svg(I.person)+'Frontline track &middot; Prevention of choking</span>'
     +  '<h1>Choose a scenario</h1>'
-    +  '<p>Four frontline shifts, four different ways a choking risk builds and can be prevented. Each is a first-person shift under time pressure, with the same records-and-judgement engine. Start with The Teatime Shift.</p>'
+    +  '<p>Four frontline shifts, four different risks, all under time pressure. Start with The Teatime Shift.</p>'
     +'</div>'
     +'<div class="scn-grid">'+cards+'</div>'
     +'</div></div>';
