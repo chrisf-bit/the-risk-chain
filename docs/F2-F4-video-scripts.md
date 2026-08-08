@@ -34,35 +34,58 @@ The build reads the intro from each scenario's data, so a recorded clip drops st
 - **No em dashes in spoken lines** (house rule for all user-facing copy). Durations are targets; shorter is better.
 - 16:9, 1920×1080. Match the F1 talking-head framing so the landing/handover video tiles are consistent.
 
+**Avatar (Synthesia) safety — important**
+Synthesia's medical policy allows general, educational health framing but **rejects
+personalised medical advice, diagnoses, treatment or first-aid instructions, medication
+directives, and condition-specific claims** an avatar "speaks". So the rule for every clip
+below is:
+- The **avatar speaks only the human, non-clinical framing** of the shift: the setting, the
+  pressure, the people, and the "no hints / your choices decide it" spine.
+- **All clinical specifics stay on screen, not in the avatar's mouth** — IDDSI levels, named
+  conditions or events (e.g. a seizure), the hospital/discharge detail, capacity and
+  best-interests wording, and every emergency / first-aid step. These already live in the
+  app as **on-screen text** (the landing intro copy and fact tiles) and in the app's own
+  components (records, red-flag and escalation panels), which are not avatar-generated and
+  so are outside Synthesia's moderation.
+
+This is why the scripts below are deliberately light on clinical detail: the learner still
+gets all of it, just read on screen rather than spoken. If a clip is still flagged, move the
+offending line into the on-screen copy and keep the spoken version reflective and general.
+
 ---
 
 ## 0. PER-SCENARIO INTROS · EDUCATOR · ~20s each
-*Each plays inline on that scenario's landing and tees the shift up. Keep the shared spine
-("no hints / no single right answer / what happens is whatever your choices make happen" +
-"when you're ready, begin your shift") consistent with the existing S1 intro, and change
-only the scenario-specific set-up. S1 (The Teatime Shift) is already recorded — see
-`F1-video-scripts.md` section 1. Record the three below to match its framing.*
+*Each plays inline on that scenario's landing and tees the shift up. Reworded to be
+avatar-safe (see the Synthesia note above): the spoken lines carry only the human framing;
+the clinical detail sits in the on-screen intro copy. Keep the shared spine ("no hints / no
+single right answer / what happens is whatever your choices make happen" + "when you're
+ready, begin your shift") consistent with the existing S1 intro. S1 (The Teatime Shift) is
+already recorded — see `F1-video-scripts.md` section 1.*
 
-**S2 — New Arrival, Old Plan (Priya)**
+**S2 — New Arrival, Old Plan (Priya)**  ·  *already recorded and wired; low-risk wording, kept as-is*
 > Welcome to New Arrival, Old Plan. This is your first shift since Priya came home to her own flat, after a spell in hospital. You are on your own, and the meal left ready for her may not be the one she needs now.
 >
 > There are no hints, and no single right answer. What happens is whatever your choices make happen.
 >
 > The hardest risks here are the quiet ones, sitting in the paperwork. When you are ready, begin your shift.
 
-**S3 — Preparation Under Pressure (Aaron)**
-> Welcome to Preparation Under Pressure. It is a disrupted breakfast: contractors on site, agency staff who have not been briefed, and Aaron drowsy after a seizure yesterday. His food and drink have to be exactly right, and it would be easy to cut a corner.
+**S3 — Preparation Under Pressure (Aaron)**  ·  *reworded (removed the seizure and texture specifics)*
+> Welcome to Preparation Under Pressure. It is a busy, disrupted breakfast. There are contractors on site, colleagues who have not worked with the people here before, and a great deal happening at once. It would be easy to rush, or to cut a corner.
 >
 > There are no hints, and no single right answer. What happens is whatever your choices make happen.
 >
-> Getting the texture right, and checking it, is the whole job. When you are ready, begin your shift.
+> The small details matter more today than the noise around you suggests. When you are ready, begin your shift.
 
-**S4 — Happy Birthday (Marcus)**
-> Welcome to Happy Birthday. You are taking Marcus out for his birthday meal, with a family who love him and would like the rules to bend, just for today. But Marcus cannot weigh these risks for himself, so the safe path is the harder one.
+*Moved to on-screen intro copy (already in the S3 landing text): Aaron was drowsy after a seizure yesterday; his breakfast is Level 3 and his drinks Level 2; the two thickener tins by the kettle.*
+
+**S4 — Happy Birthday (Marcus)**  ·  *reworded (removed the capacity claim)*
+> Welcome to Happy Birthday. You are taking Marcus out for his birthday meal, with a family who love him and would like the rules to bend, just for today. The kind thing and the safe thing will not always feel like the same thing, and the pressure will be on you.
 >
 > There are no hints, and no single right answer. What happens is whatever your choices make happen.
 >
-> Including him safely, without a scene, is what this shift asks of you. When you are ready, begin your shift.
+> Including him in every part of his day, safely, is what this shift asks of you. When you are ready, begin your shift.
+
+*Moved to on-screen intro copy (already in the S4 landing text): Marcus lacks capacity for eating and drinking risk decisions, so a change to his plan is a best-interests decision, and his "yes" to please his Dad is not informed agreement.*
 
 ---
 
@@ -82,13 +105,14 @@ only the scenario-specific set-up. S1 (The Teatime Shift) is already recorded �
 ## 2. S3 HANDOVER — Aaron · EDUCATOR, second person · ~35s
 *Plays in the media band on the S3 handover screen. Setting: Bramble Close shared house, a disrupted breakfast.*
 
-> You are leading breakfast at Bramble Close this morning, and it is not a calm one. Contractors are in replacing a boiler, breakfast has moved to the lounge, and two of the three staff on shift are agency, who have not been briefed on the people here.
+> You are leading breakfast at Bramble Close this morning, and it is not a calm one. Contractors are in replacing a boiler, breakfast has moved to the lounge, and two of the three staff on shift are agency, who have not worked with the people here before.
 >
-> Aaron was drowsy after a seizure yesterday. His breakfast needs preparing to his texture, and his drinks thickened, and there are two tins of thickener sitting by the kettle.
+> Aaron is not quite himself today, and his breakfast needs preparing carefully and unhurried. There is a lot happening around you, and it would be easy to let something slip.
 >
-> Before you prepare anything, read Aaron's plan and how his textures are checked. When you are ready, start the preparation.
+> Before you prepare anything, read what the service holds about Aaron, and how things should be done for him. When you are ready, start the preparation.
 
-*Colleague-first-person alternative (an outgoing worker exists here): "I'm handing you a messy one this morning…" then the same facts.*
+*Avatar-safe reword: the seizure, the IDDSI levels and the thickener detail are carried by the on-screen handover text and Aaron's records, not spoken.*
+*Colleague-first-person alternative (an outgoing worker exists here): "I'm handing you a messy one this morning…" then the same, keeping clinical specifics on screen.*
 
 ---
 
@@ -97,33 +121,39 @@ only the scenario-specific set-up. S1 (The Teatime Shift) is already recorded �
 
 > Today you are taking Marcus out for his birthday meal, with his Mum, his Dad and his sibling. You are on your own, in a public place, and the family are excited for him.
 >
-> Marcus lacks capacity for decisions about the risks in his eating and drinking, so any change to his plan is a best-interests decision, not simply his or the family's to agree to in the moment.
+> The family love Marcus and will want the day to be perfect, and that will put the pressure on you. Not every kind thing in the moment is the safe thing.
 >
 > Before the food is ordered, check what you have brought with you. Away from base, his plan and the on-call number only help if they are to hand. When you are ready, go to the table.
 
+*Avatar-safe reword: the capacity and best-interests detail is carried by the on-screen landing copy and Marcus's records (the EDAR), not spoken.*
 *No colleague is present in S4, so keep this one EDUCATOR second person.*
 
 ---
 
 ## 4. DEBRIEF opening clips (optional, per scenario) · EDUCATOR
-*Record all four (A/B/C/D) per scenario; the build plays the one matching the outcome. Optional for now: wire later. Keep the D / fatal cut sombre, unhurried, no music sting. Substitute the person's name and the scenario's specifics as below.*
+*Record all four (A/B/C/D) per scenario; the build plays the one matching the outcome. Optional for now: wire later. Keep the D / fatal cut sombre, unhurried, no music sting. Substitute the person's name as below.*
+
+**Avatar-safe (Synthesia):** these are reflective, not instructional. The spoken lines avoid
+IDDSI level numbers and step-by-step first aid; the specific safe-response steps, texture
+levels and escalation detail are shown **on screen** in the debrief's own components (the
+recovery-steps list, the domain breakdown and the toolkit), so the avatar never voices them.
 
 ### S2 — Priya
-- **A · Prevention** > Nothing dramatic happened, and that is the point. You treated the discharge summary as the current source, prepared the right texture, and kept Priya's choice and dignity intact in her own home. The trap in the paperwork never reached her plate.
-- **B · Near miss, recovered** > Priya took an unsafe mouthful and coughed, and you caught it. You stopped, kept her upright, called for help, and she cleared it. Recognising a near miss and acting on it is success. But the conditions were set earlier, and that is what we will look at.
-- **C · Emergency, survived** > This one was serious, and in a lone-worked flat the margins were thin. Priya survived because the response was run. Reaching an emergency at all means the safe controls were already lost earlier. Let us walk back through it.
+- **A · Prevention** > Nothing dramatic happened, and that is the point. You treated the current record as the one that mattered, prepared the right meal for her, and kept Priya's choice and dignity intact in her own home. The trap in the paperwork never reached her plate.
+- **B · Near miss, recovered** > There was an unsafe moment at the table, and you caught it in time. You recognised what was happening and acted, and Priya came through it. Recognising a near miss and responding is success, not failure. But the conditions were set earlier, and that is what we will look at.
+- **C · Emergency, survived** > This one became serious, and in a lone-worked flat the margins were thin. Priya came through it because the response was there when it was needed. Reaching that point at all means the safe controls were already lost earlier. Let us walk back through it.
 - **D · Fatal** > Take a moment. This shift ended in the outcome the training exists to prevent. Priya did not survive. This was not one mistake, and it is not about blame. It was a chain, and each link, held, would have changed the ending.
 
 ### S3 — Aaron
-- **A · Prevention** > Nothing dramatic happened, and that is the point. A true, smooth Level 3, prepared separately, a drink checked before serving, and a settled, unhurried room. Aaron's breakfast kept its identity and his dignity was intact.
-- **B · Near miss, recovered** > Aaron coughed after a few spoonfuls, and you caught it. You stopped, sat him upright, let him recover and escalated, and he cleared it. Recognising a near miss is success. But the conditions were set earlier, in the preparation and the room.
-- **C · Emergency, survived** > This one was serious, made more likely by the texture, the disrupted room, or the drowsiness. Aaron survived because the response was run. Reaching an emergency means the margins were already gone. Let us look back.
+- **A · Prevention** > Nothing dramatic happened, and that is the point. The right textures, prepared with care, a drink checked before it was served, and a settled, unhurried room. Aaron's breakfast kept its identity and his dignity was intact.
+- **B · Near miss, recovered** > An emerging problem showed at the table, and you caught it. You recognised it and acted, and Aaron came through it. Recognising a near miss is success. But the conditions were set earlier, in the preparation and the room.
+- **C · Emergency, survived** > This one became serious, made more likely by the rush and the disrupted room. Aaron came through it because the response was there. Reaching that point means the margins were already gone. Let us look back.
 - **D · Fatal** > Take a moment. This ended in the outcome the training exists to prevent. Aaron did not survive. This was not one mistake, and it is not about blame. It was a chain, and any single link, held, would have changed the ending.
 
 ### S4 — Marcus
 - **A · Prevention** > Marcus was included in every part of his birthday, safely. You held the harder middle, safe inclusion, rather than caving to the family or shutting him out with a blanket no. The family were reassured, and the decision was recorded properly.
-- **B · Near miss, recovered** > Marcus took an unsafe mouthful and coughed, and you caught it in the noise. You stopped, supported him upright, called for help, and he cleared it. Recognising a near miss is success. But the pressure that led there was building earlier.
-- **C · Emergency, survived** > This one was serious, in a busy public place with the family distressed. Marcus survived because the response was run. Reaching an emergency means the safe controls had already gone under the pressure. Let us walk back through it.
+- **B · Near miss, recovered** > There was an unsafe moment, and you caught it in the noise. You recognised it and acted, and Marcus came through it. Recognising a near miss is success. But the pressure that led there was building earlier.
+- **C · Emergency, survived** > This one became serious, in a busy public place with the family distressed. Marcus came through it because the response was there when it was needed. Reaching that point means the safe controls had already gone under the pressure. Let us walk back through it.
 - **D · Fatal** > Take a moment. This ended in the outcome the training exists to prevent. Marcus did not survive. This was not one mistake, and it is not about blame. It was a chain, and any single link, held, would have changed the ending.
 
 *The cross-track reveal is rendered as on-screen text in each scenario's debrief (no recording needed).*
