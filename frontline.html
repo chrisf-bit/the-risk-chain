@@ -869,6 +869,7 @@ function isMobileView(){ try{ return window.matchMedia('(max-width:900px)').matc
    as a data-URI so they load over file:// too. The disclaimer now lives at the
    end of the debrief (caveatBox), not here. */
 const INTRO_VTT='data:text/vtt;base64,V0VCVlRUCgpTVFlMRQo6OmN1ZSB7CiAgICBjb2xvcjogd2hpdGU7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjMzgzOTQzQTM7Cn0KCjAwOjAwOjAwLjYwMCAtLT4gMDA6MDA6MDIuNTk5CldlbGNvbWUgdG8gVGhlIFRlYXRpbWUgU2hpZnQuCgowMDowMDowMi41OTkgLS0+IDAwOjAwOjA3LjM5OQpGb3IgdGhlIG5leHQgZmlmdGVlbiBtaW51dGVzLCB5b3UncmUgZ29pbmcgdG8gbGVhZAphIHJlYWwgdGVhdGltZSBhdCBhIGNhcmUgaG9tZSwgc3VwcG9ydGluZyBhIG1hbiBjYWxsZWQKCjAwOjAwOjA3LjM5OSAtLT4gMDA6MDA6MDkuMzA3CkRhbmllbCB0aHJvdWdoIGhpcyBtZWFsLCBvbiB5b3VyIG93bi4KCjAwOjAwOjA5LjQ1NyAtLT4gMDA6MDA6MTMuMjE3ClRoZXJlIGFyZSBubyBoaW50cywgYW5kIG5vIHNpbmdsZSByaWdodCBhbnN3ZXIuCgowMDowMDoxMy4yMTcgLS0+IDAwOjAwOjE2LjMzNwpXaGF0IGhhcHBlbnMgaXMgd2hhdGV2ZXIgeW91ciBjaG9pY2VzIG1ha2UgaGFwcGVuLgoKMDA6MDA6MTYuMzM3IC0tPiAwMDowMDoyMC4wMzQKTm90aGluZyBhYm91dCB0aGlzIHNoaWZ0IGxvb2tzIGRyYW1hdGljLCBhbmQgdGhhdAppcyBleGFjdGx5IHRoZSBwb2ludC4KCjAwOjAwOjIwLjE4NCAtLT4gMDA6MDA6MjQuNTg0ClRoaXMgaXMgaG93IHJlYWwgcHJhY3RpY2UgZmVlbHMsIGFuZCBpdCBpcyB3aGVyZSByZWFsCmp1ZGdlbWVudCBpcyBtYWRlLgoKMDA6MDA6MjQuNTg0IC0tPiAwMDowMDoyNi40MDcKV2hlbiB5b3UncmUgcmVhZHksIGJlZ2luIHlvdXIgc2hpZnQu';
+const INTRO_S2_VTT='data:text/vtt;base64,V0VCVlRUCgpTVFlMRQo6OmN1ZSB7CiAgICBjb2xvcjogd2hpdGU7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjMzgzOTQzQTM7Cn0KCjAwOjAwOjAwLjYwMCAtLT4gMDA6MDA6MDIuNzU5CldlbGNvbWUgdG8gTmV3IEFycml2YWwsIE9sZCBQbGFuLgoKMDA6MDA6MDMuMzI5IC0tPiAwMDowMDowOC41MjkKVGhpcyBpcyB5b3VyIGZpcnN0IHNoaWZ0IHNpbmNlIFByaXlhIGNhbWUgaG9tZSB0bwpoZXIgb3duIGZsYXQsIGFmdGVyIGEgc3BlbGwgaW4gaG9zcGl0YWwuCgowMDowMDowOC41MjkgLS0+IDAwOjAwOjEyLjQ5NApZb3UgYXJlIG9uIHlvdXIgb3duLCBhbmQgdGhlIG1lYWwgbGVmdCByZWFkeSBmb3IgaGVyCm1heSBub3QgYmUgdGhlIG9uZSBzaGUgbmVlZHMgbm93LgoKMDA6MDA6MTIuNzQ0IC0tPiAwMDowMDoxNS45NDQKVGhlcmUgYXJlIG5vIGhpbnRzLCBhbmQgbm8gc2luZ2xlIHJpZ2h0IGFuc3dlci4KCjAwOjAwOjE1Ljk0NCAtLT4gMDA6MDA6MTguMTIwCldoYXQgaGFwcGVucyBpcyB3aGF0ZXZlciB5b3VyIGNob2ljZXMgbWFrZSBoYXBwZW4uCgowMDowMDoxOC4zNzAgLS0+IDAwOjAwOjIyLjUzMApUaGUgaGFyZGVzdCByaXNrcyBoZXJlIGFyZSB0aGUgcXVpZXQgb25lcywgc2l0dGluZwppbiB0aGUgcGFwZXJ3b3JrLgoKMDA6MDA6MjIuNTMwIC0tPiAwMDowMDoyNC4zNzIKV2hlbiB5b3UgYXJlIHJlYWR5LCBiZWdpbiB5b3VyIHNoaWZ0Lg==';
 function danielChipAvatar(){
   return '<svg class="d-chip-ava" viewBox="0 0 44 44" aria-hidden="true">'
     +'<circle cx="22" cy="22" r="21" class="il-chip-bg"/>'
@@ -2539,6 +2540,7 @@ SCENARIOS.S2.build = {
        opts:[{val:'prompt',src:'Prompt in the flat',v:'Independent'},{val:'discharge',src:'Discharge summary',v:'Upright, unhurried, pacing'}]},
     ],
   },
+  intro:{ video:'assets/frontline/intro-s2.mp4', vtt:INTRO_S2_VTT },
   handover:{ eyebrow:'12:30 &middot; First shift home',
     text:'It is your first shift since Priya came home to her flat after hospital. Before you go through to the meal, read what the flat holds about her. The prompt on the wall is the easiest to reach for. It may not be the one that matters.',
     q:'Open any of the records. When you are ready, go through to the meal.',
