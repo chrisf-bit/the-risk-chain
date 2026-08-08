@@ -154,12 +154,50 @@ When something looks wrong, grep for competing rules on the same selector.
 
 ## Frontline sim (`frontline.html`) — separate sim, same repo
 
-`frontline.html` is a SECOND, standalone sim (F1 "The Teatime Shift"; first‑person
-support worker; person **Daniel** at Larkfield House), deployed from the same repo/Render
-at `<render-url>/frontline.html`. Independent of The Risk Chain — do **not** couple them.
-Single file, no build step. Verify brace/paren balance before every push:
-`node -e "const s=require('fs').readFileSync('frontline.html','utf8');for(const[c,o,cl]of[['{}','{','}'],['()','(',')']]){const a=s.split(o).length-1,b=s.split(cl).length-1;console.log(c,a===b?'ok':'MISMATCH')}"`.
+`frontline.html` is a SECOND, standalone sim: the **four‑scenario Prevention‑of‑Choking
+frontline track** (first‑person support worker), deployed from the same repo/Render at
+`<render-url>/frontline.html`. Independent of The Risk Chain — do **not** couple them.
+Single file, no build step. Before **every** push verify brace/paren/bracket balance **and**
+`node -c` the extracted script (the file is huge; a typo breaks the app):
+`node -e "const s=require('fs').readFileSync('frontline.html','utf8');for(const[c,o,cl]of[['{}','{','}'],['()','(',')'],['[]','[',']']]){const a=s.split(o).length-1,b=s.split(cl).length-1;console.log(c,a===b?'ok':'MISMATCH')}"`
+then `awk '/^<script>/{f=1;next}/^<\/script>/{f=0}f' frontline.html > /tmp/fl.js && node -c /tmp/fl.js`.
 There is also a static mobile *mockup* `frontline-mobile.html` (one screen, design ref only).
+
+### Four‑scenario architecture (multi‑scenario engine) — built 2026‑08
+The sim is now a **scenario‑select picker → per‑scenario shift**. Four scenarios, **gated** so
+each unlocks when the previous is completed. Each has its own **deep signature interaction**:
+- **S1 The Teatime Shift** — Daniel · Larkfield House · L6/L0 · supervision. (Original F1; its
+  data + logic remain the **bespoke path**.)
+- **S2 New Arrival, Old Plan** — Priya · own flat · L5/L2 · documentation conflict. Signature:
+  **reconcile widget** (`type:'reconcile'`, closing node `NR`).
+- **S3 Preparation Under Pressure** — Aaron · shared house · L3/L2 · texture accuracy. Signature:
+  **flow/spoon‑tilt test** (`type:'flowtest'`, node `N2`).
+- **S4 Happy Birthday** — Marcus · restaurant · L5/L2 · best‑interests. Signature:
+  **manager‑then‑on‑call exchange** (`type:'oncall'`, node `N3`).
+
+**How it's wired (all in `frontline.html`):**
+- `SCENARIOS` registry = per‑scenario **meta** + a **`build`** bundle; active scenario is `SC`.
+  `setScenario()` and the **boot rebind (at the END of the script, after all build bundles are
+  defined — do not move it earlier)** call `bindScenarioData()`, which points the engine globals
+  (`NODES/DOCS/DOC_ORDER/FLOW/SCENE_IMG/RECOVERY_STEPS/WORKER_STEPS/ORG_STEPS/ORG_STEP_FATAL`)
+  at `SC.build`.
+- **S1 logic is byte‑unchanged**, guarded by `if(S.scenario!=='S1')` early‑returns into a
+  **generic layer**: `applyEffectsGeneric`, `superstripGeneric`, `scoreProfileGeneric`,
+  `viewOutcomeGeneric`, `debriefShell`, generic readiness/toolkit/events, `SC.build.crossTrack`.
+  Generic logic is driven by **node/option metadata**: `opt.kind` (defensible/risky/failing),
+  `opt.cc` (CC1/CC2), `opt.primes/dignity/escalation/events`; node `recog/emergency/recogText/cue/type`.
+- Each built scenario's `SC.build` supplies: `nodes, docs, docOrder, base` (flow),
+  `recogNode, emergencyNode, closingNode?, recordsLabel, sceneImg, intro{video,vtt},
+  handover{eyebrow,text,q,cta,videoD,vttD,videoM?,vttM?}, meters(), domains, ccHold,
+  outcomes{A..D}, reveal(), crossTrack(), toolkitBase/Fail`. **Adding a widget** = a `node.type`
+  branch in `momentCard`, a `*Body()` render fn, dispatcher cases, a `scoreForNode` special‑case,
+  config on `SC.build`, and state fields in `initState`.
+- **Gated progression:** completion persisted **separately** from run‑state (`frontline_progress_v1`,
+  marked at `resolve()`); unlock chain in `SCEN_ORDER`/`isUnlocked()`; picker states Locked /
+  Ready / Completed. Run‑state localStorage key is `frontline_v2`.
+- **Picker** (`viewPicker`): white intro panel over a deeper `.pick-screen` backdrop, light
+  cards, **scenario ICON badges** (`badgeIcon`, not "S1/S2" text), and a **dynamic
+  `document.title`** per stage.
 
 ### Brand & design system (FINALISED this session — client‑approved hex)
 Locked to the official PracticE Ready brand palette in both themes (`:root` light default,
@@ -201,18 +239,26 @@ throughout, all gated by `prefers-reduced-motion`.
   C vs D. Post‑incident steps split worker‑owned vs manager/org‑led. Emergency wording held
   at "recognise → call 999 → follow choking first‑aid guidance" (no technique taught). Emma
   owns the clinical wording; full sourcing in `docs/F1-emergency-path-for-validation.md`.
-- **Talking‑head videos** with **captions inlined as data‑URI `<track>`** (a `.vtt` won't
-  load over `file://`; base64 constants live near `isMobileView()`). Current state:
-  - **Intro** (`intro.mp4`, welcome‑only, captions `INTRO_VTT`) plays **inline in the landing
-    hero's right tile** — NO lightbox, NO acknowledge gate (see DONE section below).
-  - **Handover is device‑specific** (chosen by `isMobileView()` at render): desktop
-    `handover.mp4` + `HANDOVER_VTT` ("they're all on the right"); mobile `handover-mobile.mp4`
-    + `HANDOVER_VTT_MOBILE` ("in the tab above this video"). **NOTE:** the mobile handover is
-    still the OLDER recording/wording — the desktop clip was re‑recorded (new presenter/script)
-    but no matching mobile cut exists yet. Swap `handover-mobile.mp4` + its VTT when one does.
-  - SME‑owned caveat `SIM_CAVEAT` now shows at the **end of the debrief** (`caveatBox()`),
-    not up front. Scripts: `docs/F1-video-scripts.md` (§1 = welcome‑only intro; §1b = end
-    disclaimer as on‑screen text).
+- **Talking‑head videos** (captions inlined as data‑URI `<track>`; base64 constants live near
+  `isMobileView()`). Now **per‑scenario assets, all recorded and wired**:
+  - **Intro** plays inline in the landing hero's right tile (`setupIntroVideo`), read from
+    `SC.build.intro{video,vtt}`. Files: `intro.mp4`/`INTRO_VTT` (S1); `intro-s2/s3/s4.mp4` +
+    `INTRO_S2/S3/S4_VTT`. **Each scenario has its OWN intro** (client preference — it tees the
+    shift up). No lightbox, no acknowledge gate.
+  - **Handover** read from `SC.build.handover{videoD,vttD,videoM?,vttM?}` (device‑specific via
+    `isMobileView()`; falls back to `videoD` when there's no mobile cut). Files: `handover.mp4`
+    + `handover-mobile.mp4` (S1, both current — **the old mobile‑gap is CLOSED**);
+    `handover-s2/s3/s4.mp4` + `HANDOVER_S2/S3/S4_VTT` (layout‑neutral, so they serve both cuts).
+  - SME‑owned caveat `SIM_CAVEAT` shows at the **end of the debrief** (`caveatBox()`).
+- **AVATAR SCRIPTS ARE SYNTHESIA‑MODERATED — HARD CONSTRAINT.** Synthesia rejects avatar‑*spoken*
+  personalised medical advice, diagnoses, treatment/first‑aid instructions, and condition‑specific
+  claims (it rejected the first S3 handover cut). **Rule:** the avatar speaks only the human /
+  scenario framing; **ALL clinical specifics** (IDDSI levels, named events like a seizure,
+  capacity / best‑interests wording, emergency & first‑aid steps) live in **on‑screen text**
+  (landing `lead`, fact tiles, records, debrief components), never in the spoken script. S2–S4
+  scripts in `docs/F2-F4-video-scripts.md` are the Synthesia‑safe versions (§0 per‑scenario
+  intros, §1‑3 handovers, §4 optional debrief openers); S1 scripts in `docs/F1-video-scripts.md`.
+  A **Custom Avatar / enterprise plan** gets broader medical latitude if the topic keeps flagging.
 - **Shift countdown:** the HUD clock is a live **15:00 countdown** ("Time left"), started when
   the handover screen first loads (`startShiftClock()`), runs across the nodes, clamps at
   `00:00`; non‑persisted so a reload restarts it; reset on Restart/begin. Replaced the old
@@ -220,8 +266,12 @@ throughout, all gated by `prefers-reduced-motion`.
 - **Fullscreen** on first interaction + top‑bar toggle. **Mobile:** fluid ring gauges + a
   **[The moment]/[Records] tab** so records aren't buried below the scene. Synthesised UI
   **sound effects** (`AUDIO.sfx`, primed on first gesture; play *after* the context resumes).
-- Scene photos: `assets/frontline/scene-*.jpg`. Options key on `id` not array position
-  (`m={a:100,b:55,c:15}`), so reordering is display‑only and safe.
+- Scene photos: S1 uses `assets/frontline/scene-*.jpg` via `SCENE_IMG`. **S2–S4 node scene
+  banners are still PLACEHOLDERS** (blank tinted panels; `svgBanner` returns null art for
+  non‑S1). To add real images, set that scenario's `SC.build.sceneImg` to `{Nx:{src,pos}, …}`.
+  Shot list + generation prompts: `docs/frontline-image-shotlist.md`. Handover/landing don't
+  need scene images (their video fills that slot). Keep every image **under 2000px**.
+- Options key on `id` not array position (`m={a:100,b:55,c:15}`), so reordering is display‑only.
 
 ### Brand marks, logo & mobile tweaks
 - **Header chip + favicon** are the SAME file: `assets/frontline/brand-icon.png` (the PR

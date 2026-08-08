@@ -2,11 +2,16 @@
 
 **For:** sourcing / generating scene photography · **From:** Chris / Rapid Learn
 
-Each scenario currently renders **placeholder banners** (blank tinted panels) at the
-handover and each node. Dropping a real image in is one line per key in the scenario's
-`sceneImg` map in `frontline.html` (same mechanism S1 uses: `handover`, `N1`, `N2`, …;
-`N6` reuses `N5`). This list gives, per image, the subject, framing, a generation prompt,
-and stock search terms.
+Each scenario renders **placeholder banners** (blank tinted panels) above each decision
+node. Dropping a real image in is one line per key in the scenario's `sceneImg` map in
+`frontline.html` (`SC.build.sceneImg = {N1:{src,pos}, …}`). This list gives, per image, the
+subject, framing, a generation prompt, and stock search terms.
+
+**NOTE — the `handover` row is no longer needed.** The intros and handovers are now video
+clips (recorded and wired), so the landing and handover screens are covered; **no scene image
+is needed there.** The images to produce are the **node moments** below (`N1`–`N5`; `N6`, the
+emergency, can reuse the `N5` image). The three widget nodes still show a banner too: S2 `NR`
+(reconcile), S3 `N2` (flow test), S4 `N3` (on-call).
 
 ## House treatment (apply to every image, for cohesion)
 - **Ratio / size:** landscape, 16:9. Export **under 2000px on the long edge** (hard API limit
