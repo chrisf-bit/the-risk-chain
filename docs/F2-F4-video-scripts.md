@@ -105,14 +105,18 @@ already recorded — see `F1-video-scripts.md` section 1.*
 ## 2. S3 HANDOVER — Aaron · EDUCATOR, second person · ~35s
 *Plays in the media band on the S3 handover screen. Setting: Bramble Close shared house, a disrupted breakfast.*
 
-> You are leading breakfast at Bramble Close this morning, and it is not a calm one. Contractors are in replacing a boiler, breakfast has moved to the lounge, and two of the three staff on shift are agency, who have not worked with the people here before.
+> You are leading breakfast at Bramble Close this morning, and it is not a calm one. Contractors are in replacing a boiler, breakfast has moved to the lounge, and two of the three staff on shift are agency, who have not worked here before.
 >
-> Aaron is not quite himself today, and his breakfast needs preparing carefully and unhurried. There is a lot happening around you, and it would be easy to let something slip.
+> There is a great deal happening at once, and it would be easy to rush, or to let something slip. This morning rewards care and attention, not speed.
 >
-> Before you prepare anything, read what the service holds about Aaron, and how things should be done for him. When you are ready, start the preparation.
+> Before you start, take a proper look at what the service holds about the people you are supporting today. When you are ready, start the preparation.
 
-*Avatar-safe reword: the seizure, the IDDSI levels and the thickener detail are carried by the on-screen handover text and Aaron's records, not spoken.*
-*Colleague-first-person alternative (an outgoing worker exists here): "I'm handing you a messy one this morning…" then the same, keeping clinical specifics on screen.*
+*Synthesia rejected the earlier cut. This version removes every person- and care-specific
+line: no "not quite himself", no "his breakfast needs preparing", no "how things should be
+done for him". The avatar now speaks only about the disrupted shift and general attention;
+everything about Aaron (his name, the seizure, the IDDSI levels, the thickener) is carried
+by the on-screen handover text and his records, which are not avatar-generated.*
+*Colleague-first-person alternative (an outgoing worker exists here): "I'm handing you a messy one this morning…" then the same, keeping all person/care detail on screen.*
 
 ---
 
