@@ -46,7 +46,7 @@
   --shadow:0 2px 6px rgba(20,38,74,.06),0 14px 30px rgba(20,38,74,.10);
   --shadow-lg:0 4px 14px rgba(20,38,74,.09),0 30px 60px rgba(20,38,74,.16);
   --r:12px; --r-sm:8px; --r-lg:18px;
-  /* One humanist sans across every surface — the Frutiger / Clearview
+  /* One humanist sans across every surface, the Frutiger / Clearview
      signage lineage, chosen for legibility at small sizes. Segoe UI is the
      closest default on Windows; Helvetica / Arial are the universal
      fallbacks. --serif and --scene are aliases so nothing reads as a second
@@ -525,6 +525,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .dom-bar{height:9px;border-radius:100px;background:var(--surface-3);margin-top:6px;overflow:hidden}
 .dom-bar i{display:block;height:100%;border-radius:100px;background:var(--teal)}
 .dom-bar i.lo{background:var(--g-red)} .dom-bar i.mid{background:var(--g-amber)} .dom-bar i.hi{background:var(--g-green)}
+.dom-note{font-size:var(--t-cap);color:var(--ink-3);margin:6px 0 0;line-height:1.4}
 .cc-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
 .cc-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);border:1px solid var(--line)}
 .cc-item .cci{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;flex:none}
@@ -1017,7 +1018,7 @@ const AUDIO = (function(){
       case 'toggle':  note(720,t,0.04,0.03); break;                                    // theme / sound
       case 'good':    note(523,t,0.13,0.045); note(659,t+0.085,0.13,0.045); note(988,t+0.17,0.30,0.04); break;   // prevention
       case 'warn':    note(392,t,0.16,0.045,'triangle'); note(294,t+0.11,0.22,0.038); break;                     // near miss / emergency
-      case 'somber':  note(147,t,0.55,0.05); note(110,t+0.20,0.8,0.045); break;        // fatal — low, slow, respectful
+      case 'somber':  note(147,t,0.55,0.05); note(110,t+0.20,0.8,0.045); break;        // fatal: low, slow, respectful
     }
   }
   function prime(){ if(!ensure()) return; if(ctx.state==='suspended'){ ctx.resume(); } }
@@ -2049,9 +2050,9 @@ function viewOutcome(){
     badgeCls='oc-warn'; badge='Emergency, survived';
     h='Daniel is stabilised and taken to hospital';
     if(n6==='a'){
-      body='The obstruction was serious. You recognised the emergency, called 999 and followed choking first-aid guidance without delay, and the paramedics took over. Daniel is alive because the response was run at once — not a near miss, and not luck, but a fast, correct emergency response after the meal had already gone wrong.';
+      body='The obstruction was serious. You recognised the emergency, called 999 and followed choking first-aid guidance without delay, and the paramedics took over. Daniel is alive because the response was run at once. That is not a near miss, and not luck, but a fast, correct emergency response after the meal had already gone wrong.';
     } else {
-      body='The obstruction was serious. You began to help, but the 999 call was left until you had a free moment. Daniel survived — and that matters — but that delay was unsafe: in a full obstruction the call for help cannot wait. Getting emergency help on its way is part of the first response, not something to fit in afterwards.';
+      body='The obstruction was serious. You began to help, but the 999 call was left until you had a free moment. Daniel survived, and that matters, but that delay was unsafe. In a full obstruction the call for help cannot wait. Getting emergency help on its way is part of the first response, not something to fit in afterwards.';
     }
     extra = postIncidentBlocks(false);
   } else {
@@ -2102,7 +2103,8 @@ function viewDebrief(){
   const doms=scoreProfile();
   const domHtml=doms.map(function(d){
     return '<div class="dom-row"><div class="dr-top"><b>'+d.k+'</b><span>'+d.v+' / 100</span></div>'
-      +'<div class="dom-bar"><i class="'+barCls(d.v)+'" style="width:'+d.v+'%"></i></div></div>';
+      +'<div class="dom-bar"><i class="'+barCls(d.v)+'" style="width:'+d.v+'%"></i></div>'
+      +(d.note?'<p class="dom-note">'+d.note+'</p>':'')+'</div>';
   }).join('');
 
   let ccInner, reveal, ccSub;
@@ -2199,7 +2201,7 @@ function readiness(){
   let band,cls,txt;
   if(S.outcome==='D'){
     band='Not yet ready'; cls='r-bad';
-    txt='The shift ended in the outcome this training exists to prevent. It was a chain of failures, each recoverable on its own — in practice, any one of them held would have changed the ending. This cannot be offset by good work elsewhere.';
+    txt='The shift ended in the outcome this training exists to prevent. It was a chain of failures, each recoverable on its own. In practice, any one of them held would have changed the ending. This cannot be offset by good work elsewhere.';
   } else if(S.cc1 || S.cc2){
     band='Not yet ready'; cls='r-bad';
     txt = S.outcome==='C'
@@ -2244,7 +2246,7 @@ function targetedToolkit(){
   }
   if(S.outcome==='C' || S.outcome==='D'){
     items.push({ic:'route',ref:'TK2.3',t:'Incident escalation flowchart',p:'The full sequence from incident to learning, and who owns each step.'});
-    items.push({ic:'phone',ref:'TK7.2a',t:'Who to call',p:'999, manager, safeguarding and CQC — who to contact, when, and why.'});
+    items.push({ic:'phone',ref:'TK7.2a',t:'Who to call',p:'999, manager, safeguarding and CQC. Who to contact, when, and why.'});
   }
   if(S.outcome==='D'){
     items.push({ic:'heart',ref:'TK5.4',t:'Emotional impact',p:'Support for staff after a serious incident. Being affected is human, not weakness.'});
@@ -2265,7 +2267,7 @@ function crossTrackReveal(){
   return '<div class="crosstrack">'
     +'<div class="ct-k">Cross-track &middot; where this shift came from</div>'
     +'<h3>Here is the shift your paperwork produced</h3>'
-    +'<p>The pressures you worked against tonight were set long before teatime. A colleague off sick with no cover, a medication change that never reached Daniel’s plan, and a reassessment that was never booked — these were shaped upstream, by the manager and the organisation, not on the dining-room floor.</p>'
+    +'<p>The pressures you worked against tonight were set long before teatime. A colleague off sick with no cover, a medication change that never reached Daniel’s plan, and a reassessment that was never booked. These were shaped upstream, by the manager and the organisation, not on the dining-room floor.</p>'
     +'<div class="ct-chain">'
     + ctNode('users','Short-staffed rota')
     + '<span class="ct-arr">'+svg(I.arrowR)+'</span>'
@@ -2333,11 +2335,16 @@ function scoreForNode(nodeId){
   var o=chosenOpt(nodeId); if(!o) return null; return o.kind==='defensible'?100:o.kind==='risky'?55:15;
 }
 function scoreProfileGeneric(){
-  return ((SC.build&&SC.build.domains)||[]).map(function(d){
+  var doms=((SC.build&&SC.build.domains)||[]).map(function(d){
     var vs=d.nodes.map(scoreForNode).filter(function(v){return v!=null;});
     var v=vs.length?Math.round(vs.reduce(function(a,b){return a+b;},0)/vs.length):0;
     return {k:d.k, v:clamp(v), note:d.note||''};
   });
+  // Bespoke per-scenario nuance: reward evidence use beyond the raw choice kind
+  // (e.g. reading the governing record before acting, or bringing the plan to hand).
+  var adj=SC.build&&SC.build.scoreAdjust;
+  if(adj){ doms.forEach(function(d){ var delta=adj(d.k); if(delta){ d.v=clamp(d.v+delta); } }); }
+  return doms;
 }
 function outcomeMeta(o){
   return ({A:{cls:'oc-good',ic:I.shield,label:'Prevention'},
@@ -2372,6 +2379,13 @@ function summariseEventsGeneric(){
   if(SC.build&&SC.build.reconcile){
     var rt=(SC.build.reconcile.fields||[]).length;
     out.push({k:'ALIGNMENT_DONE', d:S.alignmentDone?(S.alignCorrect+' of '+rt+' fields reconciled to the correct source'):'Records not reconciled'});
+  }
+  if(SC.build&&SC.build.flowtest){
+    out.push({k:'FLOWTEST_DONE', d:S.flowServed?(S.flowTextureOk?'Flow test run; Level 2 confirmed before serving':'Served without a true Level 2 texture'):'Fluids not tested'});
+  }
+  if(SC.build&&SC.build.oncall){
+    out.push({k:'PLAN_TO_HAND', d:S.planToHand?'Marcus’s plan and EDAR were to hand':'Acted without his plan to hand'});
+    out.push({k:'BEST_INTERESTS', d:S.oncallDone?(S.oncallBailed?'Decided alone, without escalating':'Best-interests plan agreed with on-call'):'No decision reached'});
   }
   var en=SC.build&&SC.build.emergencyNode;
   if(en && S.choices[en]){
@@ -2411,7 +2425,8 @@ function debriefShell(ccInner, reveal, ccSub){
   var doms=scoreProfile();
   var domHtml=doms.map(function(d){
     return '<div class="dom-row"><div class="dr-top"><b>'+d.k+'</b><span>'+d.v+' / 100</span></div>'
-      +'<div class="dom-bar"><i class="'+barCls(d.v)+'" style="width:'+d.v+'%"></i></div></div>';
+      +'<div class="dom-bar"><i class="'+barCls(d.v)+'" style="width:'+d.v+'%"></i></div>'
+      +(d.note?'<p class="dom-note">'+d.note+'</p>':'')+'</div>';
   }).join('');
   var eventsHtml=summariseEvents().map(function(e){ return '<div class="ev"><span class="evk">'+e.k+'</span><span class="evd">'+e.d+'</span></div>'; }).join('');
   var meta=outcomeMeta(S.outcome);
@@ -2611,13 +2626,18 @@ SCENARIOS.S2.build = {
              {v:pv, w:(pv>=70?'Settled':'Unsettled'), label:'Priya'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1','NR']},
-    {k:'Preparation', nodes:['N2']},
-    {k:'Person-centred practice', nodes:['N3','N4']},
-    {k:'Capacity and consent', nodes:['N4']},
-    {k:'Dynamic judgement', nodes:['N5']},
-    {k:'Response & learning', nodes:['N5','N6','NR']},
+    {k:'Information use', nodes:['N1','NR'], note:'Read the discharge summary as the current source, and reconciled the conflicting records.'},
+    {k:'Preparation', nodes:['N2'], note:'Returned the wrong meal and prepared it to her plan before serving.'},
+    {k:'Person-centred practice', nodes:['N3','N4'], note:'Handled the family kindly and respected Priya’s home and her choices.'},
+    {k:'Capacity and consent', nodes:['N4'], note:'Offered a safe choice in her own tenancy rather than blanket control.'},
+    {k:'Dynamic judgement', nodes:['N5'], note:'Held safety while lone-working, without rushing her.'},
+    {k:'Response & learning', nodes:['N5','N6','NR'], note:'Recognised the emerging sign, and escalated to realign the records for tomorrow.'},
   ],
+  scoreAdjust:function(k){
+    if(k==='Information use'){ return S.opened.DOC_DISCHARGE ? 8 : -10; }   // reward reading the governing record
+    if(k==='Response & learning'){ return S.alignmentDone ? 4 : -6; }
+    return 0;
+  },
   ccHold:{ CC1:'Every mouthful served met Priya’s Level 5 plan.',
            CC2:'You verified the discharge summary rather than taking the stale prompt at face value.' },
   outcomes:{
@@ -2797,14 +2817,19 @@ SCENARIOS.S3.build = {
              {v:av, w:(av>=70?'Settled':'Unsettled'), label:'Aaron'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N2']},
-    {k:'Preparation', nodes:['N2','N3']},
-    {k:'Person-centred practice', nodes:['N3']},
-    {k:'Capacity and consent', nodes:['N3']},
-    {k:'Dynamic judgement', nodes:['N4']},
-    {k:'Team coordination', nodes:['N1']},
-    {k:'Response & learning', nodes:['N5','N6']},
+    {k:'Information use', nodes:['N2'], note:'Read the plan and IDDSI guidance, and verified the thickener and scoop.'},
+    {k:'Preparation', nodes:['N2','N3'], note:'Prepared a true, separate Level 3 and a checked Level 2, without over-diluting.'},
+    {k:'Person-centred practice', nodes:['N3'], note:'Kept his food’s identity and dignity, and did not over-modify.'},
+    {k:'Capacity and consent', nodes:['N3'], note:'Offered choice within his plan rather than reducing the meal to convenience.'},
+    {k:'Dynamic judgement', nodes:['N4'], note:'Re-established a calm space and managed posture and pace under disruption.'},
+    {k:'Team coordination', nodes:['N1'], note:'Checked the agency colleague’s competence before delegating.'},
+    {k:'Response & learning', nodes:['N5','N6'], note:'Recognised the emerging sign early, and escalated for a review.'},
   ],
+  scoreAdjust:function(k){
+    if(k==='Information use'){ return (S.opened.DOC_IDDSI||S.opened.DOC_TEST) ? 8 : -10; }   // reward checking the texture standard
+    if(k==='Preparation'){ return S.flowTextureOk ? 5 : 0; }
+    return 0;
+  },
   ccHold:{ CC1:'The food and fluids you served met Aaron’s Level 3 and Level 2 plan.',
            CC2:'You checked competence and kept Aaron’s specialist preparation rather than handing it to an unbriefed colleague.' },
   outcomes:{
@@ -2997,13 +3022,18 @@ SCENARIOS.S4.build = {
              {v:mv, w:(mv>=70?'Settled':'Unsettled'), label:'Marcus'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1']},
-    {k:'Person-centred practice', nodes:['N4']},
-    {k:'Capacity and consent', nodes:['N2','N4']},
-    {k:'Team coordination', nodes:['N3']},
-    {k:'Dynamic judgement', nodes:['N3','N4']},
-    {k:'Response & learning', nodes:['N5','N6']},
+    {k:'Information use', nodes:['N1'], note:'Checked the order against his plan, and had his details to hand for on-call.'},
+    {k:'Person-centred practice', nodes:['N4'], note:'Chose safe inclusion over exclusion, and protected his dignity in public.'},
+    {k:'Capacity and consent', nodes:['N2','N4'], note:'Did not mistake compliance for consent, and followed a best-interests process.'},
+    {k:'Team coordination', nodes:['N3'], note:'Reached the manager, then on-call, to agree a defensible way forward.'},
+    {k:'Dynamic judgement', nodes:['N3','N4'], note:'Held the line under escalating family and social pressure.'},
+    {k:'Response & learning', nodes:['N5','N6'], note:'Recognised the emerging sign in the noise, and initiated a review.'},
   ],
+  scoreAdjust:function(k){
+    if(k==='Information use'){ return S.planToHand ? 8 : -10; }   // reward bringing the plan and on-call details
+    if(k==='Team coordination'){ return (S.oncallDone && !S.oncallBailed) ? 4 : 0; }
+    return 0;
+  },
   ccHold:{ CC1:'Everything Marcus was served met his Level 5 and Level 2 plan.',
            CC2:'You did not treat compliance as consent, and you reached a best-interests decision with the right authority.' },
   outcomes:{
@@ -3173,7 +3203,7 @@ function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); if(!S.muted){ 
 
 /* ---------- Full screen ---------- */
 /* Cannot be triggered on load (browsers require a gesture), so we request it
-   on the first interaction — acknowledging the intro, or Begin — and offer a
+   on the first interaction (acknowledging the intro, or Begin) and offer a
    top-bar toggle. Fails quietly if the host (e.g. an LMS iframe) disallows it. */
 function isFs(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
 function goFullscreen(){
