@@ -343,16 +343,20 @@ Intro is now **welcome‑only**, inline, with the SME disclaimer **at the end**:
   `<style>` block (harmless; can be cleared later).
 
 ### OPEN THREADS
-- **Scene images (the main remaining asset job):** S3 **N5** + all of **S4 (N1–N5)**. See the
-  scene‑image STATUS + intake workflow above. All videos are DONE.
-- Full **WCAG 2.1 AA** close‑out (axe/Lighthouse + screen‑reader + modal focus‑trap). Done
-  so far: captions, video pause, reduced‑motion, focus outline, Esc‑closes‑modal, ARIA
-  labels, aria‑pressed tabs, several contrast fixes. NOT certified — don't claim AA yet.
-- Carry the ring/glass language into the **debrief** (domain bars → rings).
-- **Audit copy for em dashes** (hard rule) — a lot of outcome/debrief copy still uses them.
-- Two S2–S4 quality passes not yet done: **bespoke scoring nuance** (they use the generic
-  scorer) and NHS‑level **debrief polish** (they use `debriefShell`, which is functional but
-  plainer than S1's hand‑built debrief).
+- **ALL ASSETS COMPLETE** (2026‑08): every scenario has its intro + handover + all 4 debrief
+  clips (25 videos, compressed to ~38MB total via ffmpeg 720p CRF23) and all node scene images
+  (S2–S4 `scene-s<n>-n<k>.jpg`). No placeholders remain.
+- **Em dashes: DONE** — `frontline.html` is em‑dash‑free (`grep -c "—"` = 0). Keep it that way.
+- **S2–S4 scoring nuance + debrief polish: DONE** — per‑scenario `SC.build.scoreAdjust(k)`
+  rewards evidence use; debrief renders a per‑domain `note` (`.dom-note`) and per‑scenario
+  signature‑interaction lines in "captured this run".
+- Still open: full **WCAG 2.1 AA** close‑out (axe/Lighthouse + screen‑reader + modal
+  focus‑trap). Done so far: captions, video pause, reduced‑motion, focus outline,
+  Esc‑closes‑modal, ARIA labels, aria‑pressed tabs, contrast fixes. NOT certified yet.
+- Still open: carry the ring/glass language into the **debrief** (domain bars → rings).
+- Still open (commercial): **SCORM packaging** for LMS delivery — self‑contained SCORM 1.2,
+  per‑scenario packages, baked‑in 12‑month licence expiry; SCORM wrapper (pipwerks) reporting
+  completion at the debrief. See the licensing discussion.
 
 ### IMPORTANT working note
 The user's screenshots have failed to load **all session** because they exceed **2000px**
