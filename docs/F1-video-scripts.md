@@ -68,8 +68,8 @@ no IDDSI numbers. The specifics are on screen (see §3b).
 **B · Near miss, recovered  ·  ~30s**
 > Daniel took an unsafe mouthful, and you caught it. You recognised what was happening and acted, and he came through it. Recognising a near miss and responding is success, not failure. But the conditions for it were set earlier in the shift, and the breakdown on the screen shows where. Recording the near miss, and getting his plan looked at again, is the right way to close it.
 
-**C · Emergency, survived  ·  ~30s**
-> This one became serious. It reached an emergency, and Daniel came through it because the response was there when it was needed. That is not luck. But reaching that point at all means the safe margins had already gone earlier in the shift. The screen shows the chain that led there, and where it could have held. And if getting help on its way was left even a little late, that is the thing to carry forward: it can never wait.
+**C · Emergency, survived  ·  ~30s**  ·  *reworded after Synthesia rejected the emergency-response wording*
+> This one was a close call, and the worst was avoided. But it came far closer than it ever should have. By the time things reached that point, the safe margins earlier in the shift had already gone. The screen shows the chain that led there, and where any single link, held, would have changed it. Sit with it for a moment, because a shift should never get this close.
 
 **D · Fatal  ·  ~38s  ·  sombre, unhurried, no music sting**
 > Take a moment before we go on. This shift ended in the outcome the training exists to prevent. Daniel did not survive.
