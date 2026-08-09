@@ -134,13 +134,21 @@ by the on-screen handover text and his records, which are not avatar-generated.*
 
 ---
 
-## 4. DEBRIEF opening clips (optional, per scenario) · EDUCATOR
-*Record all four (A/B/C/D) per scenario; the build plays the one matching the outcome. Optional for now: wire later. Keep the D / fatal cut sombre, unhurried, no music sting. Substitute the person's name as below.*
+## 4. DEBRIEF — one clip per outcome (per scenario) · EDUCATOR
+*One self-contained clip per outcome path (A/B/C/D). The debrief has a **single video slot**
+and plays the clip matching the run's outcome, so there is **no stitching** — nothing to
+frame-match between clips (this avoids the Synthesia end-frame / mid-blink mismatch). Optional
+for now: wire later. Keep the D / fatal cut sombre, unhurried, no music sting. Substitute the
+person's name as below.*
 
-**Avatar-safe (Synthesia):** these are reflective, not instructional. The spoken lines avoid
-IDDSI level numbers and step-by-step first aid; the specific safe-response steps, texture
-levels and escalation detail are shown **on screen** in the debrief's own components (the
-recovery-steps list, the domain breakdown and the toolkit), so the avatar never voices them.
+**Each clip = human framing + verdict, then hand to the on-screen breakdown.** All run-specific
+detail is **rendered in the debrief itself**, so the clip never has to name what actually went
+wrong on this run: the **critical-control cards** (held/tripped), the scenario **reveal box**,
+the **domain breakdown**, the **targeted toolkit** and the **cross-track reveal** all sit on
+screen. The clips below end by pointing the learner there.
+
+**Avatar-safe (Synthesia):** reflective, not instructional — no IDDSI level numbers, no
+step-by-step first aid, no "call 999". The specifics are on screen.
 
 ### S2 — Priya
 - **A · Prevention** > Nothing dramatic happened, and that is the point. You treated the current record as the one that mattered, prepared the right meal for her, and kept Priya's choice and dignity intact in her own home. The trap in the paperwork never reached her plate.
@@ -167,12 +175,12 @@ recovery-steps list, the domain breakdown and the toolkit), so the avatar never 
 ## Clip count summary
 | Group | Clips | Notes |
 |---|---|---|
-| Per-scenario intros | 3 | Priya, Aaron, Marcus (S1 intro already exists) |
-| Handovers | 3 | Priya, Aaron, Marcus (one each) |
-| **Minimum to replace current placeholders** | **6** | 3 intros + 3 handovers |
-| Debrief openers (A/B/C/D × 3) | +12 | optional, wire later |
+| Per-scenario intros | 3 | Priya, Aaron, Marcus — **recorded + wired** (S1 intro already existed) |
+| Handovers | 3 | Priya, Aaron, Marcus — **recorded + wired** |
+| Debrief — one clip per outcome (A/B/C/D × 3) | +12 | optional; single-slot per run, no stitching |
 
-Still outstanding from F1: the **S1 mobile handover** re-cut (the desktop clip was re-recorded; the mobile cut still uses the older script).
+All intros and handovers (incl. the S1 mobile re-cut) are now recorded and wired; the only
+video work left is the optional per-outcome debrief clips.
 
 ## Clinical note
 All emergency wording is held at "recognise the emergency, call 999, follow choking

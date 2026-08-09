@@ -51,58 +51,55 @@
 
 ---
 
-## 3. DEBRIEF — modular segments  ·  EDUCATOR
+## 3. DEBRIEF — one clip per outcome  ·  EDUCATOR
 
-The debrief plays **opening + any triggered cause segments + reveal**, in this order. A learner sees ~2–4 of these.
+**One self-contained clip per outcome path (A/B/C/D).** The debrief has a single video slot
+and plays the clip matching the run's outcome, so there is **no stitching and nothing to
+frame-match** between clips (this avoids the Synthesia end-frame / mid-blink problem). Each
+clip is the human framing plus the verdict, then hands to the **on-screen breakdown** for the
+run-specific detail. Record all four; keep the D / fatal cut sombre, unhurried, no music sting.
 
-### 3a. Opening / verdict — record all four; play the one matching the outcome
+**Avatar-safe (Synthesia):** reflective and general — no step-by-step first aid, no "call 999",
+no IDDSI numbers. The specifics are on screen (see §3b).
 
-**A · Prevention  ·  ~25s**
-> So — nothing dramatic happened. And that is exactly the point. The right texture, steady pacing, eyes on Daniel the whole way through: a busy teatime became fifteen ordinary minutes. That's prevention doing its job, quietly, before anything can go wrong. Let's look at how you got there.
+**A · Prevention  ·  ~28s**
+> Nothing dramatic happened, and that is exactly the point. The meal stayed safe from start to finish, and Daniel had an ordinary, unhurried teatime. That is prevention doing its job quietly, before anything can go wrong. On the screen you can see how each part of your practice held up, and the two controls that kept the meal safe. And if you connected the smaller signals in the records as well, that is prevention working days ahead, not just in the moment.
 
-**B · Near miss, recovered  ·  ~28s**
-> Daniel took an unsafe mouthful, and he coughed — and you caught it. You stopped the meal, kept him upright, called for help, and he cleared it. Recognising a near miss and acting on it is success, not failure. But the conditions for it were set earlier in the shift, and that's what we need to look at.
+**B · Near miss, recovered  ·  ~30s**
+> Daniel took an unsafe mouthful, and you caught it. You recognised what was happening and acted, and he came through it. Recognising a near miss and responding is success, not failure. But the conditions for it were set earlier in the shift, and the breakdown on the screen shows where. Recording the near miss, and getting his plan looked at again, is the right way to close it.
 
-**C · Emergency, survived  ·  ~28s**
-> This one was serious. It reached a full choking emergency — and Daniel survived, because the response was run. That's not a near miss, and it wasn't luck. But reaching an emergency at all means the safe margins were already gone earlier in the shift. Let's walk back through how it got there.
+**C · Emergency, survived  ·  ~30s**
+> This one became serious. It reached an emergency, and Daniel came through it because the response was there when it was needed. That is not luck. But reaching that point at all means the safe margins had already gone earlier in the shift. The screen shows the chain that led there, and where it could have held. And if getting help on its way was left even a little late, that is the thing to carry forward: it can never wait.
 
-**D · Fatal  ·  ~35s  ·  sombre, unhurried, no music sting**
-> Take a moment before we go on. This shift ended in the outcome the training exists to prevent. Daniel didn't survive.
+**D · Fatal  ·  ~38s  ·  sombre, unhurried, no music sting**
+> Take a moment before we go on. This shift ended in the outcome the training exists to prevent. Daniel did not survive.
 >
-> I want to be clear about two things. This wasn't one mistake — and this isn't about blame. It was a chain of failures, and each one, on its own, was recoverable. We're going to look at every link. Because any single one of them, held, would have changed the ending.
+> I want to be clear about two things. This was not one mistake, and it is not about blame. It was a chain, and each link, on its own, was recoverable. The screen walks through every link, because any single one of them, held, would have changed the ending.
 
-### 3b. Cause segments — record each once; play only if triggered
-
-**Supervision broke (CC1)  ·  ~22s  ·  trigger: `cc1` tripped**
-> Supervision broke while food was within Daniel's reach. That is one of the two critical controls, and it's the heart of how a choking risk becomes a choking incident. Eyes on, food managed — that's what keeps a meal safe, and it can't be traded off against good work anywhere else.
-
-**Unsafe plate (CC2)  ·  ~22s  ·  trigger: `cc2` tripped**
-> The plate that reached Daniel didn't meet his plan — it wasn't cut down to the texture he needs. That's the other critical control. Checking the food against the plan before he starts is the single most reliable way to stop an unsafe mouthful ever being possible.
-
-**Medication clue missed  ·  ~26s  ·  trigger: `!medFlagged`**
-> There was a clue in the records that wasn't connected. A new medication, started about three weeks ago, listing sedation and dry mouth. It began after Daniel's last eating and drinking assessment — so his plan, on its own, understated today's risk. Reading that medication change against the "drowsy lately" note is exactly the judgement that spots trouble before it happens.
-
-**Medication clue caught (praise)  ·  ~22s  ·  trigger: `medFlagged`**
-> One thing you did really well. You read the new medication against the "drowsy lately" note, and you flagged that Daniel needs a reassessment. That's prevention working days before any incident — seeing what the plan itself doesn't yet say. That's someone reading the whole picture.
-
-**999 delayed (named unsafe)  ·  ~20s  ·  trigger: Path C and the 999 call was delayed**
-> One thing to carry forward. The call to 999 was left until you had a free moment. Daniel came through — but in a full obstruction, the call for help cannot wait. Getting emergency help on its way is part of the first response, not something to fit in afterwards.
-
-### 3c. Cross-track reveal — record once; plays every run, last  ·  ~32s
-> Last thing — and it's the important one. The pressures you were working against tonight were set long before teatime. A colleague off sick with no cover. A medication change that never reached Daniel's plan. A reassessment nobody booked.
->
-> None of those were decided on the dining-room floor. They were shaped upstream — by the manager, and by the organisation. This is the shift your paperwork produced. In the full programme, you'd take the manager and director shifts that built this one.
+### 3b. What moved on-screen (no longer spoken — nothing is lost)
+The old per-cause spoken segments and the cross-track reveal are now **rendered in the debrief
+itself**, so they need no clip and no stitching. Each per-outcome clip above deliberately points
+the learner to this on-screen breakdown:
+- **Critical controls (CC1 supervision, CC2 unsafe plate)** — the two critical-control cards
+  show held or tripped, each with its explanation.
+- **The medication clue** (missed, or caught-and-praised) — the debrief **reveal box**.
+- **A delayed call for help** on Path C — named in the outcome copy and the "captured this run"
+  events line (`EMERGENCY_RESPONSE`).
+- **Cross-track reveal** ("the shift your paperwork produced") — on-screen text at the foot of
+  the debrief (`crossTrackReveal()`), every run. Not a clip.
 
 ---
 
 ## 4. OPTIONAL — escalation replies (short reaction clips)
-*Only if you want the "who to call" learning reinforced in the moment. Keep to a few seconds each; these are cutaways, not scenes.*
+*Only if you want the "who to call" learning reinforced in the moment. Keep to a few seconds each; these are cutaways, not scenes. **Not currently used in the app.***
+
+> **Synthesia caution:** an avatar speaking emergency/first-aid instruction ("follow the choking first-aid guidance", "ambulance is on its way") is exactly what Synthesia rejects. If you build these, keep the spoken line to a human reassurance only and let any procedural detail sit on screen. Safer rewrites below.
 
 **Shift leader answers (N4 escalate)  ·  ~6s**
-> On my way down — keep Daniel safe, I'm thirty seconds behind you.
+> I'm on my way down, thirty seconds behind you. Stay with Daniel.
 
 **999 call handler (N6, correct response)  ·  ~8s**
-> Ambulance is on its way. Stay with him, keep following the choking first-aid guidance, and tell me the moment anything changes.
+> Help is on its way to you now. Stay with him, keep doing what you're doing, and tell me the moment anything changes.
 
 ---
 
@@ -111,13 +108,15 @@ The debrief plays **opening + any triggered cause segments + reveal**, in this o
 |---|---|
 | Welcome | 1 |
 | Handover | 1 |
-| Debrief opening (A/B/C/D) | 4 |
-| Debrief causes (CC1, CC2, med-missed, med-caught, 999-delayed) | 5 |
-| Cross-track reveal | 1 |
-| **Core total** | **12** |
+| Debrief — one clip per outcome (A/B/C/D) | 4 |
+| **Core total** | **6** |
 | Optional escalation replies | +2 |
 
-Ten of these cover **all ~60 debrief combinations**; a learner only ever sees the opening + their triggered causes + the reveal.
+The debrief is now **one self-contained clip per outcome** (no cause segments, no separate
+reveal clip): the app plays the single clip matching the run, and all run-specific detail
+(critical controls, medication reveal, delayed-call note, cross-track reveal) is rendered
+**on screen**. This removes the stitching entirely, so there is no end-frame / mid-blink
+mismatch to worry about.
 
 ## Clinical note
 All emergency wording is held at "recognise the emergency, call 999, follow choking first-aid guidance" — no physical technique is taught or shown, per Emma (SME). Any change to the emergency or caveat wording is Emma's to confirm before recording.
