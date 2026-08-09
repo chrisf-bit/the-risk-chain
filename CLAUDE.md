@@ -188,10 +188,18 @@ each unlocks when the previous is completed. Each has its own **deep signature i
   `opt.cc` (CC1/CC2), `opt.primes/dignity/escalation/events`; node `recog/emergency/recogText/cue/type`.
 - Each built scenario's `SC.build` supplies: `nodes, docs, docOrder, base` (flow),
   `recogNode, emergencyNode, closingNode?, recordsLabel, sceneImg, intro{video,vtt},
-  handover{eyebrow,text,q,cta,videoD,vttD,videoM?,vttM?}, meters(), domains, ccHold,
-  outcomes{A..D}, reveal(), crossTrack(), toolkitBase/Fail`. **Adding a widget** = a `node.type`
-  branch in `momentCard`, a `*Body()` render fn, dispatcher cases, a `scoreForNode` special‑case,
-  config on `SC.build`, and state fields in `initState`.
+  handover{eyebrow,text,q,cta,videoD,vttD,videoM?,vttM?}, debrief{A..D:{video,vtt}}, meters(),
+  domains[{k,nodes,note}], scoreAdjust(k), ccHold, outcomes{A..D}, reveal(), crossTrack(),
+  toolkitBase/Fail`. **Adding a widget** = a `node.type` branch in `momentCard`, a `*Body()`
+  render fn, dispatcher cases, a `scoreForNode` special‑case, config on `SC.build`, and state
+  fields in `initState`.
+- **Scoring / debrief (S2–S4 generic path):** `scoreProfileGeneric` averages `scoreForNode`
+  (kind→100/55/15, or the widget score) over each domain's nodes, then applies the scenario's
+  `SC.build.scoreAdjust(domainKey)` delta to reward evidence use (e.g. opening the governing
+  record, plan‑to‑hand). Each domain carries a `note` rendered under its bar (`.dom-note`) in
+  both the S1 and generic debriefs. `summariseEventsGeneric` surfaces the signature‑interaction
+  result per scenario (reconcile, flow‑test, on‑call). Debrief video = one clip per outcome
+  from `SC.build.debrief[outcome]` via `debriefMedia()` (single slot, no stitching).
 - **Gated progression:** completion persisted **separately** from run‑state (`frontline_progress_v1`,
   marked at `resolve()`); unlock chain in `SCEN_ORDER`/`isUnlocked()`; picker states Locked /
   Ready / Completed. Run‑state localStorage key is `frontline_v2`.
@@ -284,17 +292,20 @@ throughout, all gated by `prefers-reduced-motion`.
   the N5 image; S2's reconcile node NR reuses the N1 (documents) image.** `pos` is the
   `object-position` (banner crops top/bottom). Shot list + prompts + stock terms:
   `docs/frontline-image-shotlist.md`.
-- **Scene-image STATUS (2026‑08):** **S2 = complete** (`scene-s2-n1..n5.jpg`). **S3 = 4/5**
-  (`scene-s3-n1..n4.jpg` in; **N5 pending** — the emerging‑signs pureed‑bowl shot). **S4 =
-  none yet** (needs N1–N5). User hit their Copilot image limit; next images may come from any
-  source (AI or free stock — Unsplash/Pexels). S1 keeps its original `scene-*.jpg`.
-- **Image intake workflow (do this for every new scene image):** Copilot stamps a "Made with
-  AI" badge in the top‑right — crop it off. `identify`/ImageMagick are NOT installed and the
+- **Scene-image STATUS (2026‑08): ALL COMPLETE.** S2/S3/S4 each have `scene-s<n>-n1..n5.jpg`
+  wired into `sceneImg` (N6 reuses N5; S2 NR reuses N1). S1 keeps its original `scene-*.jpg`.
+- **Image intake workflow (for any future scene image):** Copilot stamps a "Made with AI"
+  badge in the top‑right — crop it off. `identify`/ImageMagick are NOT installed and the
   `convert` on PATH is the **Windows disk utility, do NOT run it**. Use **PowerShell +
-  System.Drawing** to crop the top ~100px and re‑encode as JPEG q85 (see the scratchpad
-  scripts this session, or reproduce: load `Image.FromFile`, `DrawImage` a `cropTop=100`
-  source rect onto a `Bitmap`, save with the JPEG encoder). Name `scene-s<n>-n<k>.jpg`, keep
-  **under 2000px** (~1536×924 is what came through), then add to that scenario's `sceneImg`.
+  System.Drawing** to crop the top ~100px and re‑encode as JPEG q85 (`Image.FromFile`,
+  `DrawImage` a `cropTop=100` source rect onto a `Bitmap`, save with the JPEG encoder). Name
+  `scene-s<n>-n<k>.jpg`, keep **under 2000px**, then add to that scenario's `sceneImg`.
+- **Video intake workflow (compress every new clip):** `ffmpeg` is installed (winget
+  `Gyan.FFmpeg`; if not on PATH use the WinGet `Packages\...\bin\ffmpeg.exe`). All 25 clips were
+  re‑encoded 1080p→**720p H.264 CRF 23, AAC 128k, +faststart** (208MB→38MB, visually lossless
+  at the ≤~600px player). Run any new avatar clip through the same before wiring:
+  `ffmpeg -i in.mp4 -vf "scale=-2:720" -c:v libx264 -preset slow -crf 23 -c:a aac -b:a 128k -movflags +faststart -y out.mp4`.
+  Captions stay inline base64 in the HTML (separate from the mp4).
 - Options key on `id` not array position (`m={a:100,b:55,c:15}`), so reordering is display‑only.
 
 ### Brand marks, logo & mobile tweaks
