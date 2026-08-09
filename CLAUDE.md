@@ -249,6 +249,12 @@ throughout, all gated by `prefers-reduced-motion`.
     `isMobileView()`; falls back to `videoD` when there's no mobile cut). Files: `handover.mp4`
     + `handover-mobile.mp4` (S1, both current — **the old mobile‑gap is CLOSED**);
     `handover-s2/s3/s4.mp4` + `HANDOVER_S2/S3/S4_VTT` (layout‑neutral, so they serve both cuts).
+  - **Debrief = ONE self‑contained clip PER OUTCOME** (A/B/C/D), read from
+    `SC.build.debrief[outcome]` by `debriefMedia()`/`setupDebriefVideo()`; a single video slot,
+    so **no stitching** (this was the deliberate fix for Synthesia's mid‑blink end‑frames). Files
+    `debrief-s<1-4>-<a/b/c/d>.mp4` + `DEBRIEF_S<1-4>_<A-D>_VTT`. Falls back to the placeholder if
+    a clip is missing. **ALL 16 debrief clips (+ 4 intros + 4 handovers + S1 mobile) are now
+    recorded, wired and verified — the video set is COMPLETE.**
   - SME‑owned caveat `SIM_CAVEAT` shows at the **end of the debrief** (`caveatBox()`).
 - **AVATAR SCRIPTS ARE SYNTHESIA‑MODERATED — HARD CONSTRAINT.** Synthesia rejects avatar‑*spoken*
   personalised medical advice, diagnoses, treatment/first‑aid instructions, and condition‑specific
@@ -257,8 +263,14 @@ throughout, all gated by `prefers-reduced-motion`.
   capacity / best‑interests wording, emergency & first‑aid steps) live in **on‑screen text**
   (landing `lead`, fact tiles, records, debrief components), never in the spoken script. S2–S4
   scripts in `docs/F2-F4-video-scripts.md` are the Synthesia‑safe versions (§0 per‑scenario
-  intros, §1‑3 handovers, §4 optional debrief openers); S1 scripts in `docs/F1-video-scripts.md`.
+  intros, §1‑3 handovers, §4 debrief = one clip per outcome); S1 scripts in `docs/F1-video-scripts.md`.
   A **Custom Avatar / enterprise plan** gets broader medical latitude if the topic keeps flagging.
+  - **Lesson learned (debrief C, "emergency survived"):** the emergency‑response wording bounced.
+    The **"[person] came through it, but only just" survival phrasing was the trigger.** The fix
+    that reliably passes: mirror the proven S1 C wording verbatim — "a close call, and the worst
+    was avoided … the safe controls had already gone … the screen shows the chain." D ("did not
+    survive") passes (different, non‑medical filter). When drafting any new avatar copy, **match
+    the wording of a clip that already passed** rather than inventing near‑equivalents.
 - **Shift countdown:** the HUD clock is a live **15:00 countdown** ("Time left"), started when
   the handover screen first loads (`startShiftClock()`), runs across the nodes, clamps at
   `00:00`; non‑persisted so a reload restarts it; reset on Restart/begin. Replaced the old
