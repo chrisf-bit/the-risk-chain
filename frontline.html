@@ -377,8 +377,17 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* scene grid: moment + evidence */
 .scene{flex:1;min-height:0;display:grid;grid-template-columns:1fr 322px;gap:16px}
-.moment{min-height:0;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:hidden}
+.moment{position:relative;min-height:0;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:hidden}
 .m-pad{flex:1;min-height:0;overflow:auto;padding:20px 30px 24px;display:flex;flex-direction:column}
+/* Scroll affordance (rule 3 keeps scrollbars hidden, so a "more below" cue tells
+   learners there are answers/records beyond the fold). Shown only when the
+   container can scroll down; hidden once the bottom is reached. */
+.scroll-cue{position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;pointer-events:none;opacity:0;transition:opacity .18s ease;z-index:3}
+.scroll-cue.on{opacity:1}
+.cue-pill{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border-radius:100px;padding:5px 13px;font-size:var(--t-cap);font-weight:750;box-shadow:0 4px 12px rgba(20,38,74,.28)}
+.cue-pill svg{width:14px;height:14px;animation:cueBob 1.5s ease-in-out infinite}
+@keyframes cueBob{0%,100%{transform:translateY(-1px)}50%{transform:translateY(2px)}}
+@media (prefers-reduced-motion:reduce){.cue-pill svg{animation:none}}
 .m-scene-ic{width:52px;height:52px;border-radius:12px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:16px}
 .m-scene-ic svg{width:29px;height:29px}
 .moment .eyebrow{margin-bottom:2px}
@@ -443,7 +452,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .micro-actions{margin-top:26px}
 
 /* evidence rail */
-.evi{min-height:0;display:flex;flex-direction:column}
+.evi{position:relative;min-height:0;display:flex;flex-direction:column}
 .evi-head{flex:none;padding:2px 6px 12px}
 .evi-head h3{font-size:var(--t-h3);display:flex;align-items:center;gap:8px;color:var(--ink)}
 .evi-head h3 svg{width:20px;height:20px;color:var(--z-read)}
@@ -1555,7 +1564,22 @@ function render(){
   if(S.stage==='landing'){ setupIntroVideo(); }
   if(S.stage==='handover'){ setupHandoverVideo(); startShiftClock(); }
   if(S.stage==='debrief'){ setupDebriefVideo(); }
+  wireScrollCues();
 }
+/* Toggle the "more below" cue on any scroll container that can still scroll down,
+   and keep it in sync while the learner scrolls. */
+function updateCue(sc){
+  var cue=sc.parentNode && sc.parentNode.querySelector('.scroll-cue'); if(!cue) return;
+  cue.classList.toggle('on', (sc.scrollHeight - sc.clientHeight - sc.scrollTop) > 6);
+}
+function wireScrollCues(){
+  var list=document.querySelectorAll('[data-scrollcue]');
+  for(var i=0;i<list.length;i++){ (function(sc){
+    updateCue(sc);
+    sc.addEventListener('scroll', function(){ updateCue(sc); }, {passive:true});
+  })(list[i]); }
+}
+window.addEventListener('resize', function(){ wireScrollCues(); });
 /* ---------- Scenario picker ---------- */
 function viewPicker(){
   const cards=SCEN_ORDER.map(function(id,i){
@@ -1765,7 +1789,13 @@ function momentCard(node){
   else if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
   else body=decideBody(node);
-  return '<div class="moment">'+sceneIllo(key,warnScene)+'<div class="m-pad">'+body+'</div></div>';
+  return '<div class="moment">'+sceneIllo(key,warnScene)+'<div class="m-pad" data-scrollcue>'+body+'</div>'+scrollCue()+'</div>';
+}
+/* "More below" cue markup; visibility is toggled by wireScrollCues() after render. */
+function scrollCue(){
+  return '<div class="scroll-cue"><span class="cue-pill">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
+    +'More below</span></div>';
 }
 /* Reconcile widget (deep signature interaction, S2). Active "which source is
    current for each field" step. Config in SC.build.reconcile; picks held in
@@ -2063,10 +2093,10 @@ function eviRail(){
   return '<div class="evi">'
     +'<div class="evi-head"><h3>'+svg(I.eye)+'Records &amp; tools</h3>'
     +'<p>Opened '+openedCount+' of '+DOC_ORDER.length+'. Open a document to read it and judge it yourself.</p></div>'
-    +'<div class="evi-scroll">'
+    +'<div class="evi-scroll" data-scrollcue>'
     +'<div class="evi-sec sec-records"><div class="evi-grp">'+recLabel+'</div>'+rows(false)+'</div>'
     +'<div class="evi-sec sec-tools"><div class="evi-grp">Reference tools</div>'+rows(true)+'</div>'
-    +'</div></div>';
+    +'</div>'+scrollCue()+'</div>';
 }
 
 /* ---------- Document modal ---------- */
