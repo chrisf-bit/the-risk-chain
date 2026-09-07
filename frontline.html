@@ -388,6 +388,31 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .cue-pill svg{width:14px;height:14px;animation:cueBob 1.5s ease-in-out infinite}
 @keyframes cueBob{0%,100%{transform:translateY(-1px)}50%{transform:translateY(2px)}}
 @media (prefers-reduced-motion:reduce){.cue-pill svg{animation:none}}
+/* How-to-play coach tour: spotlight + anchored pop, mounted on <body> so it
+   survives re-renders. Navy accents keep contrast in both themes. */
+.fl-tour{position:fixed;inset:0;z-index:200}
+.fl-tour-block{position:fixed;inset:0}
+.fl-tour-spot{position:fixed;border-radius:12px;border:2px solid var(--teal);box-shadow:0 0 0 100vmax rgba(7,20,40,.66);transition:top .28s cubic-bezier(.2,.8,.2,1),left .28s cubic-bezier(.2,.8,.2,1),width .28s,height .28s;pointer-events:none}
+.fl-pop{position:fixed;width:320px;max-width:calc(100vw - 24px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:16px 18px;z-index:201;animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+.fl-pop .fp-num{display:inline-flex;align-items:center;gap:7px;font-size:var(--t-cap);font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--teal-strong)}
+.fl-pop h4{font-size:var(--t-body);margin-top:8px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.fl-pop .fp-ico{width:32px;height:32px;border-radius:9px;flex:none;display:grid;place-items:center;background:var(--navy);color:#fff}
+.fl-pop .fp-ico svg{width:17px;height:17px}
+.fl-pop p{font-size:var(--t-sm);color:var(--ink-2);margin-top:8px;line-height:1.5}
+.fl-pop .fp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px}
+.fl-pop .fp-dots{display:flex;gap:5px}
+.fl-pop .fp-dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.fl-pop .fp-dot.on{background:var(--teal);width:18px;border-radius:100px}
+.fl-pop .fp-btns{display:flex;gap:8px}
+.fl-tbtn{font-size:var(--t-sm);font-weight:700;padding:8px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.fl-tbtn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.fl-skip{background:none;border:0;color:var(--ink-3);font-size:var(--t-cap);cursor:pointer;padding:4px}
+.fl-pop .fp-arrow{position:absolute;width:14px;height:14px;background:var(--surface);border:1px solid var(--line);transform:rotate(45deg)}
+.fl-pop.pl-bottom .fp-arrow{top:-8px;left:26px;border-right:0;border-bottom:0}
+.fl-pop.pl-top .fp-arrow{bottom:-8px;left:26px;border-left:0;border-top:0}
+.fl-pop.pl-left .fp-arrow{right:-8px;top:26px;border-left:0;border-bottom:0}
+.fl-pop.pl-right .fp-arrow{left:-8px;top:26px;border-right:0;border-top:0}
+@media (prefers-reduced-motion:reduce){.fl-tour-spot{transition:none}.fl-pop{animation:none}}
 .m-scene-ic{width:52px;height:52px;border-radius:12px;background:var(--teal-tint);color:var(--teal-strong);display:grid;place-items:center;margin-bottom:16px}
 .m-scene-ic svg{width:29px;height:29px}
 .moment .eyebrow{margin-bottom:2px}
@@ -1565,7 +1590,85 @@ function render(){
   if(S.stage==='handover'){ setupHandoverVideo(); startShiftClock(); }
   if(S.stage==='debrief'){ setupDebriefVideo(); }
   wireScrollCues();
+  // First-time users: auto-run the gameplay tour once, when the first moment loads.
+  if(S.stage==='node' && !flTourSeen()){ markTourSeen(); setTimeout(function(){ if(S.stage==='node' && !tourActive()){ startTour(); } }, 450); }
 }
+/* ---------- How-to-play coach tour (contextual by stage) ---------- */
+var TOURS={
+  picker:[
+    {sel:'.scn-card',ico:'play',h:'Choose a scenario',p:'Pick a shift to play. Each scenario unlocks once you complete the one before it.',place:'bottom'},
+  ],
+  landing:[
+    {sel:'.land-video',ico:'play',h:'Watch the intro',p:'A short clip sets up the shift and who you are supporting. It plays right here.',place:'left'},
+    {sel:'[data-act="begin"]',ico:'arrowR',h:'Begin when ready',p:'Once you have read the brief, start your shift.',place:'top'},
+  ],
+  handover:[
+    {sel:'.handover-video',ico:'play',h:'Your handover',p:'This is the handover briefing for the shift. Watch it, then go through to the table.',place:'right'},
+    {sel:'[data-act="to-table"]',ico:'arrowR',h:'Go to the table',p:'Start the shift when you are ready. Your time begins now.',place:'top'},
+  ],
+  node:[
+    {sel:'.sv-clock',ico:'clock',h:'Time left',p:'Your shift runs on a countdown. Reading records and making choices both use time.',place:'bottom'},
+    {sel:'.sv-gauge',ico:'gauge2',h:'Live mealtime risk',p:'This gauge moves as the situation changes with your choices. Keep it low.',place:'bottom'},
+    {sel:'.moment',ico:'eye',h:'The moment',p:'Read the scene, then choose how you respond. Some options are workable but not the safest.',place:'right'},
+    {sel:'.evi',ico:'clipboard',h:'Records and tools',p:'Open these to read the evidence before you act. The debrief records what you opened, so it pays to check.',place:'left'},
+  ],
+  debrief:[
+    {sel:'.crosstrack',ico:'check',h:'Your readiness',p:'Your verdict for this run: ready, developing or not yet ready, with what would lift it.',place:'top'},
+    {sel:'.dom',ico:'gauge2',h:'Practice profile',p:'How you scored across each domain of safe support, with a note under each.',place:'right'},
+  ],
+};
+var flTourSteps=[], flTourIdx=0;
+function flTourSeen(){ try{ return localStorage.getItem('frontline_tour_v1')==='1'; }catch(e){ return false; } }
+function markTourSeen(){ try{ localStorage.setItem('frontline_tour_v1','1'); }catch(e){} }
+function flTourEl(){ var e=document.getElementById('fl-tour-root'); if(!e){ e=document.createElement('div'); e.id='fl-tour-root'; document.body.appendChild(e); } return e; }
+function tourActive(){ return !!flTourEl().innerHTML; }
+function tourForStage(){ return TOURS[S.stage] || []; }
+function startTour(steps){
+  flTourSteps=(steps && steps.length)?steps:tourForStage();
+  flTourIdx=0;
+  if(!flTourSteps.length){ return; }
+  showTourStep(0);
+}
+function endTour(){ flTourEl().innerHTML=''; }
+function tourNext(){ if(flTourIdx>=flTourSteps.length-1){ endTour(); return; } showTourStep(++flTourIdx); }
+function tourPrev(){ if(flTourIdx<=0){ return; } showTourStep(--flTourIdx); }
+function showTourStep(i){
+  var cl=function(v,a,b){ return Math.max(a,Math.min(b,v)); };
+  var step=flTourSteps[i];
+  var t=step && document.querySelector(step.sel);
+  var r=t && t.getBoundingClientRect();
+  // Skip steps whose target is missing or not visible (e.g. hidden behind a tab).
+  if(!t || !r || (r.width===0 && r.height===0)){
+    if(i<flTourSteps.length-1){ flTourIdx=i+1; return showTourStep(i+1); }
+    endTour(); return;
+  }
+  var vw=window.innerWidth, vh=window.innerHeight, pad=8, popW=320, popH=196, gap=14;
+  var spot={t:r.top-pad,l:r.left-pad,w:r.width+pad*2,h:r.height+pad*2};
+  var popL=0, popT=0;
+  var below=function(){ popT=r.bottom+gap; popL=cl(r.left+r.width/2-popW/2,12,vw-popW-12); return popT+popH<vh-8; };
+  var above=function(){ popT=r.top-gap-popH; popL=cl(r.left+r.width/2-popW/2,12,vw-popW-12); return popT>8; };
+  var left =function(){ popL=r.left-gap-popW; popT=cl(r.top,12,vh-popH-12); return popL>8; };
+  var right=function(){ popL=r.right+gap; popT=cl(r.top,12,vh-popH-12); return popL+popW<vw-8; };
+  var plClass='pl-bottom', done=false;
+  var tryPlace=function(name){ if(name==='left'&&left()){plClass='pl-left';return true;} if(name==='top'&&above()){plClass='pl-top';return true;} if(name==='right'&&right()){plClass='pl-right';return true;} if(name==='bottom'&&below()){plClass='pl-bottom';return true;} return false; };
+  done=tryPlace(step.place);
+  if(!done){ if(below()){plClass='pl-bottom';} else if(above()){plClass='pl-top';} else if(left()){plClass='pl-left';} else { right(); plClass='pl-right'; } }
+  var last=i===flTourSteps.length-1;
+  flTourEl().innerHTML='<div class="fl-tour">'
+    +'<div class="fl-tour-block" data-act="tour-skip"></div>'
+    +'<div class="fl-tour-spot" style="top:'+spot.t+'px;left:'+spot.l+'px;width:'+spot.w+'px;height:'+spot.h+'px"></div>'
+    +'<div class="fl-pop '+plClass+'" style="top:'+Math.round(popT)+'px;left:'+Math.round(popL)+'px" role="dialog" aria-label="'+step.h+'">'
+    +'<div class="fp-arrow"></div>'
+    +'<span class="fp-num">Step '+(i+1)+' of '+flTourSteps.length+'</span>'
+    +'<h4><span class="fp-ico">'+svg(I[step.ico]||I.info)+'</span>'+step.h+'</h4>'
+    +'<p>'+step.p+'</p>'
+    +'<div class="fp-foot"><div class="fp-dots">'+flTourSteps.map(function(_,j){ return '<span class="fp-dot '+(j===i?'on':'')+'"></span>'; }).join('')+'</div>'
+    +'<div class="fp-btns">'
+    +(i>0?'<button class="fl-tbtn" data-act="tour-prev">Back</button>':'<button class="fl-skip" data-act="tour-skip">Skip</button>')
+    +'<button class="fl-tbtn primary" data-act="tour-next">'+(last?'Done':'Next')+'</button>'
+    +'</div></div></div></div>';
+}
+window.addEventListener('resize', function(){ if(tourActive()){ showTourStep(flTourIdx); } });
 /* Toggle the "more below" cue on any scroll container that can still scroll down,
    and keep it in sync while the learner scrolls. */
 function updateCue(sc){
@@ -1681,8 +1784,10 @@ function topbar(){
   const sub = S.stage==='picker' ? 'Frontline scenarios' : ('Frontline &middot; '+SC.title);
   const onPicker = S.stage==='picker';
   const inPlay = SC && SC.built && (S.stage==='handover'||S.stage==='node'||S.stage==='outcome'||S.stage==='debrief');
+  const hasTour = ['picker','landing','handover','node','debrief'].indexOf(S.stage)>=0;
   const nav = (!onPicker ? '<button class="tb-btn" data-act="to-picker">'+svg(I.restart)+'Scenarios</button>' : '')
-    + (inPlay ? '<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>' : '');
+    + (inPlay ? '<button class="tb-btn" data-act="restart">'+svg(I.restart)+'Restart</button>' : '')
+    + (hasTour ? '<button class="tb-btn" data-act="how-to-play">'+svg(I.info)+'How to play</button>' : '');
   return '<header class="topbar">'
     +'<div class="brand">'
     +'<img class="brand-mark" src="assets/frontline/brand-icon.png" alt="PracticE Ready" width="38" height="38">'
@@ -3612,6 +3717,10 @@ document.addEventListener('click', function(e){
     case 'mute': toggleMute(); break;
     case 'fullscreen': toggleFullscreen(); break;
     case 'mob-tab': mobTab=el.getAttribute('data-tab'); render(); break;
+    case 'how-to-play': startTour(); break;
+    case 'tour-next': tourNext(); break;
+    case 'tour-prev': tourPrev(); break;
+    case 'tour-skip': endTour(); break;
   }
 });
 document.addEventListener('fullscreenchange', render);
