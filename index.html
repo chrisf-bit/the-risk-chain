@@ -14,7 +14,7 @@
    operational control and the person behind the record.
    ============================================================ */
 /* ============================================================
-   v7 — NHS clinical palette. Light = primary (NHS blue on white,
+   v7 - NHS clinical palette. Light = primary (NHS blue on white,
    NHS green actions, semantic red/amber/green). Dark = clinical
    dark variant for the theme toggle.
    ============================================================ */
@@ -131,7 +131,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .ghost-btn:hover{background:rgba(255,255,255,.15)}
 .ghost-btn svg{width:15px;height:15px}
 
-/* Round stepper — a "level map" of the six rounds. Numbered nodes,
+/* Round stepper - a "level map" of the six rounds. Numbered nodes,
    a glowing YOU-ARE-HERE current node, ticked past rounds, padlocked
    future rounds, joined by a track that lights up as you progress. */
 .stepper{display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:12px 0}
@@ -562,13 +562,13 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .tab svg{width:19px;height:19px}
 .tab .tcount{font-size:11px;font-weight:700;background:var(--surface-3);color:var(--ink-2);border-radius:100px;padding:1px 8px;min-width:21px;text-align:center;font-variant-numeric:tabular-nums}
 .tab.active .tcount{background:rgba(255,255,255,.28);color:#fff}
-/* In dark mode teal is a bright cyan — white text on it is low-contrast,
+/* In dark mode teal is a bright cyan - white text on it is low-contrast,
    so the active tab uses dark text instead. */
 @media (prefers-color-scheme:dark){.tab.active{background:var(--teal);color:#05242c}.tab.active .tcount{background:rgba(0,0,0,.22);color:#05242c}.tab.active svg{color:#05242c}}
 :root[data-theme="dark"] .tab.active{background:var(--teal);color:#05242c}
 :root[data-theme="dark"] .tab.active .tcount{background:rgba(0,0,0,.22);color:#05242c}
 :root[data-theme="dark"] .tab.active svg{color:#05242c}
-/* Instruction banner — the "current objective" bar. Warm gold is the
+/* Instruction banner - the "current objective" bar. Warm gold is the
    ONLY warm element in the whole UI, so it reads instantly as "do this
    now" and never blends into the cool navy panels or teal tabs. Glow +
    a slow shine sweep give it game-HUD presence. */
@@ -819,7 +819,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .kpi .k-fill,.timebar .tb-fill{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -3px 6px rgba(0,0,0,.09)}
 .pip.used{box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
 
-/* KPI change flash on the consequence reveal — draws the eye to what moved,
+/* KPI change flash on the consequence reveal - draws the eye to what moved,
    tinted in the direction of the change. */
 @keyframes flashgood{0%,100%{box-shadow:0 0 0 0 transparent}28%{box-shadow:0 0 0 5px var(--good-tint)}}
 @keyframes flashbad{0%,100%{box-shadow:0 0 0 0 transparent}28%{box-shadow:0 0 0 5px var(--bad-tint)}}
@@ -844,7 +844,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 }
 
 /* ============================================================
-   v5.1: differentiation by fill, elevation and hue — NEVER by
+   v5.1: differentiation by fill, elevation and hue - NEVER by
    edge accents. No left-edge bars, no top strips, anywhere.
    Categories:
      INSTRUCTION  navy banner        (see the .tab-guide rule above)
@@ -854,20 +854,20 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
      METER        vivid RAG gauge
    ============================================================ */
 
-/* Vivid gauge colours — the institutional --good/--bad are muted
+/* Vivid gauge colours - the institutional --good/--bad are muted
    (brown-red, sage-green); the meters want a true RAG signal. */
 :root{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;--teal-deep:#1c6470;}
 @media (prefers-color-scheme:dark){:root{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;--teal-deep:#177483;}}
 :root[data-theme="light"]{--g-red:#d32020;--g-amber:#f2a005;--g-green:#12a150;--teal-deep:#1c6470;}
 :root[data-theme="dark"]{--g-red:#f0453f;--g-amber:#f5b431;--g-green:#28c46a;--teal-deep:#177483;}
 
-/* ACCESSIBILITY — white text on the bright cyan teal fails WCAG AA
+/* ACCESSIBILITY - white text on the bright cyan teal fails WCAG AA
    (~2.2:1). Filled primary buttons use a deep teal so white passes
    (~5:1+). Bright teal stays for non-text accents (rings, icons). */
 .btn{background:var(--teal-deep);border-color:var(--teal-deep)}
 .btn:hover{background:var(--teal-deep);border-color:var(--teal-deep);filter:brightness(1.12)}
 
-/* INSTRUCTION badge — a dark navy pill on the gold bar (high contrast,
+/* INSTRUCTION badge - a dark navy pill on the gold bar (high contrast,
    the inverse of the banner so it reads as a distinct "tag"). */
 .guide-badge{
   display:inline-block;margin-right:10px;padding:4px 12px;border-radius:100px;
@@ -876,9 +876,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
   box-shadow:0 2px 6px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
 }
 
-/* CONTENT — cards/tiles must sit clearly ABOVE the dark background.
+/* CONTENT - cards/tiles must sit clearly ABOVE the dark background.
    Depth comes from a distinctly lighter surface gradient + real
-   shadow + a top highlight — never an edge accent. */
+   shadow + a top highlight - never an edge accent. */
 :root{--card-top:#ffffff;--card-bot:#eef4f5;--card-line:#cfdadf;--card-hi:rgba(255,255,255,.7);--card-sh:0 1px 2px rgba(20,40,60,.06),0 12px 28px rgba(20,40,60,.11);}
 @media (prefers-color-scheme:dark){:root{--card-top:#22333f;--card-bot:#16232f;--card-line:#374d61;--card-hi:rgba(255,255,255,.1);--card-sh:0 1px 2px rgba(0,0,0,.4),0 16px 34px rgba(0,0,0,.55);}}
 :root[data-theme="light"]{--card-top:#ffffff;--card-bot:#eef4f5;--card-line:#cfdadf;--card-hi:rgba(255,255,255,.7);--card-sh:0 1px 2px rgba(20,40,60,.06),0 12px 28px rgba(20,40,60,.11);}
@@ -895,10 +895,10 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .kpi-panel:hover,.timecard:hover,.prev-cap:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
 
 /* ============================================================
-   ELEMENT IDENTITIES — each type is a different KIND of object, so a
+   ELEMENT IDENTITIES - each type is a different KIND of object, so a
    glance tells you what it is and what to do with it:
      RECORDS   = warm "paper" files you REVIEW (parchment icon, folded
-                 corner, warm panel). No pre-judged reliability — you
+                 corner, warm panel). No pre-judged reliability - you
                  decide by reading source + date.
      DECISIONS = cool action TILES you SELECT (big colour-coded icon,
                  a real checkbox, a decisive lit-up selected state).
@@ -906,7 +906,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
      INFO NOTE = a bright "intel" briefing you should read.
    ============================================================ */
 
-/* RECORDS — warm paper files. A warm panel + parchment icon + a folded
+/* RECORDS - warm paper files. A warm panel + parchment icon + a folded
    top corner make these read as documents, unmistakably different from
    the cool decision tiles beside them. */
 .src{background:linear-gradient(180deg,#fffdf6,#f4efe2)}
@@ -925,7 +925,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .src .s-reviewed svg{width:15px;height:15px}
 .src .s-foot{align-items:center}
 
-/* DECISIONS — cool action tiles. Big colour-coded icon = type at a
+/* DECISIONS - cool action tiles. Big colour-coded icon = type at a
    glance; a real checkbox top-right = "you tick these"; a decisive
    selected state (lit border, gradient wash, filled box, lift). */
 .act{padding-right:50px}
@@ -946,14 +946,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .act.sel .a-ico{transform:scale(1.05)}
 .act.sel .a-select{background:var(--teal-deep);border-color:var(--teal-deep);transform:scale(1.12);box-shadow:0 0 14px rgba(44,180,194,.7)}
 
-/* INFO NOTE — an "intel briefing": a bright filled medallion icon + a
+/* INFO NOTE - an "intel briefing": a bright filled medallion icon + a
    soft glow so the eye lands on it and reads "you should know this".
    Distinct from gold instructions and warm alerts. */
 .link-note{background:linear-gradient(180deg,var(--info-tint),transparent);border:1px solid var(--info);box-shadow:0 6px 22px rgba(58,110,165,.2);color:var(--ink);gap:14px;align-items:center;padding:15px 18px}
 .link-note svg{width:22px;height:22px;padding:9px;box-sizing:content-box;border-radius:11px;background:linear-gradient(145deg,#5aa0e6,#3462a5);color:#fff;box-shadow:0 5px 14px rgba(58,110,165,.45),inset 0 1px 0 rgba(255,255,255,.3);flex:none}
 .link-note b{color:var(--info)}
 
-/* DOSSIER — the situation card as a character briefing: the person is
+/* DOSSIER - the situation card as a character briefing: the person is
    the hero (large photo with a glow ring), key facts as scannable
    bullets, and the scenario brief set as an editorial serif callout. */
 .dossier-top{display:flex;gap:22px;align-items:flex-start}
@@ -973,7 +973,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .dossier-brief::before{content:"\201C";position:absolute;top:2px;left:12px;font-family:var(--serif);font-size:52px;line-height:1;color:var(--teal);opacity:.4}
 @media(max-width:640px){.dossier-top{flex-wrap:wrap}.dossier-chip{order:-1}}
 
-/* ALERTS — their own "warning module" identity: a filled, glowing icon
+/* ALERTS - their own "warning module" identity: a filled, glowing icon
    medallion (colour = severity), a bold coloured title, and a tinted
    fill with a soft glow. Distinct from cards, notes and instructions. */
 .alert{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:13px;border:1px solid;position:relative;overflow:hidden}
@@ -991,7 +991,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .alert-info .al-ico{background:linear-gradient(145deg,#5f97d6,#3a6ea5)}
 .alert-info .al-body b{color:var(--info)}
 
-/* METERS — a SEGMENTED red→amber→green gauge (a crisp game stat bar,
+/* METERS - a SEGMENTED red→amber→green gauge (a crisp game stat bar,
    not a smeared gradient). The fill is a window onto a full-width RAG
    spectrum anchored to the track (100cqi) so a low value shows only the
    red end; a repeating mask cuts it into notches; the track carries the
@@ -1014,7 +1014,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 @media(prefers-reduced-motion:reduce){.tab-guide svg,.tab-guide::after{animation:none}}
 
 /* ============================================================
-   CONSOLE RESKIN — Xbox / PS5 dashboard aesthetic (full reskin).
+   CONSOLE RESKIN - Xbox / PS5 dashboard aesthetic (full reskin).
    Big bold tiles, strong type hierarchy, minimal chrome, and the
    signature FOCUS move: the tile you point at (mouse OR keyboard)
    lifts, scales and lights up while the rest sit back.
@@ -1040,30 +1040,30 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 /* disabled tiles stay put */
 .src.capped:hover,.src.capped:focus-visible,.act.disabled:hover,.act.disabled:focus-visible{transform:none;filter:none;box-shadow:0 2px 8px rgba(0,0,0,.22)}
 
-/* Type hierarchy — bold and confident */
+/* Type hierarchy - bold and confident */
 .src h4{font-size:18px;font-weight:750;letter-spacing:-.015em;line-height:1.2}
 .src .s-teaser{font-size:14px}
 .act .a-title{font-size:15.5px;font-weight:750;letter-spacing:-.01em}
 .act .a-blurb{font-size:12.5px}
 .sec-head h3,.sec-title-ico h3{font-size:17px;font-weight:750}
 
-/* Hero icons — larger, more deliberate */
+/* Hero icons - larger, more deliberate */
 .src .s-ico{width:66px;height:66px;border-radius:17px}
 .src .s-ico svg{width:36px;height:36px}
 .act .a-ico{width:56px;height:56px;border-radius:15px}
 .act .a-ico svg{width:31px;height:31px}
 
-/* Rail readouts — cleaner numbers */
+/* Rail readouts - cleaner numbers */
 .kpi .k-val{font-size:16px}
 .kpi .k-name{font-size:13.5px;font-weight:600}
 
-/* Buttons — chunkier console CTA */
+/* Buttons - chunkier console CTA */
 .btn{border-radius:12px;font-weight:750}
 .btn-lg{padding:16px 32px;font-size:16.5px}
 @media(prefers-reduced-motion:reduce){.src,.act{transition:box-shadow .18s}.src:hover,.act:hover,.src:focus-visible,.act:focus-visible{transform:none}}
 
 /* ============================================================
-   v6 RESTYLE — bright & airy console, three zones
+   v6 RESTYLE - bright & airy console, three zones
    GUIDE (left) · WORK (centre) · HUD (right, dark)
    ============================================================ */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
@@ -1163,14 +1163,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 /* v7: selected action cards use a PALE teal-tint fill (see .act.sel in the v7 block below).
    The old v6 dark-gradient selected state is dead, but its descendant text/icon overrides
    (white title/blurb, washed-out icon, pale-cyan cat) leaked through on specificity and made
-   selected cards unreadable in light theme. Removed — v7's theme-aware colours apply instead. */
+   selected cards unreadable in light theme. Removed - v7's theme-aware colours apply instead. */
 .act.disabled{opacity:.5}
 .act.disabled:hover{transform:none;box-shadow:var(--shadow)}
 .act .a-foot{display:flex;gap:12px;margin-top:9px;z-index:1;position:relative}
 .act .a-ev{font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
 .act .a-ev.ev-on{color:var(--good)} .act .a-ev.ev-off{color:var(--ink-3)}
 
-/* v7 record modal — reads like opening a real document, not a bigger card */
+/* v7 record modal - reads like opening a real document, not a bigger card */
 .record-modal{max-width:600px}
 .record-head{align-items:center;gap:15px;padding:18px 22px}
 .record-head .rm-emblem{width:50px;height:50px;border-radius:11px;flex:none;display:grid;place-items:center;background:var(--teal-tint);color:var(--teal-strong);box-shadow:inset 0 0 0 1px var(--line)}
@@ -1217,7 +1217,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .btn-secondary:hover{background:var(--surface-2);filter:none}
 
 /* ============================================================
-   v6.1 POLISH — premium finish
+   v6.1 POLISH - premium finish
    ============================================================ */
 /* No visible scrollbars anywhere (wheel / trackpad still scroll) */
 *{scrollbar-width:none;-ms-overflow-style:none}
@@ -1247,7 +1247,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 :root[data-theme="light"] .g-alert{background:linear-gradient(180deg,rgba(209,73,46,.13),#e7edf4 60%)}
 .guide-title{opacity:.85}
 
-/* ---- PREMIUM METERS — clean single-hue bars (colour = health) ---- */
+/* ---- PREMIUM METERS - clean single-hue bars (colour = health) ---- */
 .kpi{gap:4px 12px}
 .kpi .k-bar{height:8px;border-radius:100px;overflow:hidden;background:rgba(120,145,175,.22);background-image:none;container-type:normal}
 .kpi .k-fill{border-radius:100px;-webkit-mask:none;mask:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);transition:width .9s cubic-bezier(.2,.7,.2,1)}
@@ -1310,11 +1310,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer}
 .tour-pop .tp-arrow{background:#1b2836;border-color:rgba(255,255,255,.1)}
 
 /* ============================================================
-   v7 NHS THEME — clinical, light, minimal.  Overrides above.
+   v7 NHS THEME - clinical, light, minimal.  Overrides above.
    ============================================================ */
 body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 
-/* Header — clean white, subtle border (minimal/clinical) */
+/* Header - clean white, subtle border (minimal/clinical) */
 .topbar{background:var(--surface);border-bottom:1px solid var(--line);box-shadow:none}
 .topbar .brand{color:var(--ink)} .topbar .brand small{color:var(--ink-3)} .topbar .brand .mark{color:var(--teal)}
 .ghost-btn{background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
@@ -1361,7 +1361,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .work-col .tabpanel{flex:1;min-height:0;overflow-y:auto}
 @media(max-width:1020px){#app.is-console{height:auto;overflow:visible}.console2{grid-template-columns:1fr}.guide-col{border-right:0;border-bottom:1px solid var(--line)}.guide-col,.work-col .tabpanel{overflow:visible;min-height:auto}}
 
-/* Guide — NHS care cards (coloured headers draw the eye + differentiate) */
+/* Guide - NHS care cards (coloured headers draw the eye + differentiate) */
 .guide-title{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58);font-weight:700;margin:2px 2px 2px}
 .care{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow)}
 .care-h{display:flex;align-items:center;gap:8px;padding:9px 13px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
@@ -1375,7 +1375,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .care-alert .care-h{background:var(--bad)}
 :root[data-theme="dark"] .care-info .care-h{background:#2f9fd0}
 
-/* Tabs — NHS underline, connected to content */
+/* Tabs - NHS underline, connected to content */
 .work-col .tabbar{display:flex;gap:0;border-bottom:1px solid var(--line);margin:0 0 18px;background:none;padding:0;box-shadow:none;flex:none}
 .work-col .tab{padding:12px 18px;font-size:14.5px;font-weight:700;color:var(--ink-3);border:0;border-radius:0;margin-bottom:-1px;position:relative;display:flex;gap:8px;align-items:center;background:none}
 .work-col .tab:hover{color:var(--ink)}
@@ -1385,7 +1385,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .work-col .tab.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--teal)}
 .sec-head h3,.sec-title-ico h3{color:var(--ink)}
 
-/* RECORDS — clean NHS cards with optional photo banner */
+/* RECORDS - clean NHS cards with optional photo banner */
 .src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 .src{display:flex;flex-direction:column;padding:0;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);text-align:left;width:100%;color:inherit;transition:.15s}
 .src:hover,.src:focus-visible{outline:none;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),var(--shadow-lg);transform:translateY(-2px)}
@@ -1415,7 +1415,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .src.opened .r-chip{color:var(--good)}
 .src.capped{opacity:.5}.src.capped:hover{transform:none;box-shadow:var(--shadow);border-color:var(--line)}
 
-/* DECISIONS — clean cards; category-colour icon; pale-blue selected */
+/* DECISIONS - clean cards; category-colour icon; pale-blue selected */
 .acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-content:start}
 .act{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 46px 15px 15px;display:flex;gap:13px;align-items:flex-start;position:relative;text-align:left;width:100%;color:inherit;transition:.15s;overflow:visible}
 .act .a-left{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none;margin-top:16px}
@@ -1443,7 +1443,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--sans)}
 .act .a-ev.ev-on{color:var(--good);font-size:11px;font-weight:700;display:inline-flex;gap:5px;align-items:center}
 .act .a-ev.ev-off{color:var(--ink-3);font-size:11px;font-weight:700;display:inline-flex;gap:5px;align-items:center}
 
-/* Primary buttons — NHS green with the classic drop */
+/* Primary buttons - NHS green with the classic drop */
 .btn{background:#007f3b;border:0;color:#fff;border-radius:var(--r-sm);font-weight:700;box-shadow:0 3px 0 #00602c;transition:filter .15s}
 .btn:hover{background:#007f3b;filter:brightness(1.08);box-shadow:0 3px 0 #00602c}
 .btn:active{transform:translateY(1px);box-shadow:0 2px 0 #00602c}
@@ -2122,7 +2122,7 @@ function render(){
 }
 
 /* ============================================================
-   Arrival animations — motion at the beats.
+   Arrival animations - motion at the beats.
    render() replaces innerHTML on every interaction (tab switches,
    selecting actions), so "arrival" effects are gated on a
    screen:round key and only play when you actually land somewhere
@@ -2485,7 +2485,7 @@ function viewDashboard(){
     </div>`;
 }
 
-/* Top HUD strip — leads with an animated Prevention trend chart */
+/* Top HUD strip - leads with an animated Prevention trend chart */
 function hudStrip(round){
   const v=S.prevention;
   const used=attentionUsed(round);
@@ -2530,7 +2530,7 @@ function sparkPath(vals,w,h,min,max){
   return {line:d.trim(),area,cx:x(n-1),cy:y(vals[n-1])};
 }
 
-/* Guide — NHS care cards (coloured headers) */
+/* Guide - NHS care cards (coloured headers) */
 function guideBlocks(tab,round,d){
   const T={
     situation:['Your task · 1 of 3','Read the situation'],
@@ -2608,7 +2608,7 @@ function actCard(a,round,remaining,selected){
   const opened=S.opened[round]||{};
   let evTag='';
   // Show a quiet positive when the relevant record has been reviewed, but
-  // never flag "acting on assumption" — the player shouldn't be told which
+  // never flag "acting on assumption" - the player shouldn't be told which
   // decisions are under-evidenced; that's for them to judge.
   if(inf&&inf.length && inf.some(id=>opened[id])){
     evTag=`<span class="a-ev ev-on" title="You have reviewed the relevant record">${svg(I.checkSmall)} Evidence reviewed</span>`;
