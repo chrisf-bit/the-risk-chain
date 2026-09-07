@@ -2445,11 +2445,15 @@ function readiness(){
   if(S.outcome==='D'){
     band='Not yet ready'; cls='r-bad';
     txt='The shift ended in the outcome this training exists to prevent. It was a chain of failures, each recoverable on its own. In practice, any one of them held would have changed the ending. This cannot be offset by good work elsewhere.';
+  } else if(S.outcome==='C'){
+    band='Not yet ready'; cls='r-bad';
+    txt='Daniel survived a choking emergency, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone, and a delayed call for help is never safe. This cannot be offset by good work elsewhere.';
+  } else if(S.outcome==='B'){
+    band='Developing'; cls='r-warn';
+    txt='A near miss, well recovered. An unsafe mouthful was taken, but you recognised it, stopped the meal, kept Daniel upright and called for help, and he stayed safe. That recovery matters. It sits at amber, not green, because a misjudgement earlier meant the mouthful should not have been possible. To reach green, hold the control that slipped.';
   } else if(S.cc1 || S.cc2){
     band='Not yet ready'; cls='r-bad';
-    txt = S.outcome==='C'
-      ? 'Daniel survived a choking emergency, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone, and a delayed call for help is never safe. This cannot be offset by good work elsewhere.'
-      : 'A critical control was missed during the shift. In practice that is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.';
+    txt='A critical control was missed during the shift. In practice that is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.';
   } else {
     var gaps=s1Gaps();
     if(gaps.length){
@@ -2651,7 +2655,9 @@ function summariseEventsGeneric(){
 function readinessGeneric(){
   var band,cls,txt;
   if(S.outcome==='D'){ band='Not yet ready'; cls='r-bad'; txt='The shift ended in the outcome this training exists to prevent. It came from a chain of failures, each recoverable on its own. This cannot be offset by good work elsewhere.'; }
-  else if(S.cc1||S.cc2){ band='Not yet ready'; cls='r-bad'; txt=(S.outcome==='C')?'The emergency was survived, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone. This cannot be offset by good work elsewhere.':'A critical control was missed during the shift. That is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.'; }
+  else if(S.outcome==='C'){ band='Not yet ready'; cls='r-bad'; txt='The emergency was survived, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone. This cannot be offset by good work elsewhere.'; }
+  else if(S.outcome==='B'){ band='Developing'; cls='r-warn'; txt='A near miss, well recovered. An unsafe mouthful was taken, but you recognised it, stopped the meal and acted, and '+SC.person+' stayed safe. That recovery matters. It sits at amber, not green, because a misjudgement earlier meant the mouthful should not have been possible. To reach green, hold the control that slipped.'; }
+  else if(S.cc1||S.cc2){ band='Not yet ready'; cls='r-bad'; txt='A critical control was missed during the shift. That is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.'; }
   else {
     var gaps=genericGaps();
     if(gaps.length){ band='Developing'; cls='r-warn'; txt='A safe result, and '+SC.person+' stayed safe throughout. To reach the ready standard, next time also '+joinGaps(gaps)+'.'; }
