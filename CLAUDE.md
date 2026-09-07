@@ -110,6 +110,21 @@ When something looks wrong, grep for competing rules on the same selector.
 
 ## Current state & possible next steps
 
+- **Two sims, two URLs (important):** the Render root `the-risk-chain.onrender.com` serves
+  **The Risk Chain** (`index.html`, the management/rounds sim). The **Frontline** sim is a
+  separate page at **`/frontline.html`**. Videos, the SME questions, the coach tour, etc. all
+  live in Frontline, NOT in The Risk Chain (which has no video by design).
+- **Done (2026-09 session):** **`viewReveal` reworked to fit one screen.** It used to render in
+  normal-scroll mode while the dashboard ran in the viewport-locked `is-console` shell, so its
+  content dropped off the bottom. Now the reveal joins `is-console` (render toggles it for
+  `S.screen==='reveal'` too), with a compact header band (dial inline, long intro paragraph
+  dropped), a 2-col body sized to the viewport, and the Continue button pinned in view (panels
+  scroll internally with hidden scrollbars only if ever needed). The "How earlier rounds shaped
+  this" reflection moved out of the reveal into the end **report** (`viewReport`) as a new
+  "How earlier decisions shaped later rounds" section (recomputed from final flags). **All
+  em-dashes removed** from `index.html` (40, all in CSS/JS comments, swapped to hyphens); both
+  sims are now em-dash-free (`grep -c "—"` = 0). Same one-screen treatment could still be applied
+  to `viewSummary` / `viewReport` if they overflow (not yet checked).
 - **Done (earlier):** NHS theme across the app; dashboard rebuilt (top HUD, care‑card
   guide, action bar, animated prevention trend); landing rebalanced; record photo slot
   wired; intro trimmed to 2 screens; em dashes removed; accessibility contrast fixes.
@@ -352,6 +367,55 @@ Intro is now **welcome‑only**, inline, with the SME disclaimer **at the end**:
 - `scene-handover.jpg` is no longer on the landing but is **still used** as the handover
   scene banner (`SCENE_IMG.handover`) — keep it. Dead `.disc-*` CSS remains in the
   `<style>` block (harmless; can be cleared later).
+
+### DONE (2026-09 session, SME "DT feedback" v0.1 + coach tour)
+Implemented the SME content-additions doc (Donna Thompson feedback). All in `frontline.html`:
+- **Section 3 (scoring / verdict):** green/amber/red redefined. Green (Ready) requires a safe
+  outcome, no critical control tripped, correct answers, ALL records opened, and the scenario's
+  key judgement done. Amber (Developing) now NAMES the specific gaps (helpers `commonGaps` /
+  `s1Gaps` / `genericGaps` / `joinGaps`, plus per-scenario `SC.build.greenGaps`). Red = a
+  critical control tripped or an unsafe outcome. **Client decision: a well-recovered near miss
+  (outcome B) reads amber, not red** (a misjudgement happened, but the recovery is credited);
+  C and D stay red, so "a missed control is never offset" still holds for emergencies.
+  `readiness()` / `readinessGeneric()` rewritten to branch on outcome, then gaps.
+- **Section 2 (Q1-Q10):**
+  - **Recog-node calm-branch fix (Q9 Priya, Q10 Marcus):** the recog node (N5) takes optional
+    `optionsCalm` / `qCalm`, served via `optsFor(node)` when NOT primed, so a safely-finished
+    meal asks how to CLOSE it (record + escalate) instead of showing "call for help". S1-S4.
+  - **S1:** new knowledge nodes `QF` (Q3 Level 0 fluids/thickener) and `QC` (Q1 proportionate
+    cough); N5 reworded to Q2 (becomes an emergency). New nodes carry `knowledge:true` (guarded
+    out of supervision/priming in `applyEffects`). `FLOW_S1` = N1,QF,N2,N3,N4,QC,N5. S1
+    `scoreProfile` blends QF into person-centred and QC into response.
+  - **Knowledge questions:** `QM` (Q5 over-modification, S2), `QL` (Q7 Level 3 description) +
+    `QT` (Q8 spoon-tilt, S3), `QS` (Q6 Level 5 = 4mm, S4). Each wired into that scenario's
+    `base` flow + a domain's `nodes[]` + a reused `sceneImg` key.
+  - **Q4 paramedics select-all:** shared multi-select handover node `QP` (`PARAMEDIC_ITEMS`,
+    `PARAMEDICS_NODE`, injected in `bindScenarioData`), pushed into `flow()` after the emergency
+    node and reached ONLY when 999 was called (path C). `paramedicsBody` / `paraToggle` /
+    `paraConfirm`; scored via `scoreForNode` into Response & learning; shown in "captured this run".
+- **Section 4:** optional end-of-session **questionnaire + declaration** (`QUIZ`, `DECLARATION`,
+  `endOfSessionCTA`, `viewQuestionnaire`, stage `questionnaire`, `quizSubmit`). Answers live ONLY
+  in `S.quiz` / `S.quizFree` (localStorage `frontline_v2`) and reset per run; the manager flag is
+  an on-screen message only. Currently launched from EVERY scenario's debrief.
+- **Navigation "More below" scroll cue:** rule 3 hides scrollbars, so `.m-pad` (options) and
+  `.evi-scroll` (records) could hide content below the fold. `wireScrollCues()` toggles a navy
+  "More below" pill (`.scroll-cue`) only when a container can still scroll down; updates on
+  render, scroll and resize. (This fixed the "learners miss answers" issue Donna flagged.)
+- **How-to-play coach tour:** contextual by stage (`TOURS` keyed to picker/landing/handover/
+  node/debrief), launched by a topbar **"How to play"** button (`data-act="how-to-play"`).
+  First-time users get the gameplay tour auto-run once on the first `node` (localStorage
+  `frontline_tour_v1`). Spotlight + anchored pop mounted on `<body>` (`#fl-tour-root`, survives
+  re-renders); navy accents for contrast; steps auto-skip missing/hidden targets; re-positions
+  on resize; click the dimmed area to skip. Ported from The Risk Chain's tour pattern.
+
+**NEXT (pending, user leaning yes):** move the end-of-session quiz to run ONCE after all four
+scenarios are complete (not per-scenario). Small change (~20-40 lines): gate `endOfSessionCTA()`
+on `SCEN_ORDER.every(id=>PROG[id])`, persist quiz completion in the durable `PROG` (not run-state,
+so a closed tab mid-quiz is not lost), and add a picker entry point once all four read "Completed".
+Decision still needed: once-at-end (recommended) + primary entry point (picker banner / final
+debrief / both). Also: **SCORM must report the questionnaire results** (each answer + free-text +
+`flagged` boolean + completion/declaration) to the LMS. See auto-memory
+`frontline-scorm-questionnaire-reporting`.
 
 ### OPEN THREADS
 - **ALL ASSETS COMPLETE** (2026‑08): every scenario has its intro + handover + all 4 debrief
