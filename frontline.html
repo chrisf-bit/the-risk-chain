@@ -593,6 +593,17 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 /* SME-owned learning caveat (landing + emergency outcomes) */
 .caveat{display:flex;gap:10px;align-items:flex-start;margin-top:22px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);font-size:var(--t-cap);color:var(--ink-3);line-height:1.5}
 .caveat svg{width:17px;height:17px;color:var(--ink-4);flex:none;margin-top:1px}
+/* end-of-session questionnaire (DT §4) */
+.quiz-q{margin-bottom:18px}
+.quiz-q .qq{font-weight:650;color:var(--ink);margin-bottom:10px;font-size:var(--t-body);line-height:1.45}
+.quiz-opts{display:flex;flex-wrap:wrap;gap:8px}
+.quiz-opt{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:100px;padding:9px 16px;font:inherit;font-size:var(--t-sm);font-weight:600;color:var(--ink);cursor:pointer;transition:background .13s ease,border-color .13s ease}
+.quiz-opt:hover{border-color:var(--teal)}
+.quiz-opt.sel{background:var(--z-do-tint);border-color:var(--teal);color:var(--ink)}
+.quiz-free{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font:inherit;font-size:var(--t-sm);background:var(--surface);color:var(--ink);min-height:72px;resize:vertical}
+.quiz-decl{margin-top:16px;padding:13px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);font-size:var(--t-sm);color:var(--ink-2);line-height:1.5}
+.quiz-flag{display:flex;gap:10px;align-items:flex-start;padding:13px 15px;background:var(--warn-tint);border:1px solid var(--warn-line);color:var(--warn);border-radius:var(--r);font-size:var(--t-sm);font-weight:600;line-height:1.45}
+.quiz-flag svg{width:18px;height:18px;flex:none;margin-top:1px}
 /* fatal-path aftermath lines */
 .aftermath{margin-top:20px;display:flex;flex-direction:column;gap:12px}
 .aftermath .af-line{display:flex;gap:11px;align-items:flex-start;font-size:var(--t-sm);color:var(--ink-2);line-height:1.5}
@@ -1188,18 +1199,25 @@ const NODES_S1 = {
        tag:'bad', note:'You leave Daniel’s side to help the housemate. His meal carries on without you beside him.',
        sup:''},
     ]},
-  N5:{ order:5, time:'17:57', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
+  N5:{ order:5, time:'17:57', label:'When it becomes an emergency', icon:'alertT', confidence:true, recog:true,
+    recogText:{ primed:'A little later Daniel coughs weakly and cannot clear it. His voice sounds wet and gurgly and he looks distressed. Then he goes quiet and cannot cough.', calm:'Daniel finishes his meal comfortably. His breathing and voice stay clear throughout.' },
     q:'What do you do, right now?',
+    qCalm:'The meal is done and Daniel is comfortable. How do you close it?',
     options:[
       {id:'b',kind:'risky',
        text:'Wait a moment to see if he clears it himself.',
        tag:'warn'},
       {id:'a',kind:'defensible',
-       text:'Stop the meal, keep him upright, check him, and shout for help.',
+       text:'Stop the meal, keep him upright, shout for help, and if the airway is obstructed call 999 and start choking first aid.',
        tag:'good'},
       {id:'c',kind:'failing',
        text:'Offer him a drink to help wash it down.',
        tag:'bad'},
+    ],
+    optionsCalm:[
+      {id:'a',kind:'defensible', text:'Record the meal as completed safely, noting that the earlier small cough was observed, settled and recorded.', tag:'good'},
+      {id:'b',kind:'risky', text:'Nothing further. He is fine now.', tag:'warn'},
+      {id:'c',kind:'failing', text:'Clear the table and move on without a note.', tag:'bad'},
     ]},
   /* N6, the emergency response (Paths C/D). Only reached when the meal has
      already tipped into a full obstruction. Wording validated with Emma (SME):
@@ -1216,8 +1234,42 @@ const NODES_S1 = {
       {id:'c',kind:'failing',
        text:'Leave Daniel and run upstairs to fetch the shift leader.'},
     ]},
+  /* QF (DT §2, Q3): applying Daniel's prescribed fluid level (Level 0, thin).
+     A knowledge/judgement node: no supervision or priming effects. */
+  QF:{ order:1.5, time:'17:44', label:'Fluids', icon:'utensils', knowledge:true,
+    scene:'Daniel is prescribed IDDSI Level 0 (thin) fluids. You notice a colleague adding thickener to his drink.',
+    q:'What do you do?',
+    options:[
+      {id:'a',kind:'defensible',
+       text:'Stop and check. Thickener is not part of Daniel’s plan. Do not give the drink, check his current plan and EDAR, explain kindly to the colleague, and escalate if there is any uncertainty.',
+       tag:'good', note:'You stop the drink and check it against his plan, then have a kind word with your colleague. His fluids stay Level 0, as prescribed.'},
+      {id:'b',kind:'risky',
+       text:'Let him have it this once and note it afterwards.',
+       tag:'warn', note:'You let the thickened drink through this once. It is off-plan, and thickening thin-prescribed fluids can be inappropriate and reduce his intake.'},
+      {id:'c',kind:'failing',
+       text:'Say nothing. Thickened fluids are always safer.',
+       tag:'bad', note:'You assume more thickening must be safer and say nothing. Off-plan modification is a change to his plan, not a safe default.'},
+    ]},
+  /* QC (DT §2, Q1): a small cough that settles. Teaches a proportionate
+     response (observe and record), paired with N5 (when it becomes an
+     emergency). Knowledge node: not a recog node, so it does not gate the
+     emergency path. */
+  QC:{ order:4.5, time:'17:56', label:'A small cough', icon:'alertT', knowledge:true,
+    scene:'Daniel gives a small cough while eating. He clears his throat, is breathing normally and appears comfortable.',
+    q:'What do you do next?',
+    options:[
+      {id:'a',kind:'defensible',
+       text:'Pause his meal briefly, keep him upright, check he is comfortable before he continues, and note it in his records so it can be watched.',
+       tag:'good', note:'You pause, check him, and record it. He settles and carries on eating steadily. It was an emerging sign to watch, not an emergency.'},
+      {id:'b',kind:'risky',
+       text:'Give him a drink straight away to help wash the food down.',
+       tag:'warn', note:'You reach for a drink to wash it down. Washing food down can push it the wrong way, and it is not the safe response to a cough.'},
+      {id:'c',kind:'failing',
+       text:'Ignore it. He has stopped coughing, so let him carry on without checking.',
+       tag:'bad', note:'You let it pass without a look or a note. A cough that settles is still an emerging sign to check and record.'},
+    ]},
 };
-const FLOW_S1 = ['N1','N2','N3','N4','N5'];
+const FLOW_S1 = ['N1','QF','N2','N3','N4','QC','N5'];
 /* Paths C/D: if an unsafe mouthful became possible AND the learner did not
    recognise/act at the emerging signs (N5 b or c), the meal reaches a full
    obstruction and the shift continues to the emergency node N6. Otherwise the
@@ -1231,7 +1283,7 @@ function goesToEmergency(){
 }
 function flow(){
   var f=(FLOW||[]).slice(), b=SC.build||{};
-  if(goesToEmergency() && b.emergencyNode){ f.push(b.emergencyNode); }
+  if(goesToEmergency() && b.emergencyNode){ f.push(b.emergencyNode); f.push('QP'); }
   else if(b.closingNode){ f.push(b.closingNode); }
   return f;
 }
@@ -1341,11 +1393,27 @@ let SC = SCENARIOS.S1;   // active scenario (rebound by setScenario / on boot)
    bindScenarioData(); the engine reads these globals so its render/view code is
    scenario-agnostic. */
 let NODES, DOCS, DOC_ORDER, FLOW, SCENE_IMG, RECOVERY_STEPS, WORKER_STEPS, ORG_STEPS, ORG_STEP_FATAL;
+/* Q4 (DT §2): what the paramedics need. A select-all-that-apply handover step
+   that follows the emergency ONLY when 999 was actually called (paths C), across
+   every scenario. Items are universal and pronoun-neutral; the shared node is
+   injected into whichever scenario is active. */
+const PARAMEDIC_ITEMS = [
+  {id:'passport', t:'Hospital passport', correct:true},
+  {id:'mar', t:'MAR chart and medication information, including any allergies', correct:true},
+  {id:'resus', t:'DNACPR or ReSPECT form, where one is in place', correct:true},
+  {id:'escort', t:'A staff member who knows them, to travel with them (especially with 1:1 or commissioned hospital support hours)', correct:true},
+  {id:'rota', t:'The staff duty rota for the week', correct:false},
+  {id:'planner', t:'The activity planner', correct:false},
+  {id:'fire', t:'The home’s fire-safety log', correct:false},
+  {id:'tenancy', t:'The tenancy agreement', correct:false},
+];
+const PARAMEDICS_NODE = { order:9, time:'', label:'Handover to the paramedics', icon:'phone', type:'paramedics' };
 function bindScenarioData(){
   var b=(SC&&SC.build)||{};
   NODES=b.nodes||{}; DOCS=b.docs||{}; DOC_ORDER=b.docOrder||[]; FLOW=b.base||[];
   SCENE_IMG=b.sceneImg||{}; RECOVERY_STEPS=b.recovery||[]; WORKER_STEPS=b.worker||[];
   ORG_STEPS=b.org||[]; ORG_STEP_FATAL=b.orgFatal||'';
+  NODES.QP = PARAMEDICS_NODE;   // shared post-emergency handover step
 }
 bindScenarioData();
 
@@ -1393,6 +1461,10 @@ function initState(){
     flowServed:false, flowScore:0, flowTextureOk:false,
     oncall:{phase:'start',qi:0,answers:[]},   // on-call exchange widget
     oncallDone:false, oncallScore:0, oncallBailed:false, planToHand:false,
+    paramedics:{},              // Q4 select-all handover: {itemId:true}
+    paramedicsDone:false, paramedicsScore:0,
+    quiz:{}, quizFree:'',       // optional end-of-session questionnaire (DT §4)
+    quizDone:false, quizFlag:false, declared:false,
     theme:null,
     muted:false,                // sound on by default
   };
@@ -1476,6 +1548,7 @@ function render(){
   else if(S.stage==='node') view=viewScene();
   else if(S.stage==='outcome') view=viewOutcome();
   else if(S.stage==='debrief') view=viewDebrief();
+  else if(S.stage==='questionnaire') view=viewQuestionnaire();
   app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
   try{ document.title = (S.stage==='picker' ? 'Frontline scenarios' : SC.title) + ' · PracticE Ready'; }catch(e){}
   window.scrollTo(0,0);
@@ -1688,6 +1761,7 @@ function momentCard(node){
   if(node.type==='reconcile') body=reconcileBody(node);
   else if(node.type==='flowtest') body=flowtestBody(node);
   else if(node.type==='oncall') body=oncallBody(node);
+  else if(node.type==='paramedics') body=paramedicsBody(node);
   else if(S.sub==='consequence') body=consequenceBody(node);
   else if(node.confidence && S.pendingChoice) body=confidenceBody(node);
   else body=decideBody(node);
@@ -1843,21 +1917,46 @@ function oncallFinish(){
   log('ESCALATION',{type:'oncall',reached:true}); log('BEST_INTERESTS_PROCESS',{followed:true}); log('PLAN_TO_HAND',{available:S.planToHand});
   AUDIO.sfx('confirm'); nextNode();
 }
+/* Paramedics handover (Q4): select all that should go with the person. Scored on
+   correct picks minus wrong picks; confirms into the outcome (path C). */
+function paramedicsBody(node){
+  var picks=S.paramedics||{};
+  var chips=PARAMEDIC_ITEMS.map(function(it){
+    var sel=!!picks[it.id];
+    return '<button class="opt ms'+(sel?' sel':'')+'" data-act="para-toggle" data-id="'+it.id+'" aria-pressed="'+sel+'">'
+      +'<span class="ob">'+svg(sel?I.check:I.arrowR)+'</span><span class="ot">'+it.t+'</span></button>';
+  }).join('');
+  var any=Object.keys(picks).some(function(k){return picks[k];});
+  return '<span class="eyebrow">'+node.label+'</span>'
+    +'<p class="scene-text">'+SC.person+' is choking, 999 has been called and help is on its way.</p>'
+    +'<p class="m-q">Select everything that should go with them or be arranged for the paramedics.</p>'
+    +'<div class="opts">'+chips+'</div>'
+    +'<div class="micro-actions"><button class="btn-go" data-act="para-confirm"'+(any?'':' disabled')+'>'+svg(I.check)+'Confirm what goes with them</button></div>';
+}
+function paraToggle(id){ S.paramedics=S.paramedics||{}; S.paramedics[id]=!S.paramedics[id]; AUDIO.sfx('select'); save(); render(); }
+function paraConfirm(){
+  var picks=S.paramedics||{}, c=0, w=0, total=0;
+  PARAMEDIC_ITEMS.forEach(function(it){ if(it.correct){ total++; if(picks[it.id]) c++; } else if(picks[it.id]){ w++; } });
+  S.paramedicsDone=true; S.paramedicsScore=clamp(Math.round((c-w)/total*100));
+  log('PARAMEDICS_HANDOVER',{correct:c,wrong:w});
+  AUDIO.sfx('confirm'); resolve();
+}
 function decideBody(node){
   const sceneText = node.recog ? recogSceneText() : node.scene;
   const eyebrow = (node.inject?'Interruption &middot; ':'')+node.time+' &middot; '+node.label;
-  const opts = node.options.map(function(o){
+  const q = (node.recog && !S.primed && node.qCalm) ? node.qCalm : node.q;
+  const opts = optsFor(node).map(function(o){
     return '<button class="opt" data-act="choose" data-opt="'+o.id+'">'
       +'<span class="ob">'+svg(I.arrowR)+'</span>'
       +'<span class="ot">'+o.text+'</span></button>';
   }).join('');
   return '<span class="eyebrow">'+eyebrow+'</span>'
     +'<p class="scene-text">'+sceneText+'</p>'
-    +'<p class="m-q">'+node.q+'</p>'
+    +'<p class="m-q">'+q+'</p>'
     +'<div class="opts">'+opts+'</div>';
 }
 function confidenceBody(node){
-  const o=node.options.find(function(x){return x.id===S.pendingChoice;});
+  const o=optsFor(node).find(function(x){return x.id===S.pendingChoice;});
   return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
     +(o?'<p class="conf-choice">'+svg(I.checkSmall)+'<span>'+o.text+'</span></p>':'')
     +'<p class="m-q">How confident are you in that decision?</p>'
@@ -2002,6 +2101,76 @@ function stepBlock(title, steps, startNum){
 function caveatBox(){
   return '<div class="caveat">'+svg(I.info)+'<span>'+SIM_CAVEAT+'</span></div>';
 }
+/* ---------- Optional end-of-session questionnaire + declaration (DT §4) ----------
+   A confidence check the provider can keep as a record that guidance was shared,
+   understanding was checked and support was offered. Generic wording ("the people
+   you support"). A concerning answer flags a note for the manager. */
+const QUIZ = [
+  {id:'q1', t:'After this session, do you feel more confident supporting people who have eating, drinking and swallowing risks (EDAR)?', opts:['Yes','Partly','No'], concern:['Partly','No']},
+  {id:'q2', t:'Do you understand what is expected of you when supporting someone who has an EDAR plan or specific eating and drinking guidance?', opts:['Yes','Partly','No'], concern:['Partly','No']},
+  {id:'q3', t:'Do you know which people you support have an EDAR plan or specific guidance?', opts:['Yes','No','Not sure'], concern:['No','Not sure']},
+  {id:'q4', t:'Do you know where to find the current EDAR plans and eating and drinking guidance for the people you support?', opts:['Yes','No','Not sure'], concern:['No','Not sure']},
+  {id:'q5', t:'Do you feel confident following the individual EDAR plans and guidance in practice?', opts:['Yes','Partly','No','I do not currently support anyone with an EDAR plan'], concern:['Partly','No']},
+  {id:'q6', t:'Is there anything about EDAR, or someone’s individual needs, you would like further information or support with?', opts:['Yes','No'], concern:['Yes'], free:true},
+];
+const DECLARATION = 'I confirm I have completed this session, reviewed the EDAR information, and understand I must follow the person’s current eating, drinking and support guidance. I know where to find the current guidance and will ask for support if I am unsure.';
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function quizFlagged(){ return QUIZ.some(function(q){ return S.quiz && (q.concern||[]).indexOf(S.quiz[q.id])>=0; }); }
+function endOfSessionCTA(){
+  if(S.quizDone){
+    return '<div class="panel"><h3>'+svg(I.check)+'End-of-session check complete</h3>'
+      +'<p class="ph-sub">Your confidence check and declaration have been recorded'+(S.quizFlag?', and a note has been flagged for your manager.':'.')+'</p>'
+      +'<div style="margin-top:6px"><button class="btn-ghost" data-act="to-questionnaire">'+svg(I.eye)+'View your responses</button></div></div>';
+  }
+  return '<div class="panel"><h3>'+svg(I.clipboard)+'End-of-session check (optional)</h3>'
+    +'<p class="ph-sub">A short confidence check and a declaration. It gives your provider a record that the guidance was shared, your understanding was checked, and further support was offered.</p>'
+    +'<div style="margin-top:6px"><button class="btn-go" data-act="to-questionnaire">'+svg(I.arrowR)+'Start the check</button></div></div>';
+}
+function viewQuestionnaire(){
+  if(S.quizDone){
+    var flagBox = S.quizFlag
+      ? '<div class="quiz-flag">'+svg(I.alertT)+'<span>You have asked for further support. Please speak with your manager before supporting this aspect of the plan.</span></div>'
+      : '<div class="quiz-flag" style="background:var(--good-tint);border-color:var(--good-line);color:var(--good)">'+svg(I.check)+'<span>Thank you. Your responses and declaration have been recorded.</span></div>';
+    var rows = QUIZ.map(function(q){
+      return '<div class="quiz-q"><div class="qq">'+q.t+'</div><p class="conf-choice">'+svg(I.checkSmall)+'<span>'+escHtml(S.quiz[q.id]||'')+'</span></p>'
+        +((q.free && S.quiz[q.id]==='Yes' && S.quizFree) ? '<p class="ph-sub" style="margin-top:6px">“'+escHtml(S.quizFree)+'”</p>' : '')+'</div>';
+    }).join('');
+    return '<div class="debrief"><div class="db-wrap">'
+      +'<div class="db-head"><div><span class="eyebrow">End of session &middot; recorded</span><h1>Your confidence check</h1></div></div>'
+      +'<div class="panel">'+flagBox+'<div class="quiz" style="margin-top:14px">'+rows+'</div>'
+      +'<p class="ph-sub" style="margin-top:14px"><b>Declaration.</b> '+DECLARATION+'</p></div>'
+      +'<div class="oc-actions" style="margin-top:18px"><button class="btn-go" data-act="to-debrief">'+svg(I.arrowL||I.arrowR)+'Back to the debrief</button>'
+      +'<button class="btn-ghost" data-act="to-picker">'+svg(I.restart)+'Scenarios</button></div>'
+      +'</div></div>';
+  }
+  var qs = QUIZ.map(function(q){
+    var opts=q.opts.map(function(o){
+      var sel=S.quiz && S.quiz[q.id]===o;
+      return '<button class="quiz-opt'+(sel?' sel':'')+'" data-act="quiz-pick" data-id="'+q.id+'" data-val="'+escHtml(o)+'" aria-pressed="'+(sel?'true':'false')+'">'+o+'</button>';
+    }).join('');
+    var free=(q.free && S.quiz && S.quiz[q.id]==='Yes') ? '<textarea id="quiz-free" class="quiz-free" placeholder="Tell us what you would like support with (optional).">'+escHtml(S.quizFree||'')+'</textarea>' : '';
+    return '<div class="quiz-q"><div class="qq">'+q.t+'</div><div class="quiz-opts">'+opts+'</div>'+free+'</div>';
+  }).join('');
+  var all=QUIZ.every(function(q){return S.quiz && S.quiz[q.id];});
+  return '<div class="debrief"><div class="db-wrap">'
+    +'<div class="db-head"><div><span class="eyebrow">End of session &middot; optional</span><h1>A short confidence check</h1></div></div>'
+    +'<div class="panel"><p class="ph-sub">This is about the people you support in your own service, not this simulation. Your answers are recorded for your provider.</p>'
+    +'<div class="quiz" style="margin-top:14px">'+qs+'</div>'
+    +'<div class="quiz-decl"><b>Declaration.</b> '+DECLARATION+'</div>'
+    +'<div class="oc-actions" style="margin-top:16px"><button class="btn-go" data-act="quiz-submit"'+(all?'':' disabled')+'>'+svg(I.check)+'Confirm and finish</button>'
+    +'<button class="btn-ghost" data-act="to-debrief">'+svg(I.arrowL||I.arrowR)+'Back to the debrief</button></div>'
+    +'</div></div></div>';
+}
+function stashQuizFree(){ var t=document.getElementById('quiz-free'); if(t){ S.quizFree=t.value; } }
+function toQuestionnaire(){ stashQuizFree(); S.stage='questionnaire'; save(); render(); }
+function quizPick(id,val){ stashQuizFree(); S.quiz=S.quiz||{}; S.quiz[id]=val; AUDIO.sfx('select'); save(); render(); }
+function quizSubmit(){
+  stashQuizFree();
+  if(!QUIZ.every(function(q){return S.quiz && S.quiz[q.id];})) return;
+  S.quizDone=true; S.declared=true; S.quizFlag=quizFlagged();
+  log('END_SESSION_QUESTIONNAIRE',{flagged:S.quizFlag});
+  AUDIO.sfx('confirm'); save(); render();
+}
 /* The chain named on the fatal screen and in the debrief only lists failures
    that were genuinely on this learner's route (Emma's requirement). */
 function failureChain(){
@@ -2082,18 +2251,24 @@ function scoreProfile(){
   const info = clamp((S.openedBeforeServe?45:0) + (c.N1==='a'?25:0) + (S.medFlagged?30:0));
   const prep = m[c.N1]||0;
   const dyn  = Math.round(((m[c.N2]||0)+(m[c.N3]||0))/2);
-  const person = Math.round(((c.N1==='a'?72:c.N1==='b'?48:20) + (c.N4==='a'?100:c.N4==='b'?55:25))/2);
+  // Person-centred: pace (N1) and dignity (N4), and applying his prescribed
+  // fluid level rather than assuming more modification is safer (QF).
+  var personBase = ((c.N1==='a'?72:c.N1==='b'?48:20) + (c.N4==='a'?100:c.N4==='b'?55:25))/2;
+  const person = Math.round((c.QF!=null && m[c.QF]!=null) ? (personBase*2 + m[c.QF])/3 : personBase);
   const team = m[c.N4]||0;
-  // Response & learning: at the emerging signs, and (if it reached one) the emergency.
+  // Response & learning: the proportionate response to a small cough (QC), the
+  // emerging signs (N5), and (if it reached one) the emergency (N6).
   let resp = c.N5?(m[c.N5]||0):0;
   if(c.N6){ resp = Math.round(((m[c.N5]||0) + (c.N6==='a'?100:c.N6==='b'?45:0))/2); }
+  if(c.QC!=null && m[c.QC]!=null){ resp = Math.round((resp + m[c.QC])/2); }
+  if(S.paramedicsDone){ resp = Math.round((resp + S.paramedicsScore)/2); }
   return [
     {k:'Information use', v:info, note:'Read the plan before serving; connected the medication clue.'},
     {k:'Preparation', v:prep, note:'Verified and corrected the plate before the meal.'},
     {k:'Dynamic judgement', v:dyn, note:'Held supervision across the door and the phone.'},
-    {k:'Person-centred practice', v:person, note:'Kept Daniel’s pace and dignity, no blanket restriction.'},
+    {k:'Person-centred practice', v:person, note:'Kept Daniel’s pace, dignity and prescribed fluid level, no blanket restriction or off-plan thickening.'},
     {k:'Team coordination', v:team, note:'Called for help rather than abandoning supervision.'},
-    {k:'Response & learning', v:resp, note:'Recognised the signs and acted; recorded the near miss.'},
+    {k:'Response & learning', v:resp, note:'Responded proportionately to the small cough, recognised the emergency signs, and acted.'},
   ];
 }
 function barCls(v){ return v>=70?'hi':v>=40?'mid':'lo'; }
@@ -2166,6 +2341,7 @@ function viewDebrief(){
     + targetedToolkit()
     + readiness()
     + crossTrackReveal()
+    + endOfSessionCTA()
     + caveatBox()
     +'</div></div>';
 }
@@ -2188,16 +2364,53 @@ function summariseEvents(){
   if(S.choices.N6){
     out.push({k:'EMERGENCY_RESPONSE', d:S.choices.N6==='a'?'999 called and first aid given without delay':S.choices.N6==='b'?'First aid given; 999 call delayed':'No effective response run'});
   }
+  if(S.paramedicsDone){
+    var pc=PARAMEDIC_ITEMS.filter(function(it){return it.correct && S.paramedics[it.id];}).length;
+    var pw=PARAMEDIC_ITEMS.filter(function(it){return !it.correct && S.paramedics[it.id];}).length;
+    out.push({k:'PARAMEDICS_HANDOVER', d:pc+' of 4 essentials ready for the paramedics'+(pw?', '+pw+' non-essential included':'')});
+  }
   const oc={A:'prevention',B:'near miss',C:'emergency, survived',D:'emergency, fatal'};
   out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
   return out;
+}
+/* Green/amber definition (SME "DT feedback" §3). Green (Ready) requires a safe
+   outcome, no critical control tripped, correct answers, all evidence opened and
+   the scenario's key judgement done. A safe run that misses a best-practice
+   element is amber (Developing), and the missing element(s) are NAMED so the
+   learner can see exactly what would reach green. Red is unchanged: a critical
+   control tripped or an unsafe outcome, never offset by good work elsewhere. */
+function commonGaps(){
+  var gaps=[];
+  var opened=DOC_ORDER.filter(function(id){return S.opened[id];}).length, total=DOC_ORDER.length;
+  if(opened<total){ gaps.push('open every record before acting ('+opened+' of '+total+' were opened this run)'); }
+  var sub=0;
+  Object.keys(S.choices).forEach(function(k){
+    var n=NODES[k]; if(!n||!n.options) return;
+    var sel=chosenOpt(k);
+    if(sel && sel.kind && sel.kind!=='defensible'){ sub++; }
+  });
+  if(sub){ gaps.push('choose the fully safe option at every step ('+sub+' step'+(sub>1?'s':'')+' took a workable but not ideal choice)'); }
+  return gaps;
+}
+function s1Gaps(){
+  var gaps=commonGaps();
+  if(!S.medFlagged){ gaps.push('connect and flag the medication change for reassessment, not just read it'); }
+  return gaps;
+}
+function genericGaps(){
+  var gaps=commonGaps();
+  var extra=(SC.build&&SC.build.greenGaps)?SC.build.greenGaps():[];
+  return gaps.concat(extra||[]);
+}
+function joinGaps(g){
+  if(g.length<=1){ return g[0]||''; }
+  if(g.length===2){ return g[0]+', and '+g[1]; }
+  return g.slice(0,-1).join('; ')+'; and '+g[g.length-1];
 }
 function readiness(){
   if(S.scenario!=='S1'){ return readinessGeneric(); }
   // Assessment verdict, not coaching. Derived from the critical controls,
   // the outcome and the practice profile.
-  const doms=scoreProfile();
-  const lowAny=doms.some(function(d){return d.v<40;});
   let band,cls,txt;
   if(S.outcome==='D'){
     band='Not yet ready'; cls='r-bad';
@@ -2207,12 +2420,15 @@ function readiness(){
     txt = S.outcome==='C'
       ? 'Daniel survived a choking emergency, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone, and a delayed call for help is never safe. This cannot be offset by good work elsewhere.'
       : 'A critical control was missed during the shift. In practice that is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.';
-  } else if(lowAny){
-    band='Developing'; cls='r-warn';
-    txt='Daniel came through the meal, but safety rested on margins thinner than they needed to be. Parts of practice are not yet consistent.';
   } else {
-    band='Ready'; cls='r-good';
-    txt='Supervision held, the food met Daniel’s plan, and the meal stayed safe throughout. This is the standard a lone teatime shift asks for.';
+    var gaps=s1Gaps();
+    if(gaps.length){
+      band='Developing'; cls='r-warn';
+      txt='A safe result: supervision held and the food met Daniel’s plan. To reach the ready standard, next time also '+joinGaps(gaps)+'.';
+    } else {
+      band='Ready'; cls='r-good';
+      txt='Supervision held, the food met Daniel’s plan, the records were used and the medication clue was flagged, and the meal stayed safe throughout. This is the standard a lone teatime shift asks for.';
+    }
   }
   return '<div class="crosstrack '+cls+'">'
     +'<div class="ct-k">Readiness &middot; this run</div>'
@@ -2332,6 +2548,7 @@ function scoreForNode(nodeId){
   }
   if(n && n.type==='flowtest'){ return S.flowServed?S.flowScore:null; }
   if(n && n.type==='oncall'){ return S.oncallDone?S.oncallScore:null; }
+  if(n && n.type==='paramedics'){ return S.paramedicsDone?S.paramedicsScore:null; }
   var o=chosenOpt(nodeId); if(!o) return null; return o.kind==='defensible'?100:o.kind==='risky'?55:15;
 }
 function scoreProfileGeneric(){
@@ -2392,18 +2609,24 @@ function summariseEventsGeneric(){
     var n6=S.choices[en];
     out.push({k:'EMERGENCY_RESPONSE', d:n6==='a'?'999 called and first aid given without delay':n6==='b'?'First aid given; 999 call delayed':'No effective response run'});
   }
+  if(S.paramedicsDone){
+    var gpc=PARAMEDIC_ITEMS.filter(function(it){return it.correct && S.paramedics[it.id];}).length;
+    var gpw=PARAMEDIC_ITEMS.filter(function(it){return !it.correct && S.paramedics[it.id];}).length;
+    out.push({k:'PARAMEDICS_HANDOVER', d:gpc+' of 4 essentials ready for the paramedics'+(gpw?', '+gpw+' non-essential included':'')});
+  }
   var oc={A:'prevention',B:'near miss',C:'emergency, survived',D:'emergency, fatal'};
   out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
   return out;
 }
 function readinessGeneric(){
-  var doms=scoreProfileGeneric();
-  var lowAny=doms.some(function(d){return d.v<40;});
   var band,cls,txt;
   if(S.outcome==='D'){ band='Not yet ready'; cls='r-bad'; txt='The shift ended in the outcome this training exists to prevent. It came from a chain of failures, each recoverable on its own. This cannot be offset by good work elsewhere.'; }
   else if(S.cc1||S.cc2){ band='Not yet ready'; cls='r-bad'; txt=(S.outcome==='C')?'The emergency was survived, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone. This cannot be offset by good work elsewhere.':'A critical control was missed during the shift. That is the difference between a safe meal and a serious incident, and it cannot be offset by good work elsewhere.'; }
-  else if(lowAny){ band='Developing'; cls='r-warn'; txt=SC.person+' came through the meal, but safety rested on margins thinner than they needed to be. Parts of practice are not yet consistent.'; }
-  else { band='Ready'; cls='r-good'; txt='The plan was held, the meal stayed safe, and '+SC.person+'’s dignity was kept throughout. This is the standard the shift asks for.'; }
+  else {
+    var gaps=genericGaps();
+    if(gaps.length){ band='Developing'; cls='r-warn'; txt='A safe result, and '+SC.person+' stayed safe throughout. To reach the ready standard, next time also '+joinGaps(gaps)+'.'; }
+    else { band='Ready'; cls='r-good'; txt='The plan was held, the records were used, the meal stayed safe, and '+SC.person+'’s dignity was kept throughout. This is the standard the shift asks for.'; }
+  }
   return '<div class="crosstrack '+cls+'">'
     +'<div class="ct-k">Readiness &middot; this run</div>'
     +'<div class="r-band"><span class="r-chip">'+svg(band==='Ready'?I.shield:I.alertT)+band+'</span></div>'
@@ -2457,6 +2680,7 @@ function debriefShell(ccInner, reveal, ccSub){
     + targetedToolkit()
     + readiness()
     + crossTrackReveal()
+    + endOfSessionCTA()
     + caveatBox()
     +'</div></div>';
 }
@@ -2555,12 +2779,18 @@ var NODES_S2 = {
        tag:'bad', note:'You remove the food without a word of explanation. In her own home, that is an over-restriction, and she is distressed.'},
     ]},
   N5:{ order:5, time:'12:52', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
-    recogText:{ primed:'Priya coughs on a mouthful, then her voice turns wet and gurgly. She is lone-supported here; there is no colleague in the room.', calm:'Priya eats steadily and finishes her meal. Her voice stays clear and she is comfortable.' },
+    recogText:{ primed:'Priya coughs on a mouthful, then her voice turns wet and gurgly. She is lone-supported here; there is no colleague in the room.', calm:'Priya finishes her meal safely, upright and comfortable, her voice clear. You have realised the prompt on the wall was out of date all along.' },
     q:'What do you do, right now?',
+    qCalm:'The meal is done and Priya is comfortable. How do you close it safely?',
     options:[
       {id:'a',kind:'defensible', text:'Stop the meal, keep her upright, let her recover, and call for help.', tag:'good'},
       {id:'b',kind:'risky', text:'Wait a moment to see if it settles.', tag:'warn'},
       {id:'c',kind:'failing', text:'Offer a drink to wash it down.', tag:'bad'},
+    ],
+    optionsCalm:[
+      {id:'a',kind:'defensible', text:'Record that the meal was completed safely at the correct texture, and escalate so the discharge information is reconciled and the plan and EDAR are updated.', tag:'good'},
+      {id:'b',kind:'risky', text:'Nothing further. It went fine.', tag:'warn'},
+      {id:'c',kind:'failing', text:'Leave the old prompt in place so the next shift can decide.', tag:'bad'},
     ]},
   N6:{ order:6, time:'12:53', label:'The emergency', icon:'alertT', emergency:true,
     scene:'Priya cannot breathe, speak or cough. In a self-contained flat with no colleague in the room, every second counts.',
@@ -2571,6 +2801,15 @@ var NODES_S2 = {
       {id:'c',kind:'failing', text:'Leave her to go and find the bank worker.'},
     ]},
   NR:{ order:7, time:'12:58', label:'Reconcile the records', icon:'route', type:'reconcile' },
+  /* QM (DT §2, Q5): over-modification. A knowledge/judgement node. */
+  QM:{ order:8, time:'12:34', label:'A more modified texture', icon:'utensils', knowledge:true,
+    scene:'You see a person prescribed an IDDSI Level 6 (soft and bite-sized) diet, but their food is being prepared to Level 4 (pureed).',
+    q:'Is this appropriate, and what do you do?',
+    options:[
+      {id:'a',kind:'defensible', text:'No. Follow the prescribed Level 6. A more modified texture is not automatically safer, it is a change to the plan. Check the plan and SALT guidance and escalate to find out why before it is served.', tag:'good', note:'You hold the prescribed level. Over-modifying is still a deviation from the plan, and it can reduce dignity, enjoyment, nutrition and independence.'},
+      {id:'b',kind:'risky', text:'Give the Level 4 today and mention it at the next review.', tag:'warn', note:'You let the more modified texture through for now. It is still off-plan, and a texture change is a SALT and plan decision, not an ad-hoc swap.'},
+      {id:'c',kind:'failing', text:'Yes, pureed is always safer, so Level 4 is fine.', tag:'bad', note:'You treat more modification as automatically safer. It is not, and it may not be clinically indicated.'},
+    ]},
 };
 /* Wire S2 into the registry as a fully playable scenario. */
 Object.assign(SCENARIOS.S2, {
@@ -2584,9 +2823,10 @@ Object.assign(SCENARIOS.S2, {
   ],
 });
 SCENARIOS.S2.build = {
-  nodes:NODES_S2, docs:DOCS_S2, docOrder:DOC_ORDER_S2, base:['N1','N2','N3','N4','N5'],
+  nodes:NODES_S2, docs:DOCS_S2, docOrder:DOC_ORDER_S2, base:['N1','N2','QM','N3','N4','N5'],
   sceneImg:{
     N1:{src:'assets/frontline/scene-s2-n1.jpg', pos:'50% 52%'},
+    QM:{src:'assets/frontline/scene-s2-n2.jpg', pos:'50% 58%'},
     N2:{src:'assets/frontline/scene-s2-n2.jpg', pos:'50% 58%'},
     N3:{src:'assets/frontline/scene-s2-n3.jpg', pos:'50% 58%'},
     N4:{src:'assets/frontline/scene-s2-n4.jpg', pos:'50% 55%'},
@@ -2626,18 +2866,19 @@ SCENARIOS.S2.build = {
              {v:pv, w:(pv>=70?'Settled':'Unsettled'), label:'Priya'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1','NR'], note:'Read the discharge summary as the current source, and reconciled the conflicting records.'},
+    {k:'Information use', nodes:['N1','NR','QM'], note:'Read the discharge summary as the current source, reconciled the conflicting records, and did not treat more modification as automatically safer.'},
     {k:'Preparation', nodes:['N2'], note:'Returned the wrong meal and prepared it to her plan before serving.'},
     {k:'Person-centred practice', nodes:['N3','N4'], note:'Handled the family kindly and respected Priya’s home and her choices.'},
     {k:'Capacity and consent', nodes:['N4'], note:'Offered a safe choice in her own tenancy rather than blanket control.'},
     {k:'Dynamic judgement', nodes:['N5'], note:'Held safety while lone-working, without rushing her.'},
-    {k:'Response & learning', nodes:['N5','N6','NR'], note:'Recognised the emerging sign, and escalated to realign the records for tomorrow.'},
+    {k:'Response & learning', nodes:['N5','N6','NR','QP'], note:'Recognised the emerging sign, and escalated to realign the records for tomorrow.'},
   ],
   scoreAdjust:function(k){
     if(k==='Information use'){ return S.opened.DOC_DISCHARGE ? 8 : -10; }   // reward reading the governing record
     if(k==='Response & learning'){ return S.alignmentDone ? 4 : -6; }
     return 0;
   },
+  greenGaps:function(){ var g=[]; if(!S.alignmentDone){ g.push('complete the records reconciliation so tomorrow’s shift inherits the corrected plan'); } return g; },
   ccHold:{ CC1:'Every mouthful served met Priya’s Level 5 plan.',
            CC2:'You verified the discharge summary rather than taking the stale prompt at face value.' },
   outcomes:{
@@ -2755,12 +2996,18 @@ var NODES_S3 = {
        tag:'bad', note:'You start feeding him slumped and drowsy in the chaotic room. Nothing about the set-up is protecting him.'},
     ]},
   N5:{ order:5, time:'08:41', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
-    recogText:{ primed:'Post-drowsiness, Aaron coughs, then his voice turns wet and gurgly after a few spoonfuls.', calm:'Aaron eats slowly but steadily, and stays comfortable and clear-voiced throughout.' },
+    recogText:{ primed:'Post-drowsiness, Aaron coughs, then his voice turns wet and gurgly after a few spoonfuls.', calm:'Aaron eats slowly but steadily at a true Level 3, and stays comfortable and clear-voiced throughout.' },
     q:'What do you do, right now?',
+    qCalm:'Aaron has finished his breakfast safely. How do you close it?',
     options:[
       {id:'a',kind:'defensible', text:'Stop the meal, reposition him upright, let him recover, and escalate.', tag:'good'},
       {id:'b',kind:'risky', text:'Tell yourself “he’s just drowsy” and carry on.', tag:'warn'},
       {id:'c',kind:'failing', text:'Offer more to help him clear it.', tag:'bad'},
+    ],
+    optionsCalm:[
+      {id:'a',kind:'defensible', text:'Record the meal at the correct texture, and label the two thickener tins with their scoop ratios so the next shift is not caught out.', tag:'good'},
+      {id:'b',kind:'risky', text:'Nothing further. Breakfast went fine.', tag:'warn'},
+      {id:'c',kind:'failing', text:'Leave the tins by the kettle as they are.', tag:'bad'},
     ]},
   N6:{ order:6, time:'08:42', label:'The emergency', icon:'alertT', emergency:true,
     scene:'Aaron cannot breathe, speak or cough. The room is still noisy with contractors and the agency staff are unsure what to do.',
@@ -2769,6 +3016,23 @@ var NODES_S3 = {
       {id:'a',kind:'defensible', text:'Shout for help, call 999, and follow choking first-aid guidance straight away.'},
       {id:'b',kind:'risky', text:'Start first aid, and get to the 999 call when you can.'},
       {id:'c',kind:'failing', text:'Go to find the contractor to turn the drills off first.'},
+    ]},
+  /* QL (DT §2, Q7) and QT (DT §2, Q8): applied Level 3 knowledge. */
+  QL:{ order:7, time:'08:21', label:'What Level 3 looks like', icon:'gauge2', knowledge:true,
+    scene:'Aaron is prescribed IDDSI Level 3 (liquidised) food.',
+    q:'Which best describes how it should be?',
+    options:[
+      {id:'a',kind:'defensible', text:'Smooth, no lumps, pours off a spoon and is eaten with a spoon, with no chewing needed.', tag:'good', note:'That is Level 3 liquidised: smooth, pourable and eaten with a spoon, with no chewing.'},
+      {id:'b',kind:'risky', text:'Thick enough to hold its shape in a firm mound on the plate.', tag:'warn', note:'That describes Level 4 pureed, which holds its shape. Level 3 pours. The contrast is the point.'},
+      {id:'c',kind:'failing', text:'A normal meal cut up small.', tag:'bad', note:'Cutting food small is not a liquidised texture at all.'},
+    ]},
+  QT:{ order:8, time:'08:23', label:'The spoon-tilt check', icon:'scale', knowledge:true,
+    scene:'You have prepared Aaron’s Level 3 meal and tilt the spoon to check it.',
+    q:'What should you see if the texture is right?',
+    options:[
+      {id:'a',kind:'defensible', text:'It pours or drips off the spoon slowly, leaving a thin coating, with no lumps.', tag:'good', note:'For Level 3 the food flows off a tilted spoon and leaves a coating. That is the texture right.'},
+      {id:'b',kind:'risky', text:'It sits firm and holds its shape on the spoon.', tag:'warn', note:'If it holds its shape it is too thick, closer to Level 4.'},
+      {id:'c',kind:'failing', text:'It runs off instantly like water.', tag:'bad', note:'If it runs like water it is too thin, and the coating test has failed.'},
     ]},
 };
 Object.assign(SCENARIOS.S3, {
@@ -2782,10 +3046,12 @@ Object.assign(SCENARIOS.S3, {
   ],
 });
 SCENARIOS.S3.build = {
-  nodes:NODES_S3, docs:DOCS_S3, docOrder:DOC_ORDER_S3, base:['N1','N2','N3','N4','N5'],
+  nodes:NODES_S3, docs:DOCS_S3, docOrder:DOC_ORDER_S3, base:['N1','N2','QL','QT','N3','N4','N5'],
   sceneImg:{
     N1:{src:'assets/frontline/scene-s3-n1.jpg', pos:'50% 55%'},
     N2:{src:'assets/frontline/scene-s3-n2.jpg', pos:'50% 58%'},
+    QL:{src:'assets/frontline/scene-s3-n2.jpg', pos:'50% 58%'},
+    QT:{src:'assets/frontline/scene-s3-n2.jpg', pos:'50% 58%'},
     N3:{src:'assets/frontline/scene-s3-n3.jpg', pos:'50% 60%'},
     N4:{src:'assets/frontline/scene-s3-n4.jpg', pos:'50% 55%'},
     N5:{src:'assets/frontline/scene-s3-n5.jpg', pos:'50% 60%'},
@@ -2817,19 +3083,20 @@ SCENARIOS.S3.build = {
              {v:av, w:(av>=70?'Settled':'Unsettled'), label:'Aaron'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N2'], note:'Read the plan and IDDSI guidance, and verified the thickener and scoop.'},
-    {k:'Preparation', nodes:['N2','N3'], note:'Prepared a true, separate Level 3 and a checked Level 2, without over-diluting.'},
+    {k:'Information use', nodes:['N2','QL'], note:'Read the plan and IDDSI guidance, verified the thickener and scoop, and knew what a true Level 3 looks like.'},
+    {k:'Preparation', nodes:['N2','N3','QT'], note:'Prepared a true, separate Level 3 and a checked Level 2, without over-diluting, and confirmed it with the spoon-tilt test.'},
     {k:'Person-centred practice', nodes:['N3'], note:'Kept his food’s identity and dignity, and did not over-modify.'},
     {k:'Capacity and consent', nodes:['N3'], note:'Offered choice within his plan rather than reducing the meal to convenience.'},
     {k:'Dynamic judgement', nodes:['N4'], note:'Re-established a calm space and managed posture and pace under disruption.'},
     {k:'Team coordination', nodes:['N1'], note:'Checked the agency colleague’s competence before delegating.'},
-    {k:'Response & learning', nodes:['N5','N6'], note:'Recognised the emerging sign early, and escalated for a review.'},
+    {k:'Response & learning', nodes:['N5','N6','QP'], note:'Recognised the emerging sign early, and escalated for a review.'},
   ],
   scoreAdjust:function(k){
     if(k==='Information use'){ return (S.opened.DOC_IDDSI||S.opened.DOC_TEST) ? 8 : -10; }   // reward checking the texture standard
     if(k==='Preparation'){ return S.flowTextureOk ? 5 : 0; }
     return 0;
   },
+  greenGaps:function(){ var g=[]; if(!S.flowServed||!S.flowTextureOk){ g.push('run the spoon-tilt test and confirm the texture before serving'); } return g; },
   ccHold:{ CC1:'The food and fluids you served met Aaron’s Level 3 and Level 2 plan.',
            CC2:'You checked competence and kept Aaron’s specialist preparation rather than handing it to an unbriefed colleague.' },
   outcomes:{
@@ -2947,10 +3214,16 @@ var NODES_S4 = {
   N5:{ order:5, time:'19:02', label:'Emerging signs', icon:'alertT', confidence:true, recog:true,
     recogText:{ primed:'Eating fast in the noisy room, Marcus coughs, then goes quiet. In the celebration, the sudden quiet is easy to miss.', calm:'Marcus enjoys his birthday meal at a steady pace, included in every part of it, and stays comfortable.' },
     q:'What do you do, right now?',
+    qCalm:'The celebration went safely and Marcus is comfortable. How do you close the meal?',
     options:[
       {id:'a',kind:'defensible', text:'Stop the meal, support him upright, and manage the public setting calmly. Shout for help if needed.', tag:'good'},
       {id:'b',kind:'risky', text:'Wait and see in the noise, hoping it settles.', tag:'warn'},
       {id:'c',kind:'failing', text:'Carry on so as not to spoil the party.', tag:'bad'},
+    ],
+    optionsCalm:[
+      {id:'a',kind:'defensible', text:'Record the safe meal and note that the best-interests decision kept Marcus included while holding his plan under family pressure.', tag:'good'},
+      {id:'b',kind:'risky', text:'Nothing further. Everyone had a good night.', tag:'warn'},
+      {id:'c',kind:'failing', text:'Let Dad think the rules can bend next time to keep the peace.', tag:'bad'},
     ]},
   N6:{ order:6, time:'19:03', label:'The emergency', icon:'alertT', emergency:true,
     scene:'Marcus cannot breathe, speak or cough. The restaurant is busy and loud, the family are distressed, and paramedic access is not immediate.',
@@ -2959,6 +3232,15 @@ var NODES_S4 = {
       {id:'a',kind:'defensible', text:'Shout for help, call 999, and follow choking first-aid guidance straight away.'},
       {id:'b',kind:'risky', text:'Start first aid, and get to the 999 call when you can.'},
       {id:'c',kind:'failing', text:'Take him outside to the quiet first, away from the crowd.'},
+    ]},
+  /* QS (DT §2, Q6): Level 5 piece size. A knowledge/judgement node. */
+  QS:{ order:7, time:'18:24', label:'Level 5 piece size', icon:'scale', knowledge:true,
+    scene:'Marcus requires IDDSI Level 5 (minced and moist) food.',
+    q:'What is the maximum size the pieces should be?',
+    options:[
+      {id:'a',kind:'defensible', text:'No larger than 4mm.', tag:'good', note:'Level 5 minced and moist is soft, moist lumps no larger than 4mm.'},
+      {id:'b',kind:'risky', text:'No larger than 8mm.', tag:'warn', note:'8mm is too large for Level 5, that is closer to Level 6 bite-sized food.'},
+      {id:'c',kind:'failing', text:'There is no maximum size.', tag:'bad', note:'There is a maximum: no larger than 4mm for Level 5.'},
     ]},
 };
 Object.assign(SCENARIOS.S4, {
@@ -2972,9 +3254,10 @@ Object.assign(SCENARIOS.S4, {
   ],
 });
 SCENARIOS.S4.build = {
-  nodes:NODES_S4, docs:DOCS_S4, docOrder:DOC_ORDER_S4, base:['N1','N2','N3','N4','N5'],
+  nodes:NODES_S4, docs:DOCS_S4, docOrder:DOC_ORDER_S4, base:['N1','QS','N2','N3','N4','N5'],
   sceneImg:{
     N1:{src:'assets/frontline/scene-s4-n1.jpg', pos:'50% 55%'},
+    QS:{src:'assets/frontline/scene-s4-n1.jpg', pos:'50% 55%'},
     N2:{src:'assets/frontline/scene-s4-n2.jpg', pos:'50% 48%'},
     N3:{src:'assets/frontline/scene-s4-n3.jpg', pos:'50% 45%'},
     N4:{src:'assets/frontline/scene-s4-n4.jpg', pos:'50% 50%'},
@@ -3022,18 +3305,19 @@ SCENARIOS.S4.build = {
              {v:mv, w:(mv>=70?'Settled':'Unsettled'), label:'Marcus'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1'], note:'Checked the order against his plan, and had his details to hand for on-call.'},
+    {k:'Information use', nodes:['N1','QS'], note:'Checked the order against his plan, knew his Level 5 piece size, and had his details to hand for on-call.'},
     {k:'Person-centred practice', nodes:['N4'], note:'Chose safe inclusion over exclusion, and protected his dignity in public.'},
     {k:'Capacity and consent', nodes:['N2','N4'], note:'Did not mistake compliance for consent, and followed a best-interests process.'},
     {k:'Team coordination', nodes:['N3'], note:'Reached the manager, then on-call, to agree a defensible way forward.'},
     {k:'Dynamic judgement', nodes:['N3','N4'], note:'Held the line under escalating family and social pressure.'},
-    {k:'Response & learning', nodes:['N5','N6'], note:'Recognised the emerging sign in the noise, and initiated a review.'},
+    {k:'Response & learning', nodes:['N5','N6','QP'], note:'Recognised the emerging sign in the noise, and initiated a review.'},
   ],
   scoreAdjust:function(k){
     if(k==='Information use'){ return S.planToHand ? 8 : -10; }   // reward bringing the plan and on-call details
     if(k==='Team coordination'){ return (S.oncallDone && !S.oncallBailed) ? 4 : 0; }
     return 0;
   },
+  greenGaps:function(){ var g=[]; if(!S.oncallDone||S.oncallBailed){ g.push('reach a best-interests decision with the manager and on-call rather than deciding alone'); } if(!S.planToHand){ g.push('have Marcus’s plan and EDAR to hand for the decision'); } return g; },
   ccHold:{ CC1:'Everything Marcus was served met his Level 5 and Level 2 plan.',
            CC2:'You did not treat compliance as consent, and you reached a best-interests decision with the right authority.' },
   outcomes:{
@@ -3085,15 +3369,24 @@ function enterNode(){
   save(); render();
   playNodeCue(flow()[S.nodeIdx]);
 }
+/* Recog nodes double as the closing beat: when the meal never became unsafe
+   (not primed), the emergency-response options do not fit "she finished her meal
+   comfortably" (the mismatch DT flagged for Priya and Marcus). A recog node may
+   carry optionsCalm/qCalm used on the safe branch to close the meal instead. */
+function optsFor(node){
+  if(node && node.recog && !S.primed && node.optionsCalm){ return node.optionsCalm; }
+  return (node && node.options) || [];
+}
 function chosenOpt(nodeId){
   const node=NODES[nodeId];
-  return node.options.find(function(o){return o.id===S.choices[nodeId];});
+  return optsFor(node).find(function(o){return o.id===S.choices[nodeId];});
 }
 /* Apply the choice's state effects. Deferred until after the confidence
    rating on confidence nodes, so the gauges do not hint the outcome. */
 function applyEffects(nodeId){
   if(S.scenario!=='S1'){ return applyEffectsGeneric(nodeId); }
   const node=NODES[nodeId]; const opt=chosenOpt(nodeId);
+  if(node.knowledge){ return; }   // pure judgement nodes (QF, QC): no supervision/priming effects
   if(nodeId==='N1'){
     S.openedBeforeServe = !!(S.opened.DOC_PLAN || S.opened.DOC_IDDSI);
     if(opt.verified){ S.plateVerified=true; log('PLATE_VERIFIED',{bool:true}); log('DOC_RELIED',{id:'DOC_PLAN'}); }
@@ -3134,7 +3427,12 @@ function chooseOption(optId){
   }
   S.choices[nodeId]=optId;
   applyEffects(nodeId);
-  if(node.emergency){ resolve(); return; }   // emergency node goes straight to the outcome
+  if(node.emergency){
+    // Fatal path (no effective response) goes straight to the outcome. When 999
+    // was called, advance to the paramedics-handover step before resolving.
+    if(optId==='c'){ resolve(); return; }
+    nextNode(); return;
+  }
   S.sub='consequence'; save(); render();
 }
 function setConfidence(val){
@@ -3254,6 +3552,11 @@ document.addEventListener('click', function(e){
     case 'oncall-answer': oncallAnswer(parseInt(el.getAttribute('data-i'),10)); break;
     case 'oncall-bail': oncallBail(); break;
     case 'oncall-finish': oncallFinish(); break;
+    case 'para-toggle': paraToggle(el.getAttribute('data-id')); break;
+    case 'para-confirm': paraConfirm(); break;
+    case 'to-questionnaire': toQuestionnaire(); break;
+    case 'quiz-pick': quizPick(el.getAttribute('data-id'), el.getAttribute('data-val')); break;
+    case 'quiz-submit': quizSubmit(); break;
     case 'begin': beginShift(); break;
     case 'to-table': toTable(); break;
     case 'confidence': setConfidence(el.getAttribute('data-val')); break;
