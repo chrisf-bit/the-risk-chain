@@ -1615,7 +1615,11 @@ function render(){
   // adjusting scoops, selecting a tin, answering the on-call). render() rebuilds
   // innerHTML each time, so without this the whole panel re-animates on every
   // click and feels like a reload. Suppress entrances when the view key repeats.
-  var vk = S.stage + (S.stage==='node' ? (':'+S.nodeIdx+':'+(S.sub||'')) : '');
+  // Key on the NODE (not the sub-step), so moving decide -> consequence, showing
+  // the confidence prompt, or any in-panel widget click is treated as the same
+  // screen and does NOT replay the panel entrance. Only a new node (or a new
+  // stage) animates.
+  var vk = S.stage + (S.stage==='node' ? (':'+S.nodeIdx) : '');
   app.classList.toggle('no-enter', vk===lastViewKey);
   lastViewKey = vk;
   try{ document.title = (S.stage==='picker' ? 'Frontline scenarios' : SC.title) + ' · PracticE Ready'; }catch(e){}
