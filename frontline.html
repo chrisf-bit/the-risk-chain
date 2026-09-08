@@ -166,9 +166,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* ---------- Generic ---------- */
 .eyebrow{font-size:var(--t-cap);font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong)}
-.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--go);color:#072a6b;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 8px 18px rgba(245,127,32,.32);transition:filter .15s ease,transform .1s ease,box-shadow .15s ease}
-.btn-go:hover{filter:brightness(1.05)}
-.btn-go:active{transform:translateY(1px);box-shadow:0 4px 12px rgba(245,127,32,.28)}
+/* Primary action = bold teal + white (client-approved direction). Deep enough
+   for white text to clear AA; teal glow so it reads as the main action. */
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,#0d8091,#0a6675);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 6px 18px rgba(13,132,148,.42),inset 0 0 0 1px rgba(34,201,223,.22);transition:filter .15s ease,transform .1s ease,box-shadow .15s ease}
+.btn-go:hover{filter:brightness(1.08)}
+.btn-go:active{transform:translateY(1px);box-shadow:0 3px 11px rgba(13,132,148,.34)}
 .btn-go svg{width:18px;height:18px}
 .btn-go[disabled]{background:var(--surface-3);color:var(--ink-4);box-shadow:none;cursor:not-allowed}
 .btn-ghost{display:inline-flex;align-items:center;gap:9px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 18px;font-weight:700;font-size:var(--t-body)}
@@ -431,14 +433,14 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .m-q{font-size:var(--t-body);font-weight:750;color:var(--ink-2);margin-top:22px}
 .opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .opt{position:relative;text-align:left;display:flex;gap:14px;align-items:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:0 1px 2px rgba(24,42,66,.05),0 2px 8px rgba(24,42,66,.06);transition:transform .13s ease,box-shadow .13s ease,border-color .13s ease;cursor:pointer}
-.opt:hover{transform:translateY(-1px);border-color:var(--go);box-shadow:var(--shadow)}
+.opt:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:var(--shadow)}
 .opt:active{transform:translateY(0);box-shadow:0 1px 3px rgba(24,42,66,.10)}
-.opt .ob{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--go);flex:none;display:grid;place-items:center;transition:background .13s,color .13s,border-color .13s}
-.opt:hover .ob{background:var(--go);border-color:var(--go);color:#fff}
+.opt .ob{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--teal-strong);flex:none;display:grid;place-items:center;transition:background .13s,color .13s,border-color .13s}
+.opt:hover .ob{background:#0d8091;border-color:#0d8091;color:#fff}
 .opt .ob svg{width:17px;height:17px;opacity:1}
 .opt .ot{font-size:var(--t-body);line-height:1.42;color:var(--ink);font-weight:550;flex:1}
-.opt.sel{background:var(--z-do-tint);border-color:var(--go)}
-.opt.sel .ob{background:var(--go);border-color:var(--go);color:#fff}
+.opt.sel{background:var(--teal-tint);border-color:var(--teal)}
+.opt.sel .ob{background:#0d8091;border-color:#0d8091;color:#fff}
 
 /* confidence */
 .conf-wrap{margin:auto 0;max-width:46ch}
