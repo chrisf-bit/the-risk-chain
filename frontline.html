@@ -57,8 +57,8 @@
   --mono:var(--sans);
   /* Type scale: nine deliberate steps. Every font-size below snaps to one
      of these, so the interface reads as one system, not ad-hoc values. */
-  --t-hero:38px; --t-h1:28px; --t-h2:21px; --t-h3:17px;
-  --t-body:15.5px; --t-sm:14px; --t-cap:13px; --t-eyebrow:11.5px; --t-nano:10px;
+  --t-hero:40px; --t-h1:29px; --t-h2:22px; --t-h3:18px;
+  --t-body:16.5px; --t-sm:15px; --t-cap:13.5px; --t-eyebrow:12.5px; --t-nano:11.5px;
 }
 @media (prefers-color-scheme:dark){
   :root{
@@ -576,7 +576,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .events{margin-top:14px;display:flex;flex-direction:column;gap:0}
 .ev{display:flex;gap:11px;align-items:center;padding:8px 2px;border-top:1px solid var(--line-2);font-size:var(--t-cap)}
 .ev:first-child{border-top:0}
-.ev .evk{font-family:var(--mono);font-size:var(--t-eyebrow);font-weight:600;color:var(--teal-strong);background:var(--teal-tint);border-radius:4px;padding:2px 7px;flex:none}
+.ev .evk{font-size:var(--t-cap);font-weight:750;color:var(--teal-strong);flex:none;min-width:150px}
 .ev .evd{color:var(--ink-3)}
 .crosstrack{margin-top:18px;background:linear-gradient(150deg,var(--navy),var(--navy-2));color:#eaf1fb;border-radius:var(--r-lg);padding:22px 24px;position:relative;overflow:hidden}
 .crosstrack .ct-k{font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#e2b877}
@@ -2582,23 +2582,23 @@ function summariseEvents(){
   if(S.scenario!=='S1'){ return summariseEventsGeneric(); }
   const out=[];
   const opened=DOC_ORDER.filter(function(id){return S.opened[id];}).length;
-  out.push({k:'DOC_OPENED', d:opened+' of '+DOC_ORDER.length+' documents opened'});
-  out.push({k:'PLATE_VERIFIED', d:S.plateVerified?'Checked against IDDSI Level 6 before serving':'Not verified before serving'});
+  out.push({k:'Records opened', d:opened+' of '+DOC_ORDER.length+' documents opened'});
+  out.push({k:'Plate checked', d:S.plateVerified?'Checked against IDDSI Level 6 before serving':'Not verified before serving'});
   const breaks=S.events.filter(function(e){return e.t==='SUPERVISION_BREAK';}).length;
-  out.push({k:'SUPERVISION_BREAK', d:breaks===0?'None: supervision held all shift':breaks+' break'+(breaks>1?'s':'')+' logged'});
-  out.push({k:'MEDCLUE_FLAGGED', d:S.medFlagged?'Yes: reassessment flagged':'No'});
+  out.push({k:'Supervision', d:breaks===0?'None: supervision held all shift':breaks+' break'+(breaks>1?'s':'')+' logged'});
+  out.push({k:'Medication clue', d:S.medFlagged?'Yes: reassessment flagged':'No'});
   const esc=S.events.filter(function(e){return e.t==='ESCALATION';}).length;
-  out.push({k:'ESCALATION', d:esc?'Escalated / called for help':'Not escalated'});
+  out.push({k:'Escalation', d:esc?'Escalated / called for help':'Not escalated'});
   if(S.choices.N6){
-    out.push({k:'EMERGENCY_RESPONSE', d:S.choices.N6==='a'?'999 called and first aid given without delay':S.choices.N6==='b'?'First aid given; 999 call delayed':'No effective response run'});
+    out.push({k:'Emergency response', d:S.choices.N6==='a'?'999 called and first aid given without delay':S.choices.N6==='b'?'First aid given; 999 call delayed':'No effective response run'});
   }
   if(S.paramedicsDone){
     var pc=PARAMEDIC_ITEMS.filter(function(it){return it.correct && S.paramedics[it.id];}).length;
     var pw=PARAMEDIC_ITEMS.filter(function(it){return !it.correct && S.paramedics[it.id];}).length;
-    out.push({k:'PARAMEDICS_HANDOVER', d:pc+' of 4 essentials ready for the paramedics'+(pw?', '+pw+' non-essential included':'')});
+    out.push({k:'Paramedics handover', d:pc+' of 4 essentials ready for the paramedics'+(pw?', '+pw+' non-essential included':'')});
   }
   const oc={A:'prevention',B:'near miss',C:'emergency, survived',D:'emergency, fatal'};
-  out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
+  out.push({k:'Outcome', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
   return out;
 }
 /* Green/amber definition (SME "DT feedback" §3). Green (Ready) requires a safe
@@ -2822,32 +2822,32 @@ function viewOutcomeGeneric(){
 function summariseEventsGeneric(){
   var out=[];
   var opened=DOC_ORDER.filter(function(id){return S.opened[id];}).length;
-  out.push({k:'DOC_OPENED', d:opened+' of '+DOC_ORDER.length+' documents opened'});
+  out.push({k:'Records opened', d:opened+' of '+DOC_ORDER.length+' documents opened'});
   var esc=S.events.filter(function(e){return e.t==='ESCALATION';}).length;
-  out.push({k:'ESCALATION', d:esc?'Escalated / called for help':'Not escalated'});
+  out.push({k:'Escalation', d:esc?'Escalated / called for help':'Not escalated'});
   if(SC.build&&SC.build.reconcile){
     var rt=(SC.build.reconcile.fields||[]).length;
-    out.push({k:'ALIGNMENT_DONE', d:S.alignmentDone?(S.alignCorrect+' of '+rt+' fields reconciled to the correct source'):'Records not reconciled'});
+    out.push({k:'Records reconciled', d:S.alignmentDone?(S.alignCorrect+' of '+rt+' fields reconciled to the correct source'):'Records not reconciled'});
   }
   if(SC.build&&SC.build.flowtest){
-    out.push({k:'FLOWTEST_DONE', d:S.flowServed?(S.flowTextureOk?'Flow test run; Level 2 confirmed before serving':'Served without a true Level 2 texture'):'Fluids not tested'});
+    out.push({k:'Flow test', d:S.flowServed?(S.flowTextureOk?'Flow test run; Level 2 confirmed before serving':'Served without a true Level 2 texture'):'Fluids not tested'});
   }
   if(SC.build&&SC.build.oncall){
-    out.push({k:'PLAN_TO_HAND', d:S.planToHand?'Marcus’s plan and EDAR were to hand':'Acted without his plan to hand'});
-    out.push({k:'BEST_INTERESTS', d:S.oncallDone?(S.oncallBailed?'Decided alone, without escalating':'Best-interests plan agreed with on-call'):'No decision reached'});
+    out.push({k:'Plan to hand', d:S.planToHand?'Marcus’s plan and EDAR were to hand':'Acted without his plan to hand'});
+    out.push({k:'Best interests', d:S.oncallDone?(S.oncallBailed?'Decided alone, without escalating':'Best-interests plan agreed with on-call'):'No decision reached'});
   }
   var en=SC.build&&SC.build.emergencyNode;
   if(en && S.choices[en]){
     var n6=S.choices[en];
-    out.push({k:'EMERGENCY_RESPONSE', d:n6==='a'?'999 called and first aid given without delay':n6==='b'?'First aid given; 999 call delayed':'No effective response run'});
+    out.push({k:'Emergency response', d:n6==='a'?'999 called and first aid given without delay':n6==='b'?'First aid given; 999 call delayed':'No effective response run'});
   }
   if(S.paramedicsDone){
     var gpc=PARAMEDIC_ITEMS.filter(function(it){return it.correct && S.paramedics[it.id];}).length;
     var gpw=PARAMEDIC_ITEMS.filter(function(it){return !it.correct && S.paramedics[it.id];}).length;
-    out.push({k:'PARAMEDICS_HANDOVER', d:gpc+' of 4 essentials ready for the paramedics'+(gpw?', '+gpw+' non-essential included':'')});
+    out.push({k:'Paramedics handover', d:gpc+' of 4 essentials ready for the paramedics'+(gpw?', '+gpw+' non-essential included':'')});
   }
   var oc={A:'prevention',B:'near miss',C:'emergency, survived',D:'emergency, fatal'};
-  out.push({k:'OUTCOME', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
+  out.push({k:'Outcome', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
   return out;
 }
 function readinessGeneric(){
