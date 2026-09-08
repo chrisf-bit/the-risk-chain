@@ -325,26 +325,24 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .ft-spoon{flex:none;width:96px;height:96px;position:relative}
 .ft-spoon svg{width:100%;height:100%;transform-origin:30% 40%;animation:spoonTilt 1.6s ease forwards}
 @keyframes spoonTilt{0%{transform:rotate(0deg)}45%{transform:rotate(0deg)}100%{transform:rotate(58deg)}}
-/* Runoff off the spoon tip: stream width + reach + speed convey the texture,
-   and the pooled "splash" at the base differs too, so it reads as fluid (not a
-   progress bar) even when motion is reduced. */
-.ft-drip{flex:1;height:92px;position:relative;display:flex;justify-content:center;align-items:flex-start}
-.ft-stream{border-radius:0 0 9px 9px}
-.ft-pool{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);height:7px;border-radius:50%;opacity:.55}
-.ft-drip.thin .ft-stream{width:5px;height:84%;background:linear-gradient(var(--cyan),rgba(33,184,217,.7));animation:streamRun .5s linear infinite}
-.ft-drip.thin .ft-pool{width:56px;background:var(--cyan)}
-.ft-drip.level2 .ft-stream{width:13px;height:60%;background:linear-gradient(var(--teal),rgba(22,175,194,.55));animation:streamRun 1.5s ease-in infinite}
-.ft-drip.level2 .ft-pool{width:30px;background:var(--teal)}
-.ft-drip.thick .ft-stream{width:26px;height:34%;background:linear-gradient(var(--violet),rgba(138,60,203,.5));border-radius:0 0 13px 13px;animation:streamRun 2.8s ease-in infinite}
-.ft-drip.thick .ft-pool{width:15px;background:var(--violet)}
-@keyframes streamRun{0%{opacity:.25;transform:translateY(-26%)}55%{opacity:1}100%{opacity:.5;transform:translateY(8%)}}
+/* Runoff off the spoon tip, drawn as a fixed-geometry inline SVG so it renders
+   identically everywhere (an earlier flex + percentage-height version collapsed
+   to nothing in the browser). Stream width + reach and the pooled "splash" at
+   the base differ by texture, so it reads as fluid, and as thin / Level 2 /
+   thick, even with motion reduced. */
+.ft-drip-svg{flex:1;height:96px;min-width:0}
+.ft-drip-svg svg{width:100%;height:100%;display:block}
+.ft-drip-svg .fld-stream{animation:fldPulse 1.5s ease-in-out infinite}
+.ft-drip-svg.thin .fld-stream{animation-duration:.7s}
+.ft-drip-svg.thick .fld-stream{animation-duration:2.6s}
+@keyframes fldPulse{0%,100%{opacity:.72}50%{opacity:1}}
 .ft-caption{font-size:var(--t-sm);color:var(--ink-2);margin:0}
 .ft-verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .ft-vchip{text-align:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:11px 10px;cursor:pointer;font:inherit;font-size:var(--t-sm);font-weight:700;color:var(--ink);transition:background .14s ease,border-color .14s ease}
 .ft-vchip:hover{border-color:var(--teal)}
 .ft-vchip:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .ft-vchip.sel{background:var(--kicker-bg);border-color:var(--teal);color:var(--teal-strong)}
-@media(prefers-reduced-motion:reduce){.ft-spoon svg{animation:none;transform:rotate(52deg)}.ft-drip .ft-stream{animation:none}}
+@media(prefers-reduced-motion:reduce){.ft-spoon svg{animation:none;transform:rotate(52deg)}.ft-drip-svg .fld-stream{animation:none}}
 @media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-verdict{grid-template-columns:1fr}.ft-visual{flex-direction:column;align-items:stretch}.ft-spoon{width:72px;height:72px;align-self:center}}
 
 /* ---------- On-call exchange (S4 signature interaction) ---------- */
@@ -2002,10 +2000,30 @@ function flowtestBody(node){
     +'<p class="scene-text">You tilt the spoon and watch how it runs off.</p>'
     +'<div class="flowt">'
     +'<div class="ft-visual"><div class="ft-spoon">'+ftSpoonSvg()+'</div>'
-    +'<div style="flex:1"><div class="ft-drip '+actual+'"><span class="ft-stream"></span><span class="ft-pool"></span></div>'
+    +'<div style="flex:1;min-width:0"><div class="ft-drip-svg '+actual+'">'+ftDripSvg(actual)+'</div>'
     +'<p class="ft-caption" style="margin-top:10px">Watch how it runs off the spoon, then judge the consistency below.</p></div></div>'
     +'<div><p class="ft-step-h"><span class="fsn">3</span>Judge the consistency</p><div class="ft-verdict">'+verdicts+'</div></div>'
     +'<div class="micro-actions"><button class="btn-go" data-act="flow-serve"'+(f.verdict?'':' disabled')+'>'+svg(I.arrowR)+'Use this drink</button></div></div>';
+}
+/* The runoff, drawn to fixed coordinates in a 200x92 viewBox (centred on x=100).
+   thin  = a long narrow stream + a droplet + a wide thin splash (runs off fast).
+   level2= a medium ribbon reaching partway + a medium pool (coats, controlled).
+   thick = a short fat lobe clinging near the spoon + a tiny pool (barely moves). */
+function ftDripSvg(actual){
+  var col = actual==='thin' ? 'var(--cyan)' : actual==='thick' ? 'var(--violet)' : 'var(--teal)';
+  var stream, pool;
+  if(actual==='thin'){
+    stream='<rect x="98" y="2" width="4" height="66" rx="2" fill="'+col+'"/><circle cx="100" cy="76" r="4" fill="'+col+'"/>';
+    pool='<ellipse cx="100" cy="87" rx="37" ry="4.5" fill="'+col+'" opacity="0.42"/>';
+  } else if(actual==='thick'){
+    stream='<path d="M87 2 h26 v18 a13 13 0 0 1 -26 0 z" fill="'+col+'"/>';
+    pool='<ellipse cx="100" cy="87" rx="12" ry="4" fill="'+col+'" opacity="0.5"/>';
+  } else {
+    stream='<rect x="93" y="2" width="14" height="52" rx="7" fill="'+col+'"/>';
+    pool='<ellipse cx="100" cy="87" rx="21" ry="5" fill="'+col+'" opacity="0.5"/>';
+  }
+  return '<svg viewBox="0 0 200 92" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+    +'<g class="fld-stream">'+stream+'</g>'+pool+'</svg>';
 }
 function ftSpoonSvg(){
   return '<svg viewBox="0 0 60 60" fill="none" aria-hidden="true">'
