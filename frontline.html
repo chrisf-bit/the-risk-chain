@@ -873,7 +873,7 @@ function sceneIllo(key,warn){
   if(m){
     var glow = m.glow ? '<span class="buzz-glow" style="left:'+m.glow.left+';top:'+m.glow.top+'"></span>' : '';
     return '<div class="scene-illo has-img'+(warn?' warn':'')+'">'
-      +'<img'+(m.glow?' class="no-kb"':'')+' src="'+m.src+'" alt="" loading="eager" decoding="async" fetchpriority="high" style="object-position:'+(m.pos||'50% 40%')+'" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
+      +'<img'+(m.glow?' class="no-kb"':'')+' src="'+m.src+'" alt="" loading="eager" decoding="sync" fetchpriority="high" style="object-position:'+(m.pos||'50% 40%')+'" data-key="'+key+'" data-warn="'+(warn?1:0)+'" onerror="sceneImgError(this)">'
       + glow
       +'</div>';
   }
@@ -1465,6 +1465,10 @@ function bindScenarioData(){
   SCENE_IMG=b.sceneImg||{}; RECOVERY_STEPS=b.recovery||[]; WORKER_STEPS=b.worker||[];
   ORG_STEPS=b.org||[]; ORG_STEP_FATAL=b.orgFatal||'';
   NODES.QP = PARAMEDICS_NODE;   // shared post-emergency handover step
+  // Warm the scene images so the first time a node is shown the photo is already
+  // decoded in cache (render() recreates the <img> each time; a cached + sync-
+  // decoded image paints with no blank-frame flicker).
+  try{ Object.keys(SCENE_IMG).forEach(function(k){ if(SCENE_IMG[k]&&SCENE_IMG[k].src){ var im=new Image(); im.src=SCENE_IMG[k].src; } }); }catch(e){}
 }
 bindScenarioData();
 
