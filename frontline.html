@@ -2075,7 +2075,11 @@ function oncallAnswer(i){
   AUDIO.sfx('select'); save(); render();
 }
 function oncallBail(){
-  S.oncallBailed=true; S.cc2=true; S.oncallDone=true; S.oncallScore=15; S.planToHand=!!S.opened.DOC_PLAN;
+  // Deciding alone under pressure trips CC2 (decision without authority). Like
+  // the other forced-recovery controls it primes the risk, so the run cannot
+  // end as a clean Prevention: it becomes a recoverable near miss if recognised
+  // at N5, or the emergency if not (SoT v0.2 4.1, S4 CC2 = forced recovery).
+  S.oncallBailed=true; S.cc2=true; S.primed=true; S.oncallDone=true; S.oncallScore=15; S.planToHand=!!S.opened.DOC_PLAN;
   log('ESCALATION',{type:'none',reached:false}); log('BEST_INTERESTS_PROCESS',{followed:false});
   AUDIO.sfx('warn'); nextNode();
 }
