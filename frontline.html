@@ -617,6 +617,10 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
   .land-facts .lf:nth-child(3){animation-delay:.18s}
   .evi-sec{animation:rise .42s cubic-bezier(.22,.61,.36,1) both}
   .evi-sec.sec-tools{animation-delay:.09s}
+  /* Same screen re-rendered (in-place click): do not replay the entrances. */
+  .no-enter .land-card,.no-enter .oc-card,.no-enter .db-wrap,.no-enter .moment,
+  .no-enter .opt,.no-enter .oc-steps .os,.no-enter .conf-pill,.no-enter .oc-badge,
+  .no-enter .r-chip,.no-enter .land-media,.no-enter .land-facts .lf,.no-enter .evi-sec{animation:none}
 }
 
 /* SME-owned learning caveat (landing + emergency outcomes) */
@@ -1584,6 +1588,7 @@ function resetShiftClock(){
 
 /* ---------- Render ---------- */
 const app=document.getElementById('app');
+var lastViewKey=null;   // screen identity of the previous render (gates entrance animations)
 function render(){
   let view='';
   // Only S1 is a fully built playable scenario; if a play stage is reached for a
@@ -1599,6 +1604,14 @@ function render(){
   else if(S.stage==='debrief') view=viewDebrief();
   else if(S.stage==='questionnaire') view=viewQuestionnaire();
   app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
+  // Entrance animations should play only when the SCREEN changes (a new node, a
+  // consequence reveal, a stage change), not on every in-place re-render (e.g.
+  // adjusting scoops, selecting a tin, answering the on-call). render() rebuilds
+  // innerHTML each time, so without this the whole panel re-animates on every
+  // click and feels like a reload. Suppress entrances when the view key repeats.
+  var vk = S.stage + (S.stage==='node' ? (':'+S.nodeIdx+':'+(S.sub||'')) : '');
+  app.classList.toggle('no-enter', vk===lastViewKey);
+  lastViewKey = vk;
   try{ document.title = (S.stage==='picker' ? 'Frontline scenarios' : SC.title) + ' · PracticE Ready'; }catch(e){}
   window.scrollTo(0,0);
   if(S.stage==='landing'){ setupIntroVideo(); }
