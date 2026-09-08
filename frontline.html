@@ -324,14 +324,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 /* One drawing: tilted spoon + the drink running off its lip into a pool
    (ftFlowSvg). Sized panel; the SVG scales to fit and stays centred. */
 .ft-visual{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 16px}
-.ft-visual svg{display:block;width:100%;height:168px}
+.ft-visual svg{display:block;width:100%;height:120px}
 .ft-caption{font-size:var(--t-sm);color:var(--ink-2);margin:8px 0 0;text-align:center}
-.ft-verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.ft-vchip{text-align:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:11px 10px;cursor:pointer;font:inherit;font-size:var(--t-sm);font-weight:700;color:var(--ink);transition:background .14s ease,border-color .14s ease}
-.ft-vchip:hover{border-color:var(--teal)}
-.ft-vchip:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-.ft-vchip.sel{background:var(--kicker-bg);border-color:var(--teal);color:var(--teal-strong)}
-@media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-verdict{grid-template-columns:1fr}.ft-visual svg{height:150px}}
+@media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-visual svg{height:112px}}
 
 /* ---------- On-call exchange (S4 signature interaction) ---------- */
 .oncall{display:flex;flex-direction:column;gap:10px;margin:6px 0 10px}
@@ -1966,13 +1961,14 @@ function flowtestBody(node){
     return '<button class="ft-tin'+(sel?' sel':'')+'" data-act="flow-tin" data-id="'+t.id+'" aria-pressed="'+sel+'">'
       +'<span class="ftt-name">'+t.name+'</span><span class="ftt-sub">'+t.sub+'</span></button>';
   }).join('');
-  var setup='<div><p class="ft-step-h"><span class="fsn">1</span>Choose the tin</p><div class="ft-tins">'+tins+'</div></div>'
-    +'<div><p class="ft-step-h"><span class="fsn">2</span>Set the scoops per 100ml</p>'
+  var chosen=ftTin();
+  var setup='<div><p class="ft-step-h"><span class="fsn">1</span>Choose the tin you will use</p><div class="ft-tins">'+tins+'</div></div>'
+    +'<div><p class="ft-step-h"><span class="fsn">2</span>Add the scoops its label states, per 100ml</p>'
     +'<div class="ft-scoop"><div class="ft-stepper">'
     +'<button data-act="flow-scoop" data-dir="-1" aria-label="Fewer scoops">&minus;</button>'
     +'<span class="ft-val">'+(f.scoops||0)+'</span>'
     +'<button data-act="flow-scoop" data-dir="1" aria-label="More scoops">+</button></div>'
-    +'<span class="ft-scoop-lbl">scoops for <b>Level 2, Mildly Thick</b></span></div></div>';
+    +'<span class="ft-scoop-lbl">'+(chosen?chosen.sub:'Choose a tin first, then match its label')+'</span></div></div>';
   if(!f.tested){
     return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
       +'<p class="scene-text">'+(cfg.lead||'')+'</p>'
@@ -1980,19 +1976,14 @@ function flowtestBody(node){
       +'<div class="micro-actions"><button class="btn-go" data-act="flow-test"'+(f.tin?'':' disabled')+'>'+svg(I.gauge2)+'Tilt the spoon to test</button></div></div>';
   }
   var actual=ftActual();
-  var verdicts=[['thin','Too thin'],['level2','Level 2'],['thick','Too thick']].map(function(v){
-    var sel=f.verdict===v[0];
-    return '<button class="ft-vchip'+(sel?' sel':'')+'" data-act="flow-verdict" data-val="'+v[0]+'" aria-pressed="'+sel+'">'+v[1]+'</button>';
-  }).join('');
   return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
-    +'<p class="scene-text">You tilt the spoon and watch how it runs off.</p>'
+    +'<p class="scene-text">You tilt the spoon to test it. A true Level 2 flows slowly off the spoon and leaves a light coating.</p>'
     +'<div class="flowt">'
     +'<div class="ft-visual">'+ftFlowSvg(actual)+'</div>'
-    +'<p class="ft-caption">Watch how it runs off the spoon, then judge the consistency below.</p>'
-    +'<div><p class="ft-step-h"><span class="fsn">3</span>Judge the consistency, is this a true Level 2?</p><div class="ft-verdict">'+verdicts+'</div></div>'
+    +'<p class="ft-caption">Does that look like Level 2? Serve it, or go back and adjust the scoops.</p>'
     +'<div class="micro-actions">'
     +  '<button class="btn-ghost" data-act="flow-redo">'+svg(I.restart)+'Adjust the scoops</button>'
-    +  '<button class="btn-go" data-act="flow-serve"'+(f.verdict?'':' disabled')+'>'+svg(I.arrowR)+'Use this drink</button>'
+    +  '<button class="btn-go" data-act="flow-serve">'+svg(I.arrowR)+'Use this drink</button>'
     +'</div></div>';
 }
 /* The runoff, drawn to fixed coordinates in a 200x92 viewBox (centred on x=100).
@@ -2035,11 +2026,12 @@ function flowVerdict(val){ S.flow=S.flow||{}; S.flow.verdict=val; AUDIO.sfx('sel
    re-thickened before serving. This is the point of the test: check, then fix. */
 function flowRedo(){ if(S.flow){ S.flow.tested=false; S.flow.verdict=null; } AUDIO.sfx('select'); save(); render(); }
 function flowServe(){
-  var actual=ftActual(), f=S.flow||{};
+  var actual=ftActual();
   var textureOk=(actual==='level2');
-  var judgedOk=(f.verdict===actual);
   S.flowTextureOk=textureOk;
-  S.flowScore = textureOk ? (judgedOk?100:72) : (judgedOk?38:22);
+  // Served a true Level 2 = full marks; serving an off-Level drink trips the
+  // serving control (below) and scores low, whether or not it was tested.
+  S.flowScore = textureOk ? 100 : 40;
   S.flowServed=true;
   log('PRODUCT_VERIFIED',{verified:textureOk});
   if(!textureOk){ S.cc1=true; S.primed=true; }
@@ -3297,7 +3289,7 @@ SCENARIOS.S3.build = {
     q:'Open any of the records. When you are ready, start the preparation.',
     cta:'Start the preparation', videoD:'assets/frontline/handover-s3.mp4', vttD:HANDOVER_S3_VTT },
   flowtest:{
-    lead:'Two thickener tins sit by the kettle, each with its own scoop ratio. Prepare Aaron’s drink to Level 2, Mildly Thick, and test it before serving.',
+    lead:'Aaron’s drink must be Level 2, Mildly Thick. The two tins by the kettle use different amounts, so read the label of the tin you pick and add exactly that many scoops. Then tilt the spoon to test it before serving.',
     tins:[
       {id:'his', name:'Aaron’s prescribed thickener', sub:'Label: 2 scoops per 100ml for Level 2', ratio:2},
       {id:'spare', name:'A spare tin by the kettle', sub:'Label: 1 scoop per 100ml for Level 2', ratio:1},
