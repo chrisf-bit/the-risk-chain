@@ -408,6 +408,32 @@ Implemented the SME content-additions doc (Donna Thompson feedback). All in `fro
   re-renders); navy accents for contrast; steps auto-skip missing/hidden targets; re-positions
   on resize; click the dimmed area to skip. Ported from The Risk Chain's tour pattern.
 
+### DONE (2026-09 session, SME "Emma" Source of Truth v0.2 gap-check)
+Checked the live S2-S4 build against the SME-confirmed **Source of Truth v0.2** and Build Pack
+v1.0. All four people's locked plans (IDDSI levels, settings, clues) and CC triggers already
+matched. Emma then made three rulings, all now implemented in `frontline.html`:
+- **Serving off-plan food/drink is a HARD FAIL in ALL four scenarios (SoT §4.1).** Reverses the
+  "DT feedback" amber-near-miss call FOR THE SERVING CONTROL ONLY. New `servedUnsafe()` helper
+  (serving control = S1 `cc2`, S2-S4 `cc1`); `resolve()` + `goesToEmergency()` route a serving
+  trip straight to the emergency with no rescue, result is red (C/D), N6 still decides survived
+  vs fatal. B (amber near miss) is now reachable ONLY via the remaining forced-recovery controls
+  (supervision break S1 cc1; unverified handoff S2/S3 cc2; decision-without-authority S4 cc2),
+  which stay soft. `servingFailLead()` renders a red debrief banner that OPENS with the serving
+  decision ("the mistake that can kill, you never know which time"), wired into both the S1 and
+  generic debriefs. Also fixed the S1 debrief badge to label all four outcomes via `outcomeMeta()`
+  (it previously only knew A vs "near miss"). See auto-memory `frontline-serving-hardfail`.
+- **Dropped Aaron's "Capacity and consent" domain (S3)** (SoT §2.3: no capacity reference for
+  Aaron). The "choice within his plan" credit folded into Person-centred practice.
+- **Full red-flags list, two groups** in ALL three red-flag docs (S1/S3/S4): immediate danger
+  (can't breathe/speak/cough; blue/grey lips; silent choking) then eating/drinking signs, per
+  SoT §5.1 verbatim. Added a `{h:'...'}` subheading item type to `docModal` (`.dl-h` style).
+- **Scroll rule relaxed (client):** a screen MAY now scroll if it needs to ("can't control what
+  devices users are using"). The no-visible-scrollbar rule still holds; this just lifts the strict
+  one-screen constraint where content genuinely overflows.
+- **Left for client (content voice):** Path B copy still says "an unsafe mouthful was taken",
+  now only shown for the soft controls, not serving. Generalise if Emma wants. Emma owns updating
+  the Source of Truth register itself.
+
 **NEXT (pending, user leaning yes):** move the end-of-session quiz to run ONCE after all four
 scenarios are complete (not per-scenario). Small change (~20-40 lines): gate `endOfSessionCTA()`
 on `SCEN_ORDER.every(id=>PROG[id])`, persist quiz completion in the durable `PROG` (not run-state,

@@ -518,6 +518,8 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .doc-body .dl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
 .doc-body .dl li{display:flex;gap:11px;font-size:var(--t-body);line-height:1.45;color:var(--ink)}
 .doc-body .dl li svg{width:17px;height:17px;color:var(--z-read);flex:none;margin-top:2px}
+.doc-body .dl li.dl-h{display:block;font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-top:10px}
+.doc-body .dl li.dl-h:first-child{margin-top:0}
 .doc-note{font-family:var(--serif);font-size:var(--t-body);line-height:1.55;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-top:4px}
 .dm-prov{padding:14px 24px 22px;display:flex;align-items:center;gap:9px;font-size:var(--t-cap);color:var(--ink-4)}
 .dm-prov svg{width:15px;height:15px}
@@ -573,6 +575,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .reveal-box h5{font-size:var(--t-sm);display:flex;align-items:center;gap:8px}
 .reveal-box h5 svg{width:16px;height:16px}
 .reveal-box p{font-size:var(--t-sm);color:var(--ink-2);margin-top:6px;line-height:1.45}
+.db-lead-fail{margin:16px 0 4px;background:var(--bad-tint);border:1px solid var(--bad-line);border-radius:var(--r-lg);padding:20px 22px}
+.db-lead-fail .dlf-k{display:flex;align-items:center;gap:8px;font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--bad)}
+.db-lead-fail .dlf-k svg{width:16px;height:16px}
+.db-lead-fail h2{font-size:var(--t-h2);margin-top:8px;color:var(--ink);letter-spacing:-.02em}
+.db-lead-fail p{font-size:var(--t-body);line-height:1.55;color:var(--ink-2);margin-top:10px;max-width:70ch}
 .events{margin-top:14px;display:flex;flex-direction:column;gap:0}
 .ev{display:flex;gap:11px;align-items:center;padding:8px 2px;border-top:1px solid var(--line-2);font-size:var(--t-cap)}
 .ev:first-child{border-top:0}
@@ -1148,12 +1155,18 @@ const DOCS_S1 = {
       {ic:'route',t:'Escalate early. Do not leave a supported person to manage a second demand.'},
     ] },
   DOC_REDFLAG:{group:'ref', title:'Choking red flags', ref:'TK7.1', icon:'alertT',
-    kicker:'Reference tool', prov:'Recognising deterioration',
+    kicker:'Reference tool', prov:'TK7.1, recognising deterioration',
     list:[
-      {ic:'alertT',t:'Persistent cough, wet or gurgly voice, visible distress.'},
-      {ic:'alertT',t:'Silence and an inability to cough, speak or breathe: a red emergency.'},
-      {ic:'eye',t:'A quiet phase after coughing can mean the airway is blocking. Do not wait it out.'},
-    ] },
+      {h:'Immediate danger, act now'},
+      {ic:'alertT',t:'Cannot breathe, speak or cough: the airway is blocked.'},
+      {ic:'alertT',t:'Blue or grey lips or face: oxygen is not reaching the body.'},
+      {ic:'alertT',t:'Silent choking: the person cannot cough or call out.'},
+      {h:'Signs during eating and drinking'},
+      {ic:'eye',t:'Coughing during or after swallowing: food or drink entering the airway.'},
+      {ic:'eye',t:'A wet or gurgly voice after eating: fluid sitting in the airway.'},
+      {ic:'eye',t:'Food left in the mouth or cheeks: difficulty managing the texture.'},
+    ],
+    note:'A quiet phase after coughing can mean the airway is blocking. Do not wait it out.' },
   DOC_CALL:{group:'ref', title:'Who to call', ref:'TK7.2', icon:'phone',
     kicker:'Reference tool', prov:'Emergency and escalation contacts',
     list:[
@@ -1311,9 +1324,19 @@ const FLOW_S1 = ['N1','QF','N2','N3','N4','QC','N5'];
 /* Generic across scenarios: an unsafe intake became possible (primed) AND the
    emerging signs were not recognised/acted on at the recog node (b or c). Each
    scenario declares its recog node, emergency node and optional closing node. */
+/* The "serving control" (SME Emma, Source of Truth v0.2 §4.1): serving or
+   allowing food or drink that does not meet the person's plan is a HARD FAIL
+   on its own, in every scenario. It goes straight to the emergency with no
+   near-miss rescue, and the result is red. This control is CC2 in S1 (unsafe
+   mouthful) and CC1 in S2-S4 (proceed against guidance / incorrect texture /
+   unsafe intake). The other controls (supervision break, unverified handoff,
+   decision without authority) stay as forced-recovery and can still resolve to
+   a recognised near miss (Path B, amber). */
+function servedUnsafe(){ return (S.scenario==='S1') ? !!S.cc2 : !!S.cc1; }
 function goesToEmergency(){
   var rn=(SC.build&&SC.build.recogNode)||'N5';
-  return S.primed && (S.choices[rn]==='b' || S.choices[rn]==='c');
+  // A hard-fail serve routes to the emergency even if the signs are recognised.
+  return S.primed && (servedUnsafe() || S.choices[rn]==='b' || S.choices[rn]==='c');
 }
 function flow(){
   var f=(FLOW||[]).slice(), b=SC.build||{};
@@ -2207,7 +2230,10 @@ function eviRail(){
 /* ---------- Document modal ---------- */
 function docModal(id){
   const d=DOCS[id];
-  const items=d.list.map(function(x){return '<li>'+svg(I[x.ic])+'<span>'+x.t+'</span></li>';}).join('');
+  const items=d.list.map(function(x){
+    if(x.h){ return '<li class="dl-h">'+x.h+'</li>'; }
+    return '<li>'+svg(I[x.ic])+'<span>'+x.t+'</span></li>';
+  }).join('');
   let flag='';
   if(d.flag){
     flag = S.medFlagged
@@ -2408,6 +2434,21 @@ function scoreProfile(){
 }
 function barCls(v){ return v>=70?'hi':v>=40?'mid':'lo'; }
 
+/* The debrief opens with the serving decision whenever off-plan food or drink
+   was served or allowed (SME Emma, Source of Truth v0.2 §4.1). It names the
+   control plainly, states that this is the mistake that can kill and that you
+   never know which time it will be, then the debrief covers what should have
+   happened. Only shown on a hard-fail run (outcome is always red there). */
+function servingFailLead(){
+  if(!servedUnsafe()) return '';
+  var who=SC.person||'the person';
+  return '<div class="db-lead-fail">'
+    +'<span class="dlf-k">'+svg(I.alertT)+'The decision that decided this shift</span>'
+    +'<h2>'+who+' was served food or drink that did not meet the plan.</h2>'
+    +'<p>Everything that followed came from that one choice. Serving or allowing off-plan food or drink is the mistake that can kill, and you never know which time it will be. On another day the same choice might pass without harm, which is exactly why it can never be taken. Below is what should have happened instead.</p>'
+    +'</div>';
+}
+
 /* ---------- Debrief (S6) ---------- */
 function viewDebrief(){
   const doms=scoreProfile();
@@ -2443,13 +2484,15 @@ function viewDebrief(){
     return '<div class="ev"><span class="evk">'+e.k+'</span><span class="evd">'+e.d+'</span></div>';
   }).join('');
 
-  const outLabel = S.outcome==='A'?'Prevention':'Near miss, recovered';
+  const om = outcomeMeta(S.outcome);
 
   return '<div class="debrief"><div class="db-wrap">'
     +'<div class="vhero">'+debriefMedia()+'</div>'
     +'<div class="db-head"><div><span class="eyebrow">Debrief &middot; the teatime shift</span>'
     +'<h1>How the shift went, and why</h1></div>'
-    +'<span class="oc-badge '+(S.outcome==='A'?'oc-good':'oc-warn')+'">'+svg(S.outcome==='A'?I.shield:I.alertT)+outLabel+'</span></div>'
+    +'<span class="oc-badge '+om.cls+'">'+svg(om.ic)+om.label+'</span></div>'
+
+    + servingFailLead()
 
     +'<div class="db-grid">'
     +  '<div class="panel"><h3>'+svg(I.gauge2)+'Your practice profile</h3>'
@@ -2799,6 +2842,7 @@ function debriefShell(ccInner, reveal, ccSub){
     +'<div class="db-head"><div><span class="eyebrow">Debrief &middot; '+SC.title+'</span>'
     +'<h1>How the shift went, and why</h1></div>'
     +'<span class="oc-badge '+meta.cls+'">'+svg(meta.ic)+meta.label+'</span></div>'
+    + servingFailLead()
     +'<div class="db-grid">'
     +  '<div class="panel"><h3>'+svg(I.gauge2)+'Your practice profile</h3>'
     +    '<p class="ph-sub">Weighted domains, not a single mark. Critical controls sit above the domains: a control missed is never offset by strong practice elsewhere.</p>'
@@ -3085,8 +3129,18 @@ var DOCS_S3 = {
     kicker:'Reference tool', prov:'Induction and competence',
     list:[{ic:'check',t:'Completed e-learning is not the same as an individual briefing.'},{ic:'eye',t:'Observed competence on this person’s plan is what safe delegation needs.'}] },
   DOC_REDFLAG:{group:'ref', title:'Choking red flags', ref:'TK7.1', icon:'alertT',
-    kicker:'Reference tool', prov:'Recognising deterioration',
-    list:[{ic:'alertT',t:'Cough, wet or gurgly voice, visible distress.'},{ic:'eye',t:'A quiet phase after coughing can mean the airway is blocking. Do not wait it out.'}] },
+    kicker:'Reference tool', prov:'TK7.1, recognising deterioration',
+    list:[
+      {h:'Immediate danger, act now'},
+      {ic:'alertT',t:'Cannot breathe, speak or cough: the airway is blocked.'},
+      {ic:'alertT',t:'Blue or grey lips or face: oxygen is not reaching the body.'},
+      {ic:'alertT',t:'Silent choking: the person cannot cough or call out.'},
+      {h:'Signs during eating and drinking'},
+      {ic:'eye',t:'Coughing during or after swallowing: food or drink entering the airway.'},
+      {ic:'eye',t:'A wet or gurgly voice after eating: fluid sitting in the airway.'},
+      {ic:'eye',t:'Food left in the mouth or cheeks: difficulty managing the texture.'},
+    ],
+    note:'A quiet phase after coughing can mean the airway is blocking. Do not wait it out.' },
   DOC_CALL:{group:'ref', title:'Who to call', ref:'TK7.2', icon:'phone',
     kicker:'Reference tool', prov:'Emergency and escalation contacts',
     list:[{ic:'phone',t:'Choking emergency with an obstructed airway: call 999.'},{ic:'users',t:'GP or SALT referral for a new swallowing concern; manager for a near miss.'}] },
@@ -3226,8 +3280,7 @@ SCENARIOS.S3.build = {
   domains:[
     {k:'Information use', nodes:['N2','QL'], note:'Read the plan and IDDSI guidance, verified the thickener and scoop, and knew what a true Level 3 looks like.'},
     {k:'Preparation', nodes:['N2','N3','QT'], note:'Prepared a true, separate Level 3 and a checked Level 2, without over-diluting, and confirmed it with the spoon-tilt test.'},
-    {k:'Person-centred practice', nodes:['N3'], note:'Kept his food’s identity and dignity, and did not over-modify.'},
-    {k:'Capacity and consent', nodes:['N3'], note:'Offered choice within his plan rather than reducing the meal to convenience.'},
+    {k:'Person-centred practice', nodes:['N3'], note:'Kept his food’s identity and dignity, offered choice within his plan, and did not over-modify or reduce the meal to convenience.'},
     {k:'Dynamic judgement', nodes:['N4'], note:'Re-established a calm space and managed posture and pace under disruption.'},
     {k:'Team coordination', nodes:['N1'], note:'Checked the agency colleague’s competence before delegating.'},
     {k:'Response & learning', nodes:['N5','N6','QP'], note:'Recognised the emerging sign early, and escalated for a review.'},
@@ -3301,8 +3354,18 @@ var DOCS_S4 = {
     kicker:'Reference tool', prov:'IDDSI framework, texture standards',
     list:[{ic:'utensils',t:'Level 5, Minced & Moist: soft, moist lumps no larger than 4mm.'},{ic:'check',t:'Level 2, Mildly Thick: coats a spoon and flows slowly off it.'}] },
   DOC_REDFLAG:{group:'ref', title:'Choking red flags', ref:'TK7.1', icon:'alertT',
-    kicker:'Reference tool', prov:'Recognising deterioration',
-    list:[{ic:'alertT',t:'Cough, wet voice, distress, and a sudden quiet.'},{ic:'eye',t:'In a noisy room the quiet phase is easy to miss. Do not wait it out.'}] },
+    kicker:'Reference tool', prov:'TK7.1, recognising deterioration',
+    list:[
+      {h:'Immediate danger, act now'},
+      {ic:'alertT',t:'Cannot breathe, speak or cough: the airway is blocked.'},
+      {ic:'alertT',t:'Blue or grey lips or face: oxygen is not reaching the body.'},
+      {ic:'alertT',t:'Silent choking: the person cannot cough or call out.'},
+      {h:'Signs during eating and drinking'},
+      {ic:'eye',t:'Coughing during or after swallowing: food or drink entering the airway.'},
+      {ic:'eye',t:'A wet or gurgly voice after eating: fluid sitting in the airway.'},
+      {ic:'eye',t:'Food left in the mouth or cheeks: difficulty managing the texture.'},
+    ],
+    note:'In a noisy, busy room the quiet phase is easy to miss. Do not wait it out.' },
   DOC_MENU:{group:'ref', title:'The restaurant menu', ref:'', icon:'book',
     kicker:'Prop on the table', prov:'A standard restaurant menu',
     list:[{ic:'utensils',t:'Large portions; nothing is labelled for texture.'},{ic:'info',t:'You have to match dishes to Marcus’s plan yourself.'}] },
@@ -3592,13 +3655,17 @@ function nextNode(){
 function resolve(){
   // Four outcome paths (validated with SME):
   //   A prevention · B near miss recovered · C emergency survived · D emergency fatal.
-  // The fatal outcome is gated behind a full chain of failures: an unsafe
-  // mouthful becomes possible (a critical control fails), the emerging signs
-  // are not recognised (N5 b/c → obstruction), AND the emergency response is
-  // not run (N6 c). Any single link held changes the ending; A is always
-  // reachable and nothing is forced.
+  // Serving off-plan food or drink (servedUnsafe) is a hard fail: it goes
+  // straight to the emergency with no near-miss rescue, and the result is red
+  // (C or D). N6 then decides survival. A near miss (B) is only reachable when
+  // a forced-recovery control slipped (not the serving control) and the signs
+  // were recognised (N5 a). A is always reachable and nothing is forced.
   if(!S.primed){ S.outcome='A'; }
-  else if(S.choices.N5==='a'){ S.outcome='B'; }        // recognised at the cough → recovered
+  else if(servedUnsafe()){                             // hard fail → emergency, red, no rescue
+    const n6=S.choices.N6;
+    S.outcome = (n6==='a'||n6==='b') ? 'C' : 'D';
+  }
+  else if(S.choices.N5==='a'){ S.outcome='B'; }        // forced-recovery control, recognised → recovered
   else {                                               // obstruction → N6 decides survival
     const n6=S.choices.N6;
     S.outcome = (n6==='a'||n6==='b') ? 'C' : 'D';
