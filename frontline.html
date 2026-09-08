@@ -1484,7 +1484,11 @@ const PROG_KEY='frontline_progress_v1';
 let PROG; try{ PROG=JSON.parse(localStorage.getItem(PROG_KEY))||{}; }catch(e){ PROG={}; }
 function saveProg(){ try{ localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); }catch(e){} }
 function markComplete(id){ if(id && !PROG[id]){ PROG[id]=true; saveProg(); } }
-function isUnlocked(id){ var i=SCEN_ORDER.indexOf(id); if(i<=0) return true; return !!PROG[SCEN_ORDER[i-1]]; }
+/* TESTING SWITCH: unlock every scenario so all four are selectable without
+   completing the previous one. Set back to false to restore gated progression
+   (each unlocks when the previous is complete) before launch. */
+const UNLOCK_ALL = true;
+function isUnlocked(id){ if(UNLOCK_ALL) return true; var i=SCEN_ORDER.indexOf(id); if(i<=0) return true; return !!PROG[SCEN_ORDER[i-1]]; }
 
 /* ---------- State ---------- */
 const KEY='frontline_v2';
