@@ -410,8 +410,10 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .scene-illo svg{height:120px;width:auto;display:block}
 .scene-illo.has-img{flex:none;height:330px;min-height:330px;background:none;display:block;margin:0}
 .scene-illo.has-img::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(to top,rgba(10,16,24,.34),rgba(10,16,24,0));pointer-events:none}
-.scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block;transform-origin:55% 42%;animation:kenburns 24s ease-in-out infinite alternate;will-change:transform}
-@keyframes kenburns{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.18) translate(-2.2%,-1.6%)}}
+/* Static scene photo. A ken-burns zoom used to live here, but render() rebuilds
+   the <img> on every interaction, so the infinite animation restarted each time
+   and read as a flicker/jump. Held still for stability. */
+.scene-illo img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block}
 .scene-illo img.no-kb{animation:none}
 @media (prefers-reduced-motion:reduce){.scene-illo img{animation:none}}
 /* buzzer light: red glow over the intercom button, flashed in sync with the sound */
@@ -2174,7 +2176,7 @@ function consequenceBody(node){
   // In-the-moment observation only: no grade, no coaching. The instrument
   // cluster above shows the situation change; judgement waits for the debrief.
   return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
-    +'<p class="scene-text">'+(o?o.note:'')+'</p>'
+    +'<p class="scene-text">'+((o&&o.note)?o.note:'')+'</p>'
     +'<div class="micro-actions">'+btn+'</div>';
 }
 function recogSceneText(){
@@ -3674,6 +3676,10 @@ function chooseOption(optId){
     if(optId==='c'){ resolve(); return; }
     nextNode(); return;
   }
+  // Recog nodes (emerging signs / closing the meal) have no consequence beat of
+  // their own; the outcome screen narrates what the choice led to. Advance
+  // straight on rather than showing an empty consequence.
+  if(node.recog){ nextNode(); return; }
   S.sub='consequence'; save(); render();
 }
 function setConfidence(val){
@@ -3683,6 +3689,7 @@ function setConfidence(val){
   log('CONFIDENCE', {node:nodeId, value:val});
   applyEffects(nodeId);
   S.pendingChoice=null;
+  if(NODES[nodeId] && NODES[nodeId].recog){ nextNode(); return; }
   S.sub='consequence'; save(); render();
 }
 function nextNode(){

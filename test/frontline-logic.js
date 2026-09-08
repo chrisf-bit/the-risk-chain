@@ -94,7 +94,8 @@ function stepNode(pick, wp){
   const opt=pick(id,n)||'a';
   if(n.confidence){ T.chooseOption(opt); T.setConfidence(3); }
   else { T.chooseOption(opt); }
-  if(!n.emergency){ T.nextNode(); }
+  // emergency and recog nodes auto-advance inside chooseOption/setConfidence
+  if(!n.emergency && !n.recog){ T.nextNode(); }
   return id;
 }
 
