@@ -321,29 +321,17 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .ft-stepper .ft-val{min-width:44px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
 .ft-scoop-lbl{font-size:var(--t-sm);color:var(--ink-2)}
 .ft-scoop-lbl b{color:var(--ink)}
-.ft-visual{display:flex;align-items:center;gap:20px;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
-.ft-spoon{flex:none;width:96px;height:96px;position:relative}
-.ft-spoon svg{width:100%;height:100%;transform-origin:30% 40%;animation:spoonTilt 1.6s ease forwards}
-@keyframes spoonTilt{0%{transform:rotate(0deg)}45%{transform:rotate(0deg)}100%{transform:rotate(58deg)}}
-/* Runoff off the spoon tip, drawn as a fixed-geometry inline SVG so it renders
-   identically everywhere (an earlier flex + percentage-height version collapsed
-   to nothing in the browser). Stream width + reach and the pooled "splash" at
-   the base differ by texture, so it reads as fluid, and as thin / Level 2 /
-   thick, even with motion reduced. */
-.ft-drip-svg{flex:1;height:96px;min-width:0}
-.ft-drip-svg svg{width:100%;height:100%;display:block}
-.ft-drip-svg .fld-stream{animation:fldPulse 1.5s ease-in-out infinite}
-.ft-drip-svg.thin .fld-stream{animation-duration:.7s}
-.ft-drip-svg.thick .fld-stream{animation-duration:2.6s}
-@keyframes fldPulse{0%,100%{opacity:.72}50%{opacity:1}}
-.ft-caption{font-size:var(--t-sm);color:var(--ink-2);margin:0}
+/* One drawing: tilted spoon + the drink running off its lip into a pool
+   (ftFlowSvg). Sized panel; the SVG scales to fit and stays centred. */
+.ft-visual{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 16px}
+.ft-visual svg{display:block;width:100%;height:168px}
+.ft-caption{font-size:var(--t-sm);color:var(--ink-2);margin:8px 0 0;text-align:center}
 .ft-verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .ft-vchip{text-align:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r);padding:11px 10px;cursor:pointer;font:inherit;font-size:var(--t-sm);font-weight:700;color:var(--ink);transition:background .14s ease,border-color .14s ease}
 .ft-vchip:hover{border-color:var(--teal)}
 .ft-vchip:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .ft-vchip.sel{background:var(--kicker-bg);border-color:var(--teal);color:var(--teal-strong)}
-@media(prefers-reduced-motion:reduce){.ft-spoon svg{animation:none;transform:rotate(52deg)}.ft-drip-svg .fld-stream{animation:none}}
-@media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-verdict{grid-template-columns:1fr}.ft-visual{flex-direction:column;align-items:stretch}.ft-spoon{width:72px;height:72px;align-self:center}}
+@media(max-width:900px){.ft-tins{grid-template-columns:1fr}.ft-verdict{grid-template-columns:1fr}.ft-visual svg{height:150px}}
 
 /* ---------- On-call exchange (S4 signature interaction) ---------- */
 .oncall{display:flex;flex-direction:column;gap:10px;margin:6px 0 10px}
@@ -1999,9 +1987,8 @@ function flowtestBody(node){
   return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
     +'<p class="scene-text">You tilt the spoon and watch how it runs off.</p>'
     +'<div class="flowt">'
-    +'<div class="ft-visual"><div class="ft-spoon">'+ftSpoonSvg()+'</div>'
-    +'<div style="flex:1;min-width:0"><div class="ft-drip-svg '+actual+'">'+ftDripSvg(actual)+'</div>'
-    +'<p class="ft-caption" style="margin-top:10px">Watch how it runs off the spoon, then judge the consistency below.</p></div></div>'
+    +'<div class="ft-visual">'+ftFlowSvg(actual)+'</div>'
+    +'<p class="ft-caption">Watch how it runs off the spoon, then judge the consistency below.</p>'
     +'<div><p class="ft-step-h"><span class="fsn">3</span>Judge the consistency, is this a true Level 2?</p><div class="ft-verdict">'+verdicts+'</div></div>'
     +'<div class="micro-actions">'
     +  '<button class="btn-ghost" data-act="flow-redo">'+svg(I.restart)+'Adjust the scoops</button>'
@@ -2012,27 +1999,33 @@ function flowtestBody(node){
    thin  = a long narrow stream + a droplet + a wide thin splash (runs off fast).
    level2= a medium ribbon reaching partway + a medium pool (coats, controlled).
    thick = a short fat lobe clinging near the spoon + a tiny pool (barely moves). */
-function ftDripSvg(actual){
+/* Spoon AND runoff in ONE drawing so the drink visibly pours off the spoon tip
+   (drawing them separately left the fluid floating in the middle of the panel).
+   A tilted spoon top-left; the drink runs off its lip and drips into a pool.
+   Speed, stream width and splash size differ by texture: thin runs off fast in
+   a narrow stream with a wide splash; Level 2 flows slowly in a fuller ribbon;
+   thick barely oozes and clings near the lip. Drops use SVG <animate> (viewBox
+   units) so the motion is visible and scale-safe. */
+function ftFlowSvg(actual){
+  var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches); }catch(e){}
   var col = actual==='thin' ? 'var(--cyan)' : actual==='thick' ? 'var(--violet)' : 'var(--teal)';
-  var stream, pool;
-  if(actual==='thin'){
-    stream='<rect x="98" y="2" width="4" height="66" rx="2" fill="'+col+'"/><circle cx="100" cy="76" r="4" fill="'+col+'"/>';
-    pool='<ellipse cx="100" cy="87" rx="37" ry="4.5" fill="'+col+'" opacity="0.42"/>';
-  } else if(actual==='thick'){
-    stream='<path d="M87 2 h26 v18 a13 13 0 0 1 -26 0 z" fill="'+col+'"/>';
-    pool='<ellipse cx="100" cy="87" rx="12" ry="4" fill="'+col+'" opacity="0.5"/>';
-  } else {
-    stream='<rect x="93" y="2" width="14" height="52" rx="7" fill="'+col+'"/>';
-    pool='<ellipse cx="100" cy="87" rx="21" ry="5" fill="'+col+'" opacity="0.5"/>';
+  var g = actual==='thin'  ? {sw:4,  sh:16, r:4, dur:'0.55s', top:88, bot:134, poolRx:34, poolCy:138}
+        : actual==='thick' ? {sw:24, sh:16, r:9, dur:'2.7s',  top:86, bot:108, poolRx:11, poolCy:116}
+        :                    {sw:12, sh:18, r:6, dur:'1.25s', top:88, bot:132, poolRx:20, poolCy:138};
+  var px=108;
+  var spoon='<rect x="20" y="30" width="72" height="10" rx="5" transform="rotate(30 20 35)" fill="var(--ink-3)"/>'
+    +'<ellipse cx="92" cy="74" rx="22" ry="13" transform="rotate(30 92 74)" fill="var(--z-monitor,#21B8D9)" opacity="0.25" stroke="var(--teal)" stroke-width="2.5"/>';
+  var stream='<rect x="'+(px-g.sw/2)+'" y="'+g.top+'" width="'+g.sw+'" height="'+g.sh+'" rx="'+(g.sw/2)+'" fill="'+col+'"/>';
+  function drop(begin){
+    if(reduce){ return '<circle cx="'+px+'" cy="'+Math.round((g.top+g.bot)/2)+'" r="'+g.r+'" fill="'+col+'"/>'; }
+    return '<circle cx="'+px+'" cy="'+g.top+'" r="'+g.r+'" fill="'+col+'">'
+      +'<animate attributeName="cy" values="'+g.top+';'+g.bot+'" dur="'+g.dur+'" begin="'+begin+'" repeatCount="indefinite"/>'
+      +'<animate attributeName="opacity" values="0;1;1;0" dur="'+g.dur+'" begin="'+begin+'" repeatCount="indefinite"/>'
+      +'</circle>';
   }
-  return '<svg viewBox="0 0 200 92" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
-    +'<g class="fld-stream">'+stream+'</g>'+pool+'</svg>';
-}
-function ftSpoonSvg(){
-  return '<svg viewBox="0 0 60 60" fill="none" aria-hidden="true">'
-    +'<ellipse cx="20" cy="20" rx="15" ry="11" fill="var(--z-monitor,#21B8D9)" opacity="0.25" stroke="var(--teal)" stroke-width="2"/>'
-    +'<rect x="30" y="24" width="26" height="5" rx="2.5" transform="rotate(32 30 24)" fill="var(--ink-3)"/>'
-    +'</svg>';
+  var drops = drop('0s') + (actual==='thin' ? drop('0.28s') : '');
+  var pool='<ellipse cx="'+px+'" cy="'+g.poolCy+'" rx="'+g.poolRx+'" ry="4.5" fill="'+col+'" opacity="0.45"/>';
+  return '<svg viewBox="0 0 220 150" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+spoon+stream+drops+pool+'</svg>';
 }
 function flowTin(id){ S.flow=S.flow||{scoops:1}; S.flow.tin=id; AUDIO.sfx('select'); save(); render(); }
 function flowScoop(dir){ S.flow=S.flow||{scoops:1}; S.flow.scoops=Math.max(0,Math.min(3,(S.flow.scoops||0)+dir)); AUDIO.sfx('select'); save(); render(); }
