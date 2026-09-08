@@ -434,6 +434,35 @@ matched. Emma then made three rulings, all now implemented in `frontline.html`:
   now only shown for the soft controls, not serving. Generalise if Emma wants. Emma owns updating
   the Source of Truth register itself.
 
+### DONE (2026-09 session, flow-test UX + flicker + WCAG contrast pass)
+Frontline polish while prepping for testing + sale. All in `frontline.html`:
+- **S3 flow test reworked** (the spoon-tilt widget). Was: separate spoon + fluid drawings
+  (fluid floated mid-panel), an empty `<span>`+`%`-height runoff that rendered blank, and a
+  confusing "too thin/Level 2/too thick" rating on top of setting scoops. Now ONE inline SVG
+  (`ftFlowSvg`) of a tilted spoon with the drink dripping off the lip (SVG `<animate>`, speed/
+  splash by texture); the rating step is gone, it's read-tin-label -> add scoops -> tilt to
+  test -> Serve or **Adjust the scoops** (`flowRedo`). Scoring keys on serving a true Level 2.
+- **"undefined" fix:** recog nodes (N5) had no per-option `note`, so their consequence beat
+  printed "undefined". Recog nodes now advance straight to the outcome (which narrates it);
+  `consequenceBody` also guards a missing note. Harness updated (recog auto-advances).
+- **Re-render flicker fixed (two causes):** (1) entrance animations replayed on every click,
+  gated them behind a `no-enter` class keyed to the SCREEN (stage + nodeIdx, NOT sub, so
+  decide->consequence and in-widget clicks don't re-animate; only a new node/stage does).
+  (2) the scene photo: killed the ken-burns zoom (restarted each render) and set the `<img>`
+  to `decoding="sync"` + preload per scenario, so it no longer blanks for a frame.
+- **WCAG 2.1 AA contrast pass (light theme; dark already passed bar the CTA).** CTA `.btn-go`
+  text `#fff`->navy `#072a6b` (fixed, both themes; white-on-orange was 2.6:1, now 5.2). Semantic
+  text tokens darkened for 4.5 on white AND on their tints: `--good` `#1f9d57`->`#0c7038`,
+  `--warn` `#bd6510`->`#9a5109`, `--bad` `#d84a42`->`#c0281f`. `--ink-3` `#6d7aa6`->`#5b6892`.
+  Teal chip fill `--chip-bg` (light) `#16afc2`->teal-deep `#0b6b78` (white-on-teal was failing).
+  Focus ring `var(--teal)`->`var(--teal-strong)`. Flow-test tin label off `--ink-4` onto `--ink-2`.
+  **No brand hex changed** (teal/orange/violet/cyan/magenta untouched; `.pr-e` brand "E" left as
+  the client-locked `#16afc2`, exempt as a logotype). Reusable check: `node test/contrast-check.js`
+  (all audited pairs clear AA). NOT yet certified: browser-only items (axe/Lighthouse, 1.4.4
+  resize, 1.4.10 reflow, 1.4.11 across every component, keyboard/focus order, screen reader).
+- **Test harness added:** `node test/frontline-logic.js` drives the real state machine across all
+  four scenarios (outcome path + readiness); 26/26. Use before any client sign-off.
+
 **NEXT (pending, user leaning yes):** move the end-of-session quiz to run ONCE after all four
 scenarios are complete (not per-scenario). Small change (~20-40 lines): gate `endOfSessionCTA()`
 on `SCEN_ORDER.every(id=>PROG[id])`, persist quiz completion in the durable `PROG` (not run-state,

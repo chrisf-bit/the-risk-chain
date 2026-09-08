@@ -29,18 +29,18 @@
 :root{
   --ground:#f4f7fc; --ground-2:#fbfcff; --surface:#ffffff; --surface-2:#f3f6fb; --surface-3:#e8eef6;
   --zn-records:#e3f6fa; --zn-records-ln:#a6e0e8; --zn-tools:#f2eafb; --zn-tools-ln:#d7c3f0; --violet:#8a3ccb; --sheen:rgba(255,255,255,.85); --zn-metric-ln:#b1cbeb;
-  --ink:#072a6b; --ink-2:#3c4f86; --ink-3:#6d7aa6; --ink-4:#9aa4c4;
+  --ink:#072a6b; --ink-2:#3c4f86; --ink-3:#5b6892; --ink-4:#9aa4c4;
   --line:#c9cdd4; --line-2:#e4e7ec;
   --navy:#0a2f7a; --navy-2:#072a6b; --navy-ink:#ffffff;
   --teal:#16afc2; --teal-strong:#0e8b9a; --teal-tint:#e3f6fa; --teal-deep:#0b6b78;
   --go:#ff7a1a; --go-sh:#d9620d; --kicker-bg:#e3f6fa; --kicker-line:#b9e4ec;
   --z-monitor:#21b8d9; --z-monitor-2:#1a97b4; --z-monitor-tint:#ffffff;
-  --z-read:#16afc2; --z-read-2:#0e8b9a; --z-read-tint:#ffffff; --chip-bg:#16afc2; --chip-ink:#ffffff; --read-head:#ffffff; --read-head-2:#f3f6fb;
+  --z-read:#16afc2; --z-read-2:#0e8b9a; --z-read-tint:#ffffff; --chip-bg:#0b6b78; --chip-ink:#ffffff; --read-head:#ffffff; --read-head-2:#f3f6fb;
   --z-do:#ff7a1a; --z-do-2:#db6410; --z-do-tint:#fff1e4;
   --hud-1:#ffffff; --hud-2:#eef3f9; --hud-label:#5a6884; --gauge-track:#e2e8f1;
-  --good:#1f9d57; --good-tint:#e4f6ec; --good-line:#bde7cd;
-  --warn:#bd6510; --warn-tint:#fff2e0; --warn-line:#f5d6a6;
-  --bad:#d84a42; --bad-tint:#fdeae8; --bad-line:#f4c4bf;
+  --good:#0c7038; --good-tint:#e4f6ec; --good-line:#bde7cd;
+  --warn:#9a5109; --warn-tint:#fff2e0; --warn-line:#f5d6a6;
+  --bad:#c0281f; --bad-tint:#fdeae8; --bad-line:#f4c4bf;
   --info:#16afc2; --info-tint:#e3f6fa;
   --g-red:#e0574f; --g-amber:#f0902a; --g-green:#2fb56a;
   --shadow:0 2px 6px rgba(20,38,74,.06),0 14px 30px rgba(20,38,74,.10);
@@ -85,18 +85,18 @@
 :root[data-theme="light"]{
   --ground:#f4f7fc; --ground-2:#fbfcff; --surface:#ffffff; --surface-2:#f3f6fb; --surface-3:#e8eef6;
   --zn-records:#e3f6fa; --zn-records-ln:#a6e0e8; --zn-tools:#f2eafb; --zn-tools-ln:#d7c3f0; --violet:#8a3ccb; --sheen:rgba(255,255,255,.85); --zn-metric-ln:#b1cbeb;
-  --ink:#072a6b; --ink-2:#3c4f86; --ink-3:#6d7aa6; --ink-4:#9aa4c4;
+  --ink:#072a6b; --ink-2:#3c4f86; --ink-3:#5b6892; --ink-4:#9aa4c4;
   --line:#c9cdd4; --line-2:#e4e7ec;
   --navy:#0a2f7a; --navy-2:#072a6b; --navy-ink:#ffffff;
   --teal:#16afc2; --teal-strong:#0e8b9a; --teal-tint:#e3f6fa; --teal-deep:#0b6b78;
   --go:#ff7a1a; --go-sh:#d9620d; --kicker-bg:#e3f6fa; --kicker-line:#b9e4ec;
   --z-monitor:#21b8d9; --z-monitor-2:#1a97b4; --z-monitor-tint:#ffffff;
-  --z-read:#16afc2; --z-read-2:#0e8b9a; --z-read-tint:#ffffff; --chip-bg:#16afc2; --chip-ink:#ffffff; --read-head:#ffffff; --read-head-2:#f3f6fb;
+  --z-read:#16afc2; --z-read-2:#0e8b9a; --z-read-tint:#ffffff; --chip-bg:#0b6b78; --chip-ink:#ffffff; --read-head:#ffffff; --read-head-2:#f3f6fb;
   --z-do:#ff7a1a; --z-do-2:#db6410; --z-do-tint:#fff1e4;
   --hud-1:#ffffff; --hud-2:#eef3f9; --hud-label:#5a6884; --gauge-track:#e2e8f1;
-  --good:#1f9d57; --good-tint:#e4f6ec; --good-line:#bde7cd;
-  --warn:#bd6510; --warn-tint:#fff2e0; --warn-line:#f5d6a6;
-  --bad:#d84a42; --bad-tint:#fdeae8; --bad-line:#f4c4bf;
+  --good:#0c7038; --good-tint:#e4f6ec; --good-line:#bde7cd;
+  --warn:#9a5109; --warn-tint:#fff2e0; --warn-line:#f5d6a6;
+  --bad:#c0281f; --bad-tint:#fdeae8; --bad-line:#f4c4bf;
   --info:#16afc2; --info-tint:#e3f6fa;
   --g-red:#e0574f; --g-amber:#f0902a; --g-green:#2fb56a;
   --shadow:0 2px 6px rgba(45,55,95,.06),0 14px 30px rgba(45,55,95,.10);
@@ -140,7 +140,7 @@ body{
 h1,h2,h3,h4,h5{margin:0;font-weight:700;line-height:1.2;text-wrap:balance;letter-spacing:-.01em}
 p{margin:0}
 button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
-:focus-visible{outline:2.5px solid var(--teal);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:2.5px solid var(--teal-strong);outline-offset:2px;border-radius:4px}
 ::selection{background:var(--teal);color:#fff}
 .serif{font-family:var(--serif)}
 /* Rule 3: hide scrollbars everywhere; wheel/trackpad still scroll */
@@ -165,7 +165,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* ---------- Generic ---------- */
 .eyebrow{font-size:var(--t-cap);font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-strong)}
-.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--go);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 8px 18px rgba(245,127,32,.32);transition:filter .15s ease,transform .1s ease,box-shadow .15s ease}
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--go);color:#072a6b;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 8px 18px rgba(245,127,32,.32);transition:filter .15s ease,transform .1s ease,box-shadow .15s ease}
 .btn-go:hover{filter:brightness(1.05)}
 .btn-go:active{transform:translateY(1px);box-shadow:0 4px 12px rgba(245,127,32,.28)}
 .btn-go svg{width:18px;height:18px}
@@ -312,7 +312,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .ft-tin:hover{border-color:var(--teal);transform:translateY(-1px)}
 .ft-tin:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .ft-tin .ftt-name{font-size:var(--t-sm);font-weight:700;color:var(--ink)}
-.ft-tin .ftt-sub{font-size:var(--t-cap);color:var(--ink-4)}
+.ft-tin .ftt-sub{font-size:var(--t-cap);color:var(--ink-2)}
 .ft-tin.sel{background:var(--kicker-bg);border-color:var(--teal)}
 .ft-scoop{display:flex;align-items:center;gap:14px}
 .ft-stepper{display:inline-flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:100px;overflow:hidden;background:var(--surface)}
