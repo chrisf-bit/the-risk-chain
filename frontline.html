@@ -62,17 +62,17 @@
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --ground:#0b1017; --ground-2:#10161f; --surface:#171e2b; --surface-2:#1f2836; --surface-3:#2a3444;
+    --ground:#08090f; --ground-2:#0c0e15; --surface:#0f111a; --surface-2:#161823; --surface-3:#1e2130;
     --zn-records:#0f2e36; --zn-records-ln:#1f5560; --zn-tools:#241a3e; --zn-tools-ln:#453a6e; --violet:#c08af0; --sheen:rgba(255,255,255,.06); --zn-metric-ln:#33445c;
     --ink:#eef2f8; --ink-2:#c2ccdb; --ink-3:#9aa6bb; --ink-4:#93a0b6;
-    --line:#333f52; --line-2:#2a3444;
+    --line:#2b3040; --line-2:#22262f;
     --navy:#0e2352; --navy-2:#0a1a40; --navy-ink:#eef2f8;
     --teal:#2fc4d8; --teal-strong:#5cd6e6; --teal-tint:#123842; --teal-deep:#8fe6f0;
     --go:#ff8a33; --go-sh:#cc5f12; --kicker-bg:rgba(47,196,216,.15); --kicker-line:rgba(47,196,216,.36);
     --z-monitor:#40c8ee; --z-monitor-2:#6cd6f0; --z-monitor-tint:#1c3355;
     --z-read:#2fc4d8; --z-read-2:#6cdaea; --z-read-tint:#123842; --chip-bg:#16afc2; --chip-ink:#04252b; --read-head:#12233f; --read-head-2:#0e1c34;
     --z-do:#ff8a33; --z-do-2:#ffab63; --z-do-tint:#33240f;
-    --hud-1:#1a2740; --hud-2:#141f36; --hud-label:#aab6cf; --gauge-track:#2f3d52;
+    --hud-1:#141d33; --hud-2:#0e1526; --hud-label:#aab6cf; --gauge-track:#2a3548;
     --good:#3fd07a; --good-tint:#12291d; --good-line:#2c5a3e;
     --warn:#f7b053; --warn-tint:#2e2413; --warn-line:#5a4a24;
     --bad:#ff6f63; --bad-tint:#2e1c1b; --bad-line:#5a3330;
@@ -103,17 +103,17 @@
   --shadow-lg:0 4px 14px rgba(45,55,95,.08),0 30px 60px rgba(45,55,95,.16);
 }
 :root[data-theme="dark"]{
-  --ground:#0b1017; --ground-2:#10161f; --surface:#171e2b; --surface-2:#1f2836; --surface-3:#2a3444;
+  --ground:#08090f; --ground-2:#0c0e15; --surface:#0f111a; --surface-2:#161823; --surface-3:#1e2130;
   --zn-records:#0f2e36; --zn-records-ln:#1f5560; --zn-tools:#241a3e; --zn-tools-ln:#453a6e; --violet:#c08af0; --sheen:rgba(255,255,255,.06); --zn-metric-ln:#33445c;
   --ink:#eef2f8; --ink-2:#c2ccdb; --ink-3:#9aa6bb; --ink-4:#93a0b6;
-  --line:#333f52; --line-2:#2a3444;
+  --line:#2b3040; --line-2:#22262f;
   --navy:#0e2352; --navy-2:#0a1a40; --navy-ink:#eef2f8;
   --teal:#2fc4d8; --teal-strong:#5cd6e6; --teal-tint:#123842; --teal-deep:#8fe6f0;
   --go:#ff8a33; --go-sh:#cc5f12; --kicker-bg:rgba(47,196,216,.15); --kicker-line:rgba(47,196,216,.36);
   --z-monitor:#40c8ee; --z-monitor-2:#6cd6f0; --z-monitor-tint:#1c3355;
   --z-read:#2fc4d8; --z-read-2:#6cdaea; --z-read-tint:#123842; --chip-bg:#16afc2; --chip-ink:#04252b; --read-head:#12233f; --read-head-2:#0e1c34;
   --z-do:#ff8a33; --z-do-2:#ffab63; --z-do-tint:#33240f;
-  --hud-1:#1a2740; --hud-2:#141f36; --hud-label:#aab6cf; --gauge-track:#2f3d52;
+  --hud-1:#141d33; --hud-2:#0e1526; --hud-label:#aab6cf; --gauge-track:#2a3548;
   --good:#3fd07a; --good-tint:#12291d; --good-line:#2c5a3e;
   --warn:#f7b053; --warn-tint:#2e2413; --warn-line:#5a4a24;
   --bad:#ff6f63; --bad-tint:#2e1c1b; --bad-line:#5a3330;
@@ -566,7 +566,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .reveal-box h5{font-size:var(--t-sm);display:flex;align-items:center;gap:8px}
 .reveal-box h5 svg{width:16px;height:16px}
 .reveal-box p{font-size:var(--t-sm);color:var(--ink-2);margin-top:6px;line-height:1.45}
-.db-lead-fail{margin:16px 0 4px;background:var(--bad-tint);border:1px solid var(--bad-line);border-radius:var(--r-lg);padding:20px 22px}
+/* A normal panel (matches the rest) with a red border + red icon/kicker for the
+   "serious" signal, rather than a muddy red fill that reads brown on dark. */
+.db-lead-fail{margin:16px 0 4px;background:var(--surface);border:1px solid var(--bad-line);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--shadow)}
 .db-lead-fail .dlf-k{display:flex;align-items:center;gap:8px;font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--bad)}
 .db-lead-fail .dlf-k svg{width:16px;height:16px}
 .db-lead-fail h2{font-size:var(--t-h2);margin-top:8px;color:var(--ink);letter-spacing:-.02em}
