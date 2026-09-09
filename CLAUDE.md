@@ -463,6 +463,40 @@ Frontline polish while prepping for testing + sale. All in `frontline.html`:
 - **Test harness added:** `node test/frontline-logic.js` drives the real state machine across all
   four scenarios (outcome path + readiness); 26/26. Use before any client sign-off.
 
+### DONE (2026-09 session, dark-theme redesign + visual polish for review)
+Client reviewed live and pushed hard on the dark theme + polish. All in `frontline.html`:
+- **Dark theme redesigned to a near-black, flat, bold-accent look** (client reference: the "Under
+  Pressure"/JAM PAN sim). Grounds/surfaces dropped to near-black (`--surface:#0f111a`), panels flat
+  with thin borders, brand accents kept but brightened. Fixed a real bug: the `[data-theme="dark"]`
+  (toggle) block was MISSING the `--zn-*`/`--violet`/`--sheen` line the system-dark block had, so
+  those fell back to LIGHT values on a dark page (bright panels, washed sheen). Restored. A theme
+  preview was built as a claude.ai artifact and client-approved before porting.
+- **Primary button (`.btn-go`) is now bold TEAL + white** (gradient `#0d8091`->`#0a6675`, white text,
+  teal glow), replacing the orange/navy CTA the client disliked. This BREAKS the old "orange = CTA"
+  brand rule with client sign-off; orange is now a reserved highlight only. **Teal-led accent
+  hierarchy** agreed: teal primary; cyan/magenta/violet supporting; orange reserved; green/amber/red
+  status only. Option cards (`.opt`) moved off orange onto teal (icon chip fills `#0d8091`).
+- **De-muddied the serving banner** (`.db-lead-fail`): flat `--surface` panel with a red border +
+  red icon/kicker instead of the maroon fill.
+- **Human-readable event labels** in the debrief "Captured this run" (DOC_OPENED -> "Records opened",
+  FLOWTEST_DONE -> "Flow test", etc.); internal `log()` keys unchanged.
+- **Type scale bumped** (body 16.5, sm 15.5, cap 14.5, eyebrow 13, nano 12.5) after "fonts too small".
+- Contrast re-verified after every change (both themes still clear AA; the navy cross-track/readiness
+  panel's coral/gold/amber/green text all 6-10:1).
+- **`UNLOCK_ALL=true`** test switch (in `isUnlocked`) keeps all four scenarios selectable for review;
+  flip to `false` to restore gated progression before launch.
+
+**Blind-iteration caveat:** the assistant has NO eyes on the rendered app; all visual fixes this
+session were driven by user screenshots. Screens NOT yet seen in the new theme: picker, landing,
+handover, decision/moment screens, reconcile (S2) + on-call (S4) widgets, emergency/outcome screens,
+mobile. Recommend a full click-through of all 4 scenarios in BOTH themes before sending to reviewers.
+
+**Custom domain (in progress):** serving from `rapid-learn.co.uk` via a **subdomain CNAME on GoDaddy**
+(e.g. `practiceready.rapid-learn.co.uk`) pointing at the Render target, then Verify in Render (auto
+HTTPS). Root domain left alone (company site + email). Frontline is at `/frontline.html` unless we
+make it the landing page. NOT for sale yet: needs WCAG 2.1 AA cert (axe/Lighthouse + manual), mobile
+pass, SCORM packaging, final SME (Emma) content sign-off.
+
 **NEXT (pending, user leaning yes):** move the end-of-session quiz to run ONCE after all four
 scenarios are complete (not per-scenario). Small change (~20-40 lines): gate `endOfSessionCTA()`
 on `SCEN_ORDER.every(id=>PROG[id])`, persist quiz completion in the durable `PROG` (not run-state,
