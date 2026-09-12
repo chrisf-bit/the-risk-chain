@@ -449,6 +449,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .conf-wrap p{color:var(--ink-3);font-size:var(--t-sm);margin-top:8px}
 .conf-choice{display:flex;gap:9px;align-items:flex-start;margin-top:16px;padding:12px 15px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);font-size:var(--t-sm);color:var(--ink);font-family:var(--serif)}
 .conf-choice svg{width:18px;height:18px;color:var(--teal-strong);flex:none;margin-top:3px}
+/* warm, process-focused affirmation on the consequence beat (never grades the choice) */
+.scene-affirm{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:var(--t-sm);font-weight:750;color:var(--teal-strong);background:var(--teal-tint);border:1px solid var(--line);border-radius:100px;padding:7px 15px}
+.scene-affirm svg{width:16px;height:16px;color:var(--teal-strong);flex:none}
 .conf-opts{display:flex;gap:11px;margin-top:22px;flex-wrap:wrap}
 .conf-pill{display:flex;flex-direction:column;gap:5px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;box-shadow:var(--shadow);min-width:150px;flex:1}
 .conf-pill:hover{border-color:var(--teal);background:var(--teal-tint)}
@@ -2188,7 +2191,10 @@ function consequenceBody(node){
       : '<button class="btn-go" data-act="next-node">'+svg(I.arrowR)+'Carry on</button>';
   // In-the-moment observation only: no grade, no coaching. The instrument
   // cluster above shows the situation change; judgement waits for the debrief.
+  // A warm, process-focused line encourages the learner for making the call,
+  // without ever telling them whether it was right (that waits for the debrief).
   return '<span class="eyebrow">'+node.time+' &middot; '+node.label+'</span>'
+    +'<p class="scene-affirm">'+svg(I.checkSmall)+'<span>'+affirmLine()+'</span></p>'
     +'<p class="scene-text">'+((o&&o.note)?o.note:'')+'</p>'
     +'<div class="micro-actions">'+btn+'</div>';
 }
@@ -2202,6 +2208,17 @@ function recogSceneText(){
 function confPill(v,ic,b,s){
   return '<button class="conf-pill" data-act="confidence" data-val="'+v+'"><span class="cp-ic">'+svg(I[ic])+'</span><b>'+b+'</b><span>'+s+'</span></button>';
 }
+// Encouragement for making the call. Process-focused, never grades the choice,
+// so it reads well whether the decision turns out right or wrong. Keyed to the
+// node index so it stays put across re-renders and varies across the shift.
+var AFFIRM_LINES=[
+  'Good, you weighed that up and made the call.',
+  'Nice work. You thought that through and decided.',
+  'Good thinking. That is your call.',
+  'Well done taking your time with that one.',
+  'Good, decision made and logged.'
+];
+function affirmLine(){ return AFFIRM_LINES[(S.nodeIdx||0) % AFFIRM_LINES.length]; }
 
 /* ---------- Instrument cluster ---------- */
 /* Live mealtime-risk score, 0..100, derived from the running mechanics.
