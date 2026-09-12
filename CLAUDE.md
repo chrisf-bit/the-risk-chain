@@ -20,7 +20,8 @@ limited time, choosing actions, and living with the consequences.
   ```
   awk '/<script>/{f=1;next}/<\/script>/{f=0}f' index.html > /tmp/rc.js && node -c /tmp/rc.js
   ```
-- Windows machine; commit trailer: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
+- Windows machine. **Never add a Co-Authored-By: Claude trailer or any AI/Claude
+  attribution to commits, PRs, code, or docs.** (Firm user rule.)
 
 ---
 
