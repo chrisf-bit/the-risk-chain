@@ -2514,15 +2514,25 @@ function scoreProfile(){
   if(c.QC!=null && m[c.QC]!=null){ resp = Math.round((resp + m[c.QC])/2); }
   if(S.paramedicsDone){ resp = Math.round((resp + S.paramedicsScore)/2); }
   return [
-    {k:'Information use', v:info, note:'Read the plan before serving; connected the medication clue.'},
-    {k:'Preparation', v:prep, note:'Verified and corrected the plate before the meal.'},
-    {k:'Dynamic judgement', v:dyn, note:'Held supervision across the door and the phone.'},
-    {k:'Person-centred practice', v:person, note:'Kept Daniel’s pace, dignity and prescribed fluid level, no blanket restriction or off-plan thickening.'},
-    {k:'Team coordination', v:team, note:'Called for help rather than abandoning supervision.'},
-    {k:'Response & learning', v:resp, note:'Responded proportionately to the small cough, recognised the emergency signs, and acted.'},
+    {k:'Information use', v:info, note:domNote({hi:'Read the plan before serving; connected the medication clue.', lo:'The plan was not fully read before serving, or the medication clue was missed.'}, info)},
+    {k:'Preparation', v:prep, note:domNote({hi:'Verified and corrected the plate before the meal.', lo:'The plate was not verified and corrected before the meal.'}, prep)},
+    {k:'Dynamic judgement', v:dyn, note:domNote({hi:'Held supervision across the door and the phone.', lo:'Supervision was not held across the door and the phone.'}, dyn)},
+    {k:'Person-centred practice', v:person, note:domNote({hi:'Kept Daniel’s pace, dignity and prescribed fluid level, no blanket restriction or off-plan thickening.', lo:'Daniel’s pace, dignity or prescribed fluid level was not fully held.'}, person)},
+    {k:'Team coordination', v:team, note:domNote({hi:'Called for help rather than abandoning supervision.', lo:'Supervision was left to manage a second demand instead of calling for help.'}, team)},
+    {k:'Response & learning', v:resp, note:domNote({hi:'Responded proportionately to the small cough, recognised the emergency signs, and acted.', lo:'The response to the cough or the emerging signs was not proportionate or timely.'}, resp)},
   ];
 }
 function barCls(v){ return v>=70?'hi':v>=40?'mid':'lo'; }
+/* Domain notes are band-aware so the line under the bar never contradicts the
+   score. A note can be a plain string (shown as-is) or {hi, lo}: the hi line
+   (what good practice looked like) shows for a strong score; the lo line (where
+   it fell short) shows otherwise. Resolved to a string in the scoring fns so
+   both debrief render paths stay unchanged. */
+function domNote(note,v){
+  if(note==null) return '';
+  if(typeof note==='string') return note;
+  return v>=70 ? (note.hi||note.lo||'') : (note.lo||note.hi||'');
+}
 
 /* The debrief opens with the serving decision whenever off-plan food or drink
    was served or allowed (SME Emma, Source of Truth v0.2 §4.1). It names the
@@ -2828,12 +2838,14 @@ function scoreProfileGeneric(){
   var doms=((SC.build&&SC.build.domains)||[]).map(function(d){
     var vs=d.nodes.map(scoreForNode).filter(function(v){return v!=null;});
     var v=vs.length?Math.round(vs.reduce(function(a,b){return a+b;},0)/vs.length):0;
-    return {k:d.k, v:clamp(v), note:d.note||''};
+    return {k:d.k, v:clamp(v), _note:d.note};
   });
   // Bespoke per-scenario nuance: reward evidence use beyond the raw choice kind
   // (e.g. reading the governing record before acting, or bringing the plan to hand).
   var adj=SC.build&&SC.build.scoreAdjust;
   if(adj){ doms.forEach(function(d){ var delta=adj(d.k); if(delta){ d.v=clamp(d.v+delta); } }); }
+  // Resolve the band-aware note against the FINAL score, then drop the raw form.
+  doms.forEach(function(d){ d.note=domNote(d._note, d.v); delete d._note; });
   return doms;
 }
 function outcomeMeta(o){
@@ -3144,12 +3156,12 @@ SCENARIOS.S2.build = {
              {v:pv, w:(pv>=70?'Settled':'Unsettled'), label:'Priya'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1','NR','QM'], note:'Read the discharge summary as the current source, reconciled the conflicting records, and did not treat more modification as automatically safer.'},
-    {k:'Preparation', nodes:['N2'], note:'Returned the wrong meal and prepared it to her plan before serving.'},
-    {k:'Person-centred practice', nodes:['N3','N4'], note:'Handled the family kindly and respected Priya’s home and her choices.'},
-    {k:'Capacity and consent', nodes:['N4'], note:'Offered a safe choice in her own tenancy rather than blanket control.'},
-    {k:'Dynamic judgement', nodes:['N5'], note:'Held safety while lone-working, without rushing her.'},
-    {k:'Response & learning', nodes:['N5','N6','NR','QP'], note:'Recognised the emerging sign, and escalated to realign the records for tomorrow.'},
+    {k:'Information use', nodes:['N1','NR','QM'], note:{hi:'Read the discharge summary as the current source, reconciled the conflicting records, and did not treat more modification as automatically safer.', lo:'The current record was not fully used here: the discharge summary, the reconciliation, or the over-modification judgement was missed.'}},
+    {k:'Preparation', nodes:['N2'], note:{hi:'Returned the wrong meal and prepared it to her plan before serving.', lo:'The meal was not brought to her plan before serving.'}},
+    {k:'Person-centred practice', nodes:['N3','N4'], note:{hi:'Handled the family kindly and respected Priya’s home and her choices.', lo:'The family, or Priya’s choices in her own home, were not fully carried with you here.'}},
+    {k:'Capacity and consent', nodes:['N4'], note:{hi:'Offered a safe choice in her own tenancy rather than blanket control.', lo:'Safety was held by restricting her rather than by offering a safe choice in her own home.'}},
+    {k:'Dynamic judgement', nodes:['N5'], note:{hi:'Held safety while lone-working, without rushing her.', lo:'Safety while lone-working was not fully held, or she was rushed.'}},
+    {k:'Response & learning', nodes:['N5','N6','NR','QP'], note:{hi:'Recognised the emerging sign, and escalated to realign the records for tomorrow.', lo:'The emerging sign, or the follow-up to realign the records, was missed.'}},
   ],
   scoreAdjust:function(k){
     if(k==='Information use'){ return S.opened.DOC_DISCHARGE ? 8 : -10; }   // reward reading the governing record
@@ -3370,12 +3382,12 @@ SCENARIOS.S3.build = {
              {v:av, w:(av>=70?'Settled':'Unsettled'), label:'Aaron'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N2','QL'], note:'Read the plan and IDDSI guidance, verified the thickener and scoop, and knew what a true Level 3 looks like.'},
-    {k:'Preparation', nodes:['N2','N3','QT'], note:'Prepared a true, separate Level 3 and a checked Level 2, without over-diluting, and confirmed it with the spoon-tilt test.'},
-    {k:'Person-centred practice', nodes:['N3'], note:'Kept his food’s identity and dignity, offered choice within his plan, and did not over-modify or reduce the meal to convenience.'},
-    {k:'Dynamic judgement', nodes:['N4'], note:'Re-established a calm space and managed posture and pace under disruption.'},
-    {k:'Team coordination', nodes:['N1'], note:'Checked the agency colleague’s competence before delegating.'},
-    {k:'Response & learning', nodes:['N5','N6','QP'], note:'Recognised the emerging sign early, and escalated for a review.'},
+    {k:'Information use', nodes:['N2','QL'], note:{hi:'Read the plan and IDDSI guidance, verified the thickener and scoop, and knew what a true Level 3 looks like.', lo:'The plan or IDDSI guidance was not fully checked, or the thickener, scoop or Level 3 standard was missed.'}},
+    {k:'Preparation', nodes:['N2','N3','QT'], note:{hi:'Prepared a true, separate Level 3 and a checked Level 2, without over-diluting, and confirmed it with the spoon-tilt test.', lo:'The Level 3 and Level 2 were not fully prepared and confirmed: components mixed, over-diluted, or the spoon-tilt test not used.'}},
+    {k:'Person-centred practice', nodes:['N3'], note:{hi:'Kept his food’s identity and dignity, offered choice within his plan, and did not over-modify or reduce the meal to convenience.', lo:'His food’s identity, dignity or choice within the plan was not fully protected.'}},
+    {k:'Dynamic judgement', nodes:['N4'], note:{hi:'Re-established a calm space and managed posture and pace under disruption.', lo:'The space, posture or pace was not fully re-established under the disruption.'}},
+    {k:'Team coordination', nodes:['N1'], note:{hi:'Checked the agency colleague’s competence before delegating.', lo:'The agency colleague’s competence was not checked before delegating.'}},
+    {k:'Response & learning', nodes:['N5','N6','QP'], note:{hi:'Recognised the emerging sign early, and escalated for a review.', lo:'The emerging sign was not recognised early, or the escalation for a review was missed.'}},
   ],
   scoreAdjust:function(k){
     if(k==='Information use'){ return (S.opened.DOC_IDDSI||S.opened.DOC_TEST) ? 8 : -10; }   // reward checking the texture standard
@@ -3600,12 +3612,12 @@ SCENARIOS.S4.build = {
              {v:mv, w:(mv>=70?'Settled':'Unsettled'), label:'Marcus'} ];
   },
   domains:[
-    {k:'Information use', nodes:['N1','QS'], note:'Checked the order against his plan, knew his Level 5 piece size, and had his details to hand for on-call.'},
-    {k:'Person-centred practice', nodes:['N4'], note:'Chose safe inclusion over exclusion, and protected his dignity in public.'},
-    {k:'Capacity and consent', nodes:['N2','N4'], note:'Did not mistake compliance for consent, and followed a best-interests process.'},
-    {k:'Team coordination', nodes:['N3'], note:'Reached the manager, then on-call, to agree a defensible way forward.'},
-    {k:'Dynamic judgement', nodes:['N3','N4'], note:'Held the line under escalating family and social pressure.'},
-    {k:'Response & learning', nodes:['N5','N6','QP'], note:'Recognised the emerging sign in the noise, and initiated a review.'},
+    {k:'Information use', nodes:['N1','QS'], note:{hi:'Checked the order against his plan, knew his Level 5 piece size, and had his details to hand for on-call.', lo:'The order was not fully checked against his plan, his Level 5 piece size, or the details needed for on-call.'}},
+    {k:'Person-centred practice', nodes:['N4'], note:{hi:'Chose safe inclusion over exclusion, and protected his dignity in public.', lo:'Safe inclusion and his dignity in public were not fully protected.'}},
+    {k:'Capacity and consent', nodes:['N2','N4'], note:{hi:'Did not mistake compliance for consent, and followed a best-interests process.', lo:'Compliance was treated as consent, or the best-interests process was not followed.'}},
+    {k:'Team coordination', nodes:['N3'], note:{hi:'Reached the manager, then on-call, to agree a defensible way forward.', lo:'The manager and on-call were not both reached to agree a defensible way forward.'}},
+    {k:'Dynamic judgement', nodes:['N3','N4'], note:{hi:'Held the line under escalating family and social pressure.', lo:'The line was not fully held under the family and social pressure.'}},
+    {k:'Response & learning', nodes:['N5','N6','QP'], note:{hi:'Recognised the emerging sign in the noise, and initiated a review.', lo:'The emerging sign in the noise was not recognised, or the review was not initiated.'}},
   ],
   scoreAdjust:function(k){
     if(k==='Information use'){ return S.planToHand ? 8 : -10; }   // reward bringing the plan and on-call details
