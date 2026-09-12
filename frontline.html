@@ -604,6 +604,25 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .crosstrack.r-good .r-chip{color:#7ee0a0;border-color:rgba(126,224,160,.42)}
 .crosstrack.r-warn .r-chip{color:#ffd27a;border-color:rgba(255,210,122,.42)}
 .crosstrack.r-bad .r-chip{color:#ff9b8f;border-color:rgba(255,155,143,.46)}
+/* Debrief summary card: brief result + strongest area + focus area, at the top
+   of the debrief so the audience gets the headline before the detail. */
+.db-summary{margin:0 0 16px;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:18px 20px}
+.dbs-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.dbs-k{font-size:var(--t-cap);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+.dbs-chip{display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:100px;font-weight:800;font-size:var(--t-body);color:#fff}
+.dbs-chip svg{width:19px;height:19px}
+.dbs-chip.good{background:var(--good)}
+.dbs-chip.warn{background:var(--warn)}
+.dbs-chip.bad{background:var(--bad)}
+.dbs-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dbs-col{display:flex;flex-direction:column;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px}
+.dbs-lbl{display:inline-flex;align-items:center;gap:7px;font-size:var(--t-cap);font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.dbs-lbl svg{width:15px;height:15px}
+.dbs-col b{font-size:var(--t-h3);color:var(--ink);line-height:1.2}
+.dbs-score{font-family:var(--mono);font-weight:700;color:var(--ink-2);font-size:var(--t-sm)}
+.dbs-col.good .dbs-lbl{color:var(--good)}
+.dbs-col.focus .dbs-lbl{color:var(--warn)}
+@media(max-width:900px){.dbs-cols{grid-template-columns:1fr}}
 .crosstrack .ct-chain{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
 .ct-node{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:650}
 .ct-node svg{width:15px;height:15px;color:#e2b877}
@@ -2671,6 +2690,7 @@ function viewDebrief(){
     +'<h1>How the shift went, and why</h1></div>'
     +'<span class="oc-badge '+om.cls+'">'+svg(om.ic)+om.label+'</span></div>'
 
+    + debriefSummaryCard()
     + servingFailLead()
 
     +'<div class="db-grid">'
@@ -2765,10 +2785,18 @@ function joinGaps(g){
   return g.slice(0,-1).join('; ')+'; and '+g[g.length-1];
 }
 function readiness(){
-  if(S.scenario!=='S1'){ return readinessGeneric(); }
-  // Assessment verdict, not coaching. Derived from the critical controls,
-  // the outcome and the practice profile.
-  let band,cls,txt;
+  var v=readinessVerdict();
+  return '<div class="crosstrack '+v.cls+'">'
+    +'<div class="ct-k">Readiness &middot; this run</div>'
+    +'<div class="r-band"><span class="r-chip">'+svg(v.band==='Ready'?I.shield:I.alertT)+v.band+'</span></div>'
+    +'<p>'+v.txt+'</p>'
+    +'</div>';
+}
+/* Assessment verdict, not coaching. {band, cls, txt}. Shared by the readiness
+   panel and the summary card at the top of the debrief. */
+function readinessVerdict(){
+  if(S.scenario!=='S1'){ return readinessVerdictGeneric(); }
+  var band,cls,txt;
   if(S.outcome==='D'){
     band='Not yet ready'; cls='r-bad';
     txt='The shift ended in the outcome this training exists to prevent. It was a chain of failures, each recoverable on its own. In practice, any one of them held would have changed the ending. This cannot be offset by good work elsewhere.';
@@ -2791,11 +2819,7 @@ function readiness(){
       txt='Supervision held, the food met Daniel’s plan, the records were used and the medication clue was flagged, and the meal stayed safe throughout. This is the standard a lone teatime shift asks for.';
     }
   }
-  return '<div class="crosstrack '+cls+'">'
-    +'<div class="ct-k">Readiness &middot; this run</div>'
-    +'<div class="r-band"><span class="r-chip">'+svg(band==='Ready'?I.shield:I.alertT)+band+'</span></div>'
-    +'<p>'+txt+'</p>'
-    +'</div>';
+  return {band:band, cls:cls, txt:txt};
 }
 /* Targeted toolkit: send the learner only to the tools their own decisions
    touched, not the whole library (build script §10). Built from run state. */
@@ -2982,7 +3006,7 @@ function summariseEventsGeneric(){
   out.push({k:'Outcome', d:'Path '+S.outcome+' ('+(oc[S.outcome]||'')+')'});
   return out;
 }
-function readinessGeneric(){
+function readinessVerdictGeneric(){
   var band,cls,txt;
   if(S.outcome==='D'){ band='Not yet ready'; cls='r-bad'; txt='The shift ended in the outcome this training exists to prevent. It came from a chain of failures, each recoverable on its own. This cannot be offset by good work elsewhere.'; }
   else if(S.outcome==='C'){ band='Not yet ready'; cls='r-bad'; txt='The emergency was survived, but only after a critical control had already failed earlier in the shift. Reaching an emergency at all means the safe margins were gone. This cannot be offset by good work elsewhere.'; }
@@ -2993,10 +3017,31 @@ function readinessGeneric(){
     if(gaps.length){ band='Developing'; cls='r-warn'; txt='A safe result, and '+SC.person+' stayed safe throughout. To reach the ready standard, next time also '+joinGaps(gaps)+'.'; }
     else { band='Ready'; cls='r-good'; txt='The plan was held, the records were used, the meal stayed safe, and '+SC.person+'’s dignity was kept throughout. This is the standard the shift asks for.'; }
   }
-  return '<div class="crosstrack '+cls+'">'
-    +'<div class="ct-k">Readiness &middot; this run</div>'
-    +'<div class="r-band"><span class="r-chip">'+svg(band==='Ready'?I.shield:I.alertT)+band+'</span></div>'
-    +'<p>'+txt+'</p></div>';
+  return {band:band, cls:cls, txt:txt};
+}
+/* Brief, audience-friendly summary at the top of the debrief: the headline
+   result, the strongest domain, and the one area to focus development. The full
+   detail still follows below. */
+function debriefSummaryCard(){
+  var v=readinessVerdict();
+  var chip = v.cls==='r-good'?'good':v.cls==='r-warn'?'warn':'bad';
+  var doms=scoreProfile();
+  if(!doms.length){ return ''; }
+  var best=doms[0], focus=doms[0];
+  doms.forEach(function(d){ if(d.v>best.v){best=d;} if(d.v<focus.v){focus=d;} });
+  var cols;
+  if(best.k===focus.k){                                   // every area scored the same
+    cols='<div class="dbs-col good"><span class="dbs-lbl">'+svg(I.shield)+'Consistent across every area</span><b>'+best.k+'</b><span class="dbs-score">'+best.v+' / 100</span></div>';
+  } else {
+    var focusLbl = focus.v>=70 ? 'Your area to keep sharp' : 'Focus your development here';
+    cols='<div class="dbs-col good"><span class="dbs-lbl">'+svg(I.shield)+'Your strongest area</span><b>'+best.k+'</b><span class="dbs-score">'+best.v+' / 100</span></div>'
+        +'<div class="dbs-col focus"><span class="dbs-lbl">'+svg(I.target)+focusLbl+'</span><b>'+focus.k+'</b><span class="dbs-score">'+focus.v+' / 100</span></div>';
+  }
+  return '<div class="db-summary">'
+    +'<div class="dbs-top"><span class="dbs-k">Your result</span>'
+    +  '<span class="dbs-chip '+chip+'">'+svg(chip==='good'?I.shield:I.alertT)+v.band+'</span></div>'
+    +'<div class="dbs-cols">'+cols+'</div>'
+    +'</div>';
 }
 function targetedToolkitGeneric(){
   var items=((SC.build&&SC.build.toolkitBase)||[]).slice();
@@ -3024,6 +3069,7 @@ function debriefShell(ccInner, reveal, ccSub){
     +'<div class="db-head"><div><span class="eyebrow">Debrief &middot; '+SC.title+'</span>'
     +'<h1>How the shift went, and why</h1></div>'
     +'<span class="oc-badge '+meta.cls+'">'+svg(meta.ic)+meta.label+'</span></div>'
+    + debriefSummaryCard()
     + servingFailLead()
     +'<div class="db-grid">'
     +  '<div class="panel"><h3>'+svg(I.gauge2)+'Your practice profile</h3>'
