@@ -379,6 +379,11 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .cue-pill svg{width:14px;height:14px;animation:cueBob 1.5s ease-in-out infinite}
 @keyframes cueBob{0%,100%{transform:translateY(-1px)}50%{transform:translateY(2px)}}
 @media (prefers-reduced-motion:reduce){.cue-pill svg{animation:none}}
+/* Soft bottom fade: a second, always-on-while-scrollable signal that content
+   continues below (scrollbars are hidden by rule 3). Sits under the pill. */
+.evi.can-scroll::after,.moment.can-scroll::after{content:'';position:absolute;left:0;right:0;bottom:0;height:46px;pointer-events:none;z-index:2}
+.evi.can-scroll::after{background:linear-gradient(to top,var(--ground),transparent)}
+.moment.can-scroll::after{background:linear-gradient(to top,var(--surface),transparent)}
 /* How-to-play coach tour: spotlight + anchored pop, mounted on <body> so it
    survives re-renders. Navy accents keep contrast in both themes. */
 .fl-tour{position:fixed;inset:0;z-index:200}
@@ -1719,8 +1724,17 @@ window.addEventListener('resize', function(){ if(tourActive()){ showTourStep(flT
 /* Toggle the "more below" cue on any scroll container that can still scroll down,
    and keep it in sync while the learner scrolls. */
 function updateCue(sc){
-  var cue=sc.parentNode && sc.parentNode.querySelector('.scroll-cue'); if(!cue) return;
-  cue.classList.toggle('on', (sc.scrollHeight - sc.clientHeight - sc.scrollTop) > 6);
+  var canScroll=(sc.scrollHeight - sc.clientHeight - sc.scrollTop) > 6;
+  var par=sc.parentNode;
+  if(par){
+    var cue=par.querySelector('.scroll-cue');
+    if(cue){ cue.classList.toggle('on', canScroll); }
+    par.classList.toggle('can-scroll', canScroll);   // drives the soft bottom fade
+  }
+}
+function reevalCues(){
+  var list=document.querySelectorAll('[data-scrollcue]');
+  for(var i=0;i<list.length;i++){ updateCue(list[i]); }
 }
 function wireScrollCues(){
   var list=document.querySelectorAll('[data-scrollcue]');
@@ -1728,6 +1742,10 @@ function wireScrollCues(){
     updateCue(sc);
     sc.addEventListener('scroll', function(){ updateCue(sc); }, {passive:true});
   })(list[i]); }
+  // The first pass can run before final layout/metrics; re-check once the frame
+  // has painted and again shortly after so the cue reliably turns on.
+  if(window.requestAnimationFrame){ requestAnimationFrame(reevalCues); }
+  setTimeout(reevalCues, 250);
 }
 window.addEventListener('resize', function(){ wireScrollCues(); });
 /* ---------- Scenario picker ---------- */
