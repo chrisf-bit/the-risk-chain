@@ -2171,9 +2171,9 @@ function confidenceBody(node){
     +(o?'<p class="conf-choice">'+svg(I.checkSmall)+'<span>'+o.text+'</span></p>':'')
     +'<p class="m-q">How confident are you in that decision?</p>'
     +'<div class="conf-opts">'
-    + confPill('cautious','scale','Cautious','Not sure it was right')
-    + confPill('measured','gauge2','Measured','Reasonably sure')
-    + confPill('confident','bolt','Confident','Sure it was right')
+    + confPill('cautious','scale','Low','Not confident')
+    + confPill('measured','gauge2','Medium','Fairly confident')
+    + confPill('confident','bolt','High','Very confident')
     +'</div>';
 }
 function consequenceBody(node){
