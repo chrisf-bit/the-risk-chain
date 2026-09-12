@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PracticE Ready - How it works</title>
+<style>
+:root{
+  --navy:#072a6b; --navy-2:#0b1f5d; --teal:#16afc2; --teal-deep:#0b6b78;
+  --orange:#ff7a1a; --ink:#1a2330; --ink-2:#48546a; --ink-3:#6b7789;
+  --line:#dde3ea; --surface:#fff; --surface-2:#f5f8fb; --tint:#eef7f9;
+  --good:#1a8f4c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#e9edf2;color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding:28px 16px}
+.page{max-width:840px;margin:0 auto;background:var(--surface);border-radius:16px;box-shadow:0 10px 40px rgba(16,32,64,.12);overflow:hidden}
+.pe-e{color:var(--teal)}
+.hd{background:linear-gradient(140deg,var(--navy),var(--navy-2));color:#fff;padding:32px 40px}
+.hd .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;margin-bottom:14px}
+.hd .mk{width:36px;height:36px;border-radius:10px;background:linear-gradient(150deg,var(--teal),var(--teal-deep));display:grid;place-items:center;font-weight:900}
+.hd h1{font-size:27px;letter-spacing:-.02em}
+.hd p{color:#a9bce0;font-size:14.5px;margin-top:8px;max-width:60ch}
+.body{padding:30px 40px 36px}
+h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--teal-deep);font-weight:800;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+h2.sec:not(:first-child){margin-top:30px}
+.section-lead{font-size:14.5px;color:var(--ink-2);margin:-6px 0 16px}
+
+/* three models */
+.models{display:grid;grid-template-columns:1fr;gap:12px}
+.model{border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:start}
+.model.reco{background:var(--tint);border-color:#bfe6ec}
+.model .mt{font-weight:800;font-size:15.5px}
+.model .badge{display:inline-block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#fff;background:var(--good);border-radius:100px;padding:3px 9px;margin-top:7px}
+.model .md{font-size:13.5px;color:var(--ink-2)}
+.model .md b{color:var(--ink)}
+.model .who{font-size:12.5px;color:var(--ink-3);margin-top:6px}
+
+/* build list */
+.build{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bcard{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.bcard h3{font-size:15px;margin-bottom:5px}
+.bcard p{font-size:13px;color:var(--ink-2)}
+.notbuild{margin-top:12px;background:#fff5ec;border:1px solid #ffd9b8;border-radius:12px;padding:14px 18px;font-size:13.5px;color:#8a4b12}
+.notbuild b{color:#6b3a0d}
+
+/* benefits + needs lists */
+ul.pts{list-style:none;display:grid;gap:9px}
+ul.pts li{display:flex;gap:10px;font-size:14px}
+ul.pts svg{width:18px;height:18px;color:var(--teal-deep);flex:none;margin-top:2px}
+ul.pts b{color:var(--ink)}
+.need-group{margin-bottom:14px}
+.need-group h4{font-size:14px;margin-bottom:7px}
+.need-group.easy h4::after{content:"low effort";font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--good);background:#e7f4ec;border-radius:100px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+.ft{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+.ft b{color:var(--ink)}
+@media (max-width:640px){.model,.build{grid-template-columns:1fr}.hd,.body{padding-left:24px;padding-right:24px}}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;max-width:none}.hd,.model.reco,.notbuild{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hd">
+    <div class="brand"><span class="mk">PR</span><span>Practic<span class="pe-e">E</span> Ready</span></div>
+    <h1>How it works</h1>
+    <p>What we build, the three ways to run it, the benefits, and the few things we need from you to make it work.</p>
+  </div>
+  <div class="body">
+
+    <h2 class="sec">The three ways to run it</h2>
+    <p class="section-lead">Same training and reporting either way. You pick the delivery that fits your setup.</p>
+    <div class="models">
+      <div class="model reco">
+        <div><div class="mt">Hosted by us</div><span class="badge">Recommended</span></div>
+        <div>
+          <div class="md"><b>We run everything.</b> Your staff open the training from a link we provide, and the results
+            flow straight to your dashboard. Nothing for your IT team to build or maintain.</div>
+          <div class="who">Your staff sign in to our platform. Simplest and most reliable, and it "just works".</div>
+        </div>
+      </div>
+      <div class="model">
+        <div class="mt">Through your own training system</div>
+        <div>
+          <div class="md"><b>We plug into your LMS.</b> The training runs inside the system your staff already use.
+            Modern systems can also pass the richer results through to your dashboard; older ones will still record who
+            completed it and their score.</div>
+          <div class="who">Your staff sign in to your existing system. We check its compatibility with you up front.</div>
+        </div>
+      </div>
+      <div class="model">
+        <div class="mt">Reporting only</div>
+        <div>
+          <div class="md"><b>You deliver, we make sense of the data.</b> We take the results and turn them into the
+            dashboard and coaching reports.</div>
+          <div class="who">No sign-in built by us. Best where systems are already in place.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="sec">What we are building</h2>
+    <div class="build">
+      <div class="bcard"><h3>The simulations</h3><p>Realistic, decision-based training scenarios your staff play through, with a supportive coaching debrief at the end.</p></div>
+      <div class="bcard"><h3>The manager dashboard</h3><p>Team readiness at a glance, who needs support, the shared strengths and gaps, and recommended next courses.</p></div>
+      <div class="bcard"><h3>A secure delivery layer</h3><p>A light, secure way for staff to reach the training and for results to reach your dashboard. Works on any device, even when the wifi drops.</p></div>
+      <div class="bcard"><h3>Best-in-class data protection</h3><p>UK data handling built in, with the option to run it without ever storing your staff's names.</p></div>
+    </div>
+    <div class="notbuild"><b>What we are not building, and you do not need:</b> a whole new learning management system for
+      you to run. This sits alongside what you already have. If you have no system, hosted-by-us covers everything.</div>
+
+    <h2 class="sec">The benefits</h2>
+    <ul class="pts">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span><b>Low burden on your team.</b> With hosted-by-us there is nothing to install or maintain.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span><b>Reliable results.</b> Training saves on the device and sends when it is back online, so nothing is lost on a weak connection.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span><b>Secure and compliant.</b> Data protection and access controls built in, ready for your DPO and for inspection.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span><b>Actionable insight.</b> Not just "who finished", but who is ready, who needs help, and exactly with what.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span><b>Fits your world.</b> Run it our way or through your own systems, on the devices your staff already use.</span></li>
+    </ul>
+
+    <h2 class="sec">What we need from you to make it work</h2>
+    <div class="need-group easy">
+      <h4>If we host it (recommended)</h4>
+      <ul class="pts">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>A list of who needs the training (or just share the link with your teams). That is essentially it.</span></li>
+      </ul>
+    </div>
+    <div class="need-group">
+      <h4>If you run it through your own system</h4>
+      <ul class="pts">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4"/></svg><span>A quick check with us that your system is compatible (we will confirm what it can and cannot pass through).</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4"/></svg><span>Your IT team to approve us as a trusted supplier. We give them a simple sheet listing exactly what to allow, a quick tick-box, not a project.</span></li>
+      </ul>
+    </div>
+    <div class="need-group">
+      <h4>For everyone</h4>
+      <ul class="pts">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>A signed data agreement (standard), and a decision on whether reporting uses names or stays anonymous.</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>A named contact on your side to get set up and answer any access questions.</span></li>
+      </ul>
+    </div>
+
+    <div class="ft">
+      <span><b>Practic<span class="pe-e">E</span> Ready</b> &middot; how it works</span>
+      <span>chris@rapid-learn.co.uk</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
