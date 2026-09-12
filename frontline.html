@@ -928,6 +928,7 @@ function debriefMedia(){
 }
 function setupDebriefVideo(){
   var v=document.querySelector('.debrief-video'); if(!v) return;
+  v.muted=!!S.muted;
   function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
   showCaps(); v.addEventListener('loadeddata', showCaps);
   var p=v.play(); if(p && p.catch){ p.catch(function(){}); }
@@ -1801,6 +1802,7 @@ function badgeStyle(accent){
 var introT=0;
 function setupIntroVideo(){
   var v=document.querySelector('.intro-video'); if(!v) return;
+  v.muted=!!S.muted;
   function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
   showCaps(); v.addEventListener('loadeddata', showCaps);
   v.addEventListener('loadedmetadata', function(){ if(introT>0 && introT < v.duration-0.3){ try{ v.currentTime=introT; }catch(e){} } });
@@ -1813,6 +1815,7 @@ function setupIntroVideo(){
 var handoverT=0, handoverEnded=false;
 function setupHandoverVideo(){
   var v=document.querySelector('.handover-video'); if(!v) return;
+  v.muted=!!S.muted;
   function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
   showCaps(); v.addEventListener('loadeddata', showCaps);
   v.addEventListener('loadedmetadata', function(){ if(handoverT>0 && handoverT < v.duration-0.3){ try{ v.currentTime=handoverT; }catch(e){} } });
@@ -3779,7 +3782,20 @@ function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); AUDIO
 function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); render(); }
 
 function restart(){ const keep={theme:S.theme,muted:S.muted}; const sc=S.scenario; resetShiftClock(); stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); S.scenario=sc; SC=SCENARIOS[sc]||SCENARIOS.S1; bindScenarioData(); S.stage=SC.built?'landing':'brief'; applyTheme(); save(); render(); }   // restart the current scenario (its landing; intro plays inline there)
-function toggleMute(){ S.muted=!S.muted; AUDIO.setMuted(S.muted); if(!S.muted){ AUDIO.sfx('toggle'); } save(); render(); }
+function toggleMute(){
+  S.muted=!S.muted;
+  AUDIO.setMuted(S.muted);                 // synthesised UI sound effects / ambience
+  // Mute the avatar video too, and do it WITHOUT a full render: rebuilding the
+  // DOM recreates the <video> and restarts the clip (the reviewer's bug, the
+  // debrief summary "starting again"). Toggle the element in place so playback
+  // and position are untouched, only the audio changes.
+  var vids=document.querySelectorAll('video');
+  for(var i=0;i<vids.length;i++){ vids[i].muted=S.muted; }
+  var btn=document.querySelector('[data-act="mute"]');
+  if(btn){ btn.setAttribute('aria-label', S.muted?'Unmute':'Mute'); btn.innerHTML=svg(S.muted?I.mute:I.sound); }
+  if(!S.muted){ AUDIO.sfx('toggle'); }
+  save();
+}
 
 /* ---------- Full screen ---------- */
 /* Cannot be triggered on load (browsers require a gesture), so we request it
