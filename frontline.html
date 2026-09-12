@@ -1862,7 +1862,7 @@ function setupIntroVideo(){
 /* Handover clip: captions on, autoplay (we arrive via a click so sound is
    allowed), and playback position preserved across re-renders so opening a
    document doesn't restart it. */
-var handoverT=0, handoverEnded=false;
+var handoverT=0, handoverEnded=false, handoverAutoplayed=false;
 function setupHandoverVideo(){
   var v=document.querySelector('.handover-video'); if(!v) return;
   v.muted=!!S.muted;
@@ -1871,7 +1871,14 @@ function setupHandoverVideo(){
   v.addEventListener('loadedmetadata', function(){ if(handoverT>0 && handoverT < v.duration-0.3){ try{ v.currentTime=handoverT; }catch(e){} } });
   v.addEventListener('timeupdate', function(){ handoverT=v.currentTime; });
   v.addEventListener('ended', function(){ handoverEnded=true; });
-  if(!handoverEnded){ var p=v.play(); if(p && p.catch){ p.catch(function(){}); } }
+  // Autoplay ONLY the first time the handover screen loads. On later re-renders
+  // (e.g. opening a record to read it) the element is rebuilt, but we do not
+  // replay it: it stays paused at its last position, so the shift lead never
+  // repeats herself while you read. The learner can resume with the controls.
+  if(!handoverAutoplayed && !handoverEnded){
+    handoverAutoplayed=true;
+    var p=v.play(); if(p && p.catch){ p.catch(function(){}); }
+  }
 }
 /* Disclaimer lightbox REMOVED (2026-08): the intro is now a welcome-only clip
    inline on the landing (setupIntroVideo), and the SME caveat moved to the end
@@ -3737,7 +3744,7 @@ SCENARIOS.S4.build = {
 };
 
 /* ---------- Reducers / actions ---------- */
-function beginShift(){ AUDIO.unlock(); goFullscreen(); mobTab='scene'; handoverT=0; handoverEnded=false; resetShiftClock(); S.stage='handover'; save(); render(); }
+function beginShift(){ AUDIO.unlock(); goFullscreen(); mobTab='scene'; handoverT=0; handoverEnded=false; handoverAutoplayed=false; resetShiftClock(); S.stage='handover'; save(); render(); }
 function toTable(){ S.timedOut=false; S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
   // Edge case: if the clock already expired (e.g. while reading the handover),
