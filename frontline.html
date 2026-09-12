@@ -344,9 +344,15 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* instrument cluster */
 .superstrip{flex:none;display:flex;align-items:stretch;gap:10px;margin-bottom:13px}
-.sv-clock{flex:none;background:linear-gradient(180deg,var(--hud-1),var(--hud-2));color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:9px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:118px}
+.sv-clock{flex:none;background:linear-gradient(180deg,var(--hud-1),var(--hud-2));color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:9px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:118px;position:relative}
 .sv-clock .cl{font-family:var(--mono);font-size:32px;font-weight:800;letter-spacing:1px}
 .sv-clock .cw{font-size:var(--t-nano);letter-spacing:.09em;text-transform:uppercase;color:var(--hud-label);font-weight:700}
+.cl-pause{position:absolute;top:5px;right:6px;width:22px;height:22px;display:grid;place-items:center;border:none;background:transparent;color:var(--hud-label);cursor:pointer;border-radius:6px;padding:0}
+.cl-pause:hover{background:var(--surface-3);color:var(--ink)}
+.cl-pause svg{width:15px;height:15px}
+.sv-clock.paused{border-color:var(--warn)}
+.sv-clock.paused .cl{color:var(--warn)}
+.sv-clock.paused .cl-pause{color:var(--warn)}
 .sv-gauge{flex:1;min-width:0;background:linear-gradient(180deg,var(--hud-1),var(--hud-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:11px 15px;display:flex;align-items:center;gap:13px}
 .sv-gauge .ring{position:relative;width:54px;height:54px;flex:none}
 .sv-gauge .ring svg{width:54px;height:54px;display:block}
@@ -1540,6 +1546,7 @@ function initState(){
     quizDone:false, quizFlag:false, declared:false,
     theme:null,
     muted:false,                // sound on by default
+    timedOut:false,             // shift countdown reached 00:00 mid-shift
   };
 }
 let S;
@@ -1583,27 +1590,52 @@ function currentTime(){
    running across the nodes and clamps at 00:00. Held in a non-persisted var
    so a page reload restarts the shift rather than resuming a stale count. */
 var SHIFT_SECONDS = 15*60;
-var shiftStartMs = 0, shiftTimer = null;
-function shiftRemaining(){
-  if(!shiftStartMs) return SHIFT_SECONDS;
-  return Math.max(0, SHIFT_SECONDS - Math.floor((Date.now()-shiftStartMs)/1000));
-}
+var shiftRem = SHIFT_SECONDS, shiftTimer = null, shiftPaused = false, shiftStarted = false;
+function shiftRemaining(){ return Math.max(0, shiftRem); }
 function fmtCountdown(s){ var m=Math.floor(s/60), ss=s%60; return m+':'+(ss<10?'0':'')+ss; }
 function tickShiftClock(){
-  var el=document.querySelector('.sv-clock .cl');
-  var rem=shiftRemaining();
-  if(el) el.textContent=fmtCountdown(rem);
-  if(rem<=0 && shiftTimer){ clearInterval(shiftTimer); shiftTimer=null; }
+  if(shiftPaused) return;                   // WCAG 2.2.1: learner can pause the limit
+  if(shiftRem>0) shiftRem--;
+  var el=document.querySelector('.sv-clock .cl'); if(el) el.textContent=fmtCountdown(shiftRem);
+  if(shiftRem<=0){ if(shiftTimer){ clearInterval(shiftTimer); shiftTimer=null; } onShiftTimeout(); }
 }
 function startShiftClock(){
-  if(shiftStartMs) return;                 // already counting
-  shiftStartMs=Date.now();
-  tickShiftClock();
+  if(shiftStarted) return;                  // already counting
+  shiftStarted=true; shiftRem=SHIFT_SECONDS; shiftPaused=false;
+  if(shiftTimer) clearInterval(shiftTimer);
   shiftTimer=setInterval(tickShiftClock,1000);
 }
 function resetShiftClock(){
   if(shiftTimer){ clearInterval(shiftTimer); shiftTimer=null; }
-  shiftStartMs=0;
+  shiftRem=SHIFT_SECONDS; shiftPaused=false; shiftStarted=false;
+}
+function stopShiftClock(){ if(shiftTimer){ clearInterval(shiftTimer); shiftTimer=null; } }
+/* Clock HUD tile shared by both superstrips, with a pause/resume control. */
+function clockWidget(){
+  return '<div class="sv-clock'+(shiftPaused?' paused':'')+'">'
+    +'<div class="cl">'+fmtCountdown(shiftRemaining())+'</div>'
+    +'<div class="cw">'+(shiftPaused?'Paused':'Time left')+'</div>'
+    +'<button class="cl-pause" data-act="shift-pause" aria-label="'+(shiftPaused?'Resume the timer':'Pause the timer')+'" title="'+(shiftPaused?'Resume':'Pause')+'">'+svg(shiftPaused?I.play:I.pause)+'</button>'
+    +'</div>';
+}
+/* Pause / resume the countdown (accessibility: readers who need longer, and
+   WCAG 2.2.1 Timing Adjustable). Only meaningful once the shift has started. */
+function toggleShiftPause(){
+  if(!shiftStarted || shiftRem<=0) return;
+  shiftPaused=!shiftPaused;
+  AUDIO.sfx('toggle');
+  render();
+}
+/* Running out of time is a non-fatal fail: the shift is incomplete, so we skip
+   straight to a dedicated debrief. No clinical outcome is invented, and the
+   scenario is NOT marked complete, so the learner retakes it. */
+function onShiftTimeout(){
+  if(S.stage!=='node' || S.timedOut) return;
+  S.timedOut=true;
+  stopShiftClock(); stopBuzzSequence(); AUDIO.ambienceStop();
+  log('SHIFT_TIMEOUT',{nodeIdx:S.nodeIdx, reached:(S.nodeIdx||0)+1, total:flow().length});
+  AUDIO.sfx('warn');
+  S.stage='debrief'; save(); render();
 }
 
 /* ---------- Render ---------- */
@@ -2285,7 +2317,7 @@ function superstrip(){
   const food = S.foodAccessible ? {v:45,w:'In reach'} : {v:100,w:'Secured'};
   const dan = S.primed ? {v:50,w:'Unsettled'} : {v:100,w:'Settled'};
   return '<div class="superstrip">'
-    +'<div class="sv-clock"><div class="cl">'+fmtCountdown(shiftRemaining())+'</div><div class="cw">Time left</div></div>'
+    + clockWidget()
     + meter(rk, rz.c, rz.l, 'Mealtime risk')
     + meter(sup.v, assurZone(sup.v), sup.w, 'Supervision')
     + meter(food.v, assurZone(food.v), food.w, 'Access to food')
@@ -2549,8 +2581,48 @@ function servingFailLead(){
     +'</div>';
 }
 
+/* ---------- Debrief: ran out of time ----------
+   A non-fatal fail. The shift was not completed in the 15-minute window, so we
+   show a dedicated debrief: no clinical outcome is invented, the scenario is not
+   marked complete, and the message is about pace and time management. */
+function viewDebriefTimeout(){
+  var doms=scoreProfile();
+  var domHtml=doms.map(function(d){
+    return '<div class="dom-row"><div class="dr-top"><b>'+d.k+'</b><span>'+d.v+' / 100</span></div>'
+      +'<div class="dom-bar"><i class="'+barCls(d.v)+'" style="width:'+d.v+'%"></i></div></div>';
+  }).join('');
+  var fl=flow();
+  var reached=Math.min((S.nodeIdx||0)+1, fl.length);
+  var who=SC.person||'the person';
+  return '<div class="debrief"><div class="db-wrap">'
+    +'<div class="db-head"><div><span class="eyebrow">Debrief &middot; '+SC.title+'</span>'
+    +'<h1>The shift ran out of time</h1></div>'
+    +'<span class="oc-badge oc-bad">'+svg(I.clock)+'Shift incomplete</span></div>'
+    +'<div class="db-lead-fail">'
+    +  '<span class="dlf-k">'+svg(I.clock)+'Time ran out</span>'
+    +  '<h2>The 15-minute shift ended before you finished supporting '+who+'.</h2>'
+    +  '<p>Time on a real shift is finite. Reading records and weighing decisions both use it, and spending too long on one part leaves the rest of the meal unattended. You reached '+reached+' of '+fl.length+' moments before the clock ran out, so the shift is incomplete. Pace matters as much as the right call. If you need longer to read, you can pause the timer.</p>'
+    +'</div>'
+    +'<div class="db-grid">'
+    +  '<div class="panel"><h3>'+svg(I.gauge2)+'Where you got to</h3>'
+    +    '<p class="ph-sub">Scored on the moments you completed. Areas you did not reach in time score low.</p>'
+    +    '<div class="dom">'+domHtml+'</div></div>'
+    +  '<div class="panel" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start">'
+    +    '<h3>'+svg(I.restart)+'Take it again</h3>'
+    +    '<p class="ph-sub" style="margin-bottom:16px">The shift is not marked complete. Run it again and keep an eye on the clock, or pause it while you read.</p>'
+    +    '<button class="btn-ghost" data-act="restart">'+svg(I.restart)+'Restart the shift</button></div>'
+    +'</div>'
+    +'<div class="crosstrack r-bad">'
+    +  '<div class="ct-k">Readiness &middot; this run</div>'
+    +  '<div class="r-band"><span class="r-chip">'+svg(I.alertT)+'Not yet ready</span></div>'
+    +  '<p>The shift was not completed within the time available. Managing your time, and not spending too long on any one record or decision, is part of safe practice, so this run cannot be assessed as ready. Take the shift again, using the pause control if you need more time to read.</p>'
+    +'</div>'
+    + caveatBox()
+    +'</div></div>';
+}
 /* ---------- Debrief (S6) ---------- */
 function viewDebrief(){
+  if(S.timedOut){ return viewDebriefTimeout(); }
   const doms=scoreProfile();
   const domHtml=doms.map(function(d){
     return '<div class="dom-row"><div class="dr-top"><b>'+d.k+'</b><span>'+d.v+' / 100</span></div>'
@@ -2818,7 +2890,7 @@ function superstripGeneric(){
   var extra=(SC.build&&SC.build.meters)?SC.build.meters():[];
   var m=extra.map(function(x){return meter(x.v,assurZone(x.v),x.w,x.label);}).join('');
   return '<div class="superstrip">'
-    +'<div class="sv-clock"><div class="cl">'+fmtCountdown(shiftRemaining())+'</div><div class="cw">Time left</div></div>'
+    + clockWidget()
     + meter(rk, rz.c, rz.l, 'Mealtime risk') + m + '</div>';
 }
 function scoreForNode(nodeId){
@@ -3666,8 +3738,11 @@ SCENARIOS.S4.build = {
 
 /* ---------- Reducers / actions ---------- */
 function beginShift(){ AUDIO.unlock(); goFullscreen(); mobTab='scene'; handoverT=0; handoverEnded=false; resetShiftClock(); S.stage='handover'; save(); render(); }
-function toTable(){ S.stage='node'; S.nodeIdx=0; enterNode(); }
+function toTable(){ S.timedOut=false; S.stage='node'; S.nodeIdx=0; enterNode(); }
 function enterNode(){
+  // Edge case: if the clock already expired (e.g. while reading the handover),
+  // fail on entering the shift proper rather than letting a 00:00 shift run on.
+  if(shiftStarted && shiftRemaining()<=0 && !S.timedOut){ onShiftTimeout(); return; }
   stopBuzzSequence();
   mobTab='scene';                // land on the moment when a new node opens
   S.sub='decide';               // decide first; confidence is asked inline after the choice
@@ -3782,6 +3857,7 @@ function resolve(){
   if(S.outcome==='B' && S.choices.N5!=='c'){ log('NEARMISS_RECORDED',{bool:true}); }
   log('OUTCOME',{path:S.outcome});
   AUDIO.ambienceStop();
+  stopShiftClock();           // shift resolved; the countdown no longer applies
   AUDIO.sfx({A:'good',B:'confirm',C:'warn',D:'somber'}[S.outcome]);
   markComplete(S.scenario);   // reaching the outcome completes the scenario, unlocking the next
   S.stage='outcome'; save(); render();
@@ -3888,6 +3964,7 @@ document.addEventListener('click', function(e){
     case 'quiz-submit': quizSubmit(); break;
     case 'begin': beginShift(); break;
     case 'to-table': toTable(); break;
+    case 'shift-pause': toggleShiftPause(); break;
     case 'confidence': setConfidence(el.getAttribute('data-val')); break;
     case 'choose': chooseOption(el.getAttribute('data-opt')); break;
     case 'next-node': nextNode(); break;
