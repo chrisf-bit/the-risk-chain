@@ -1429,7 +1429,7 @@ const SCENARIOS = {
       ['CC1','Proceed against unresolved guidance','Serving the regular roast, or allowing the biscuit, against a documentation conflict you have seen.'],
       ['CC2','Unverified handoff','Accepting the stale in-flat prompt at face value, or letting the unbriefed bank worker plate and serve.'],
     ],
-    signature:'Documentation alignment check. An active reconcile step: the conflicting records sit side by side and you decide which source is current for each field.' },
+    signature:'Documentation alignment check. An active reconcile step: at the end of the shift you put the stale records right so the next shift does not inherit the conflict.' },
   S3:{ id:'S3', built:false, badge:'S3', badgeIcon:'gauge2', accent:'violet',
     title:'Preparation Under Pressure', person:'Aaron',
     setting:'Bramble Close, supported-living shared house',
@@ -2816,7 +2816,9 @@ function scoreForNode(nodeId){
   var n=NODES[nodeId];
   if(n && n.type==='reconcile'){
     if(!S.alignmentDone) return null;
-    var c=S.alignCorrect||0; return c>=3?100:c===2?70:c===1?40:15;
+    // Scale to the number of fields (was hardcoded for 3; now field-count aware).
+    var rt=(SC.build&&SC.build.reconcile&&SC.build.reconcile.fields||[]).length||1;
+    var c=S.alignCorrect||0; return Math.max(15, Math.round((c/rt)*100));
   }
   if(n && n.type==='flowtest'){ return S.flowServed?S.flowScore:null; }
   if(n && n.type==='oncall'){ return S.oncallDone?S.oncallScore:null; }
@@ -2867,7 +2869,7 @@ function summariseEventsGeneric(){
   out.push({k:'Escalation', d:esc?'Escalated / called for help':'Not escalated'});
   if(SC.build&&SC.build.reconcile){
     var rt=(SC.build.reconcile.fields||[]).length;
-    out.push({k:'Records reconciled', d:S.alignmentDone?(S.alignCorrect+' of '+rt+' fields reconciled to the correct source'):'Records not reconciled'});
+    out.push({k:'Records reconciled', d:S.alignmentDone?(S.alignCorrect+' of '+rt+' records set right for the next shift'):'Records not reconciled'});
   }
   if(SC.build&&SC.build.flowtest){
     out.push({k:'Flow test', d:S.flowServed?(S.flowTextureOk?'Flow test run; Level 2 confirmed before serving':'Served without a true Level 2 texture'):'Fluids not tested'});
@@ -2998,8 +3000,8 @@ var DOCS_S2 = {
 var DOC_ORDER_S2 = ['DOC_PROMPT','DOC_DISCHARGE','DOC_EDAR','DOC_HANDOVER','DOC_REASSESS','DOC_IDDSI','DOC_ALIGN','DOC_CALL'];
 var NODES_S2 = {
   N1:{ order:1, time:'12:31', label:'Prompt vs record', icon:'clipboard', confidence:true,
-    scene:'The prompt in the flat reads “regular diet, independent”. You open the discharge summary. It says Level 5 food and Level 2 fluids, with an aspiration query on the ward.',
-    q:'The two records disagree. What do you do?',
+    scene:'The prompt in the flat reads “regular diet, independent”. The discharge summary, written when Priya came home from hospital, says something different.',
+    q:'The records do not agree. What do you do?',
     options:[
       {id:'a',kind:'defensible',events:[{t:'SOURCE_OF_TRUTH',p:{doc_id:'DOC_DISCHARGE'}},{t:'DOC_RELIED',p:{id:'DOC_DISCHARGE'}}],
        text:'Treat the discharge summary as the current clinical source. Do not serve the roast; plan to reconcile the records.',
@@ -3012,8 +3014,8 @@ var NODES_S2 = {
        tag:'bad', note:'You go with the prompt on the wall. It is the easiest to read, and it is the one that is now wrong.'},
     ]},
   N2:{ order:2, time:'12:36', label:'The roast', icon:'utensils', inject:true,
-    scene:'The meal left ready is a normal roast: sliced meat and whole vegetables. It is regular texture, not Level 5.',
-    q:'The roast is not Priya’s texture. What do you do?',
+    scene:'The meal left ready is a normal roast: sliced meat and whole vegetables.',
+    q:'This is the meal that was left ready for her. What do you do?',
     options:[
       {id:'a',kind:'defensible',events:[{t:'MEAL_STOPPED',p:{before_serving:true}}],
        text:'Hold the meal. Prepare a true Level 5, Minced & Moist plate with Level 2 fluids.',
@@ -3113,15 +3115,17 @@ SCENARIOS.S2.build = {
   orgFatal:'CQC is notified of Priya’s death.',
   recogNode:'N5', emergencyNode:'N6', closingNode:'NR', recordsLabel:'Priya’s records',
   reconcile:{
-    lead:'Before the next shift inherits the same trap, set which source is current for each part of Priya’s plan.',
-    cta:'Confirm the reconciliation',
+    lead:'The meal is safe now. Before you hand over, put the records right so the next shift does not inherit the same conflict. Decide what to do with each one.',
+    cta:'Confirm the handover',
     fields:[
-      {key:'food', ic:'utensils', label:'Food texture', correct:'discharge',
-       opts:[{val:'prompt',src:'Prompt in the flat',v:'Regular diet'},{val:'discharge',src:'Discharge summary',v:'Level 5, Minced & Moist'}]},
-      {key:'fluids', ic:'utensils', label:'Fluids', correct:'discharge',
-       opts:[{val:'prompt',src:'Prompt in the flat',v:'No restriction'},{val:'discharge',src:'Discharge summary',v:'Level 2, Mildly Thick'}]},
-      {key:'supervision', ic:'eye', label:'Supervision', correct:'discharge',
-       opts:[{val:'prompt',src:'Prompt in the flat',v:'Independent'},{val:'discharge',src:'Discharge summary',v:'Upright, unhurried, pacing'}]},
+      {key:'prompt', ic:'clipboard', label:'Prompt card in the flat', correct:'update',
+       opts:[{val:'leave',src:'Leave as is',v:'Next shift still reads “regular diet”'},{val:'update',src:'Update it',v:'Correct it to the current plan'}]},
+      {key:'edar', ic:'file', label:'EDAR decision record', correct:'update',
+       opts:[{val:'leave',src:'Leave as is',v:'Still shows pre-hospital arrangements'},{val:'update',src:'Update it',v:'Trigger the transition reassessment'}]},
+      {key:'handover', ic:'message', label:'Previous-shift handover note', correct:'update',
+       opts:[{val:'leave',src:'Leave as is',v:'Repeats the wrong meal'},{val:'update',src:'Update it',v:'Note the correct texture'}]},
+      {key:'discharge', ic:'check', label:'Hospital discharge summary', correct:'leave',
+       opts:[{val:'leave',src:'Leave as is',v:'It is the current clinical source'},{val:'update',src:'Change it',v:'You would be rewriting the SALT plan'}]},
     ],
   },
   intro:{ video:'assets/frontline/intro-s2.mp4', vtt:INTRO_S2_VTT },
