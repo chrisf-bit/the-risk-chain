@@ -201,12 +201,31 @@ The commercial hook that ties analytics back to revenue:
   centred practice -> here are two modules and the next course."
 - Managers get a **team development plan**: the courses that would lift the most
   people, ranked by aggregate need.
-- Every recommendation is a click-through into the catalogue: the analytics
-  product pays for itself by driving course sales.
+- Every recommendation is a click-through into **our own PracticE Ready
+  catalogue** (courses we host and sell): the analytics product pays for itself
+  by driving our course sales.
 
 Start rules-based (transparent, defensible: "amber on domain X -> course Y"), and
 only add statistical/ML personalisation once there is enough data and it can be
 explained. Avoid opaque scoring in a care/safeguarding context.
+
+**Important - what the funnel does and does not link to.** Recommendations launch
+courses **on our platform**, which we control end to end. We do **not** promise to
+link or enrol a user into the client's own (internal) LMS from the dashboard:
+
+- A truly internal LMS (on the client's network/intranet) is not reachable from an
+  external dashboard at all.
+- Even an internet-facing LMS cannot be deep-linked or enrolled into with a plain
+  hyperlink; that needs a per-client integration (LTI deep-linking, SSO, or the
+  LMS's API) and only works if their LMS supports it.
+
+So the baseline model is: **reporting flows out of their LMS to us (SCORM/xAPI);
+recommendations flow into our catalogue.** If a client wants the follow-on learning
+to live in their LMS instead, treat that as an optional, chargeable per-client
+integration (LTI), not a standard feature, and set expectations that it may be
+impossible for a closed internal system. Where no integration exists, the dashboard
+still shows the recommendation as guidance ("recommended next: Course X"), just
+without a live enrol button into their LMS.
 
 ---
 
