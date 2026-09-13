@@ -76,6 +76,65 @@ typical LMS score line.
 
 ---
 
+## 3b. The competency framework (the spine that scales)
+
+**This is the most important design decision in the whole product.** The
+dashboard must be organised around **competencies, not sims.** A sim is only ever
+*evidence*; the competency is the thing that lasts and the thing a manager cares
+about.
+
+Why: with a handful of sims you can get away with per-sim reporting. At 50 or 100
+sims it collapses into noise, and a manager looking at "Larkfield House did well
+on The Teatime Shift" has no idea what that actually means about their team's
+skills. Organise around competencies and the opposite happens: every new sim just
+adds evidence to the same stable set of competencies. Add the 101st sim and the
+dashboard does not change, it gets richer.
+
+**How it works:**
+
+- There is **one canonical competency framework** that lives *above* all sims.
+- Every sim maps each of its decision points to one or more competencies (a tag).
+  The sim's internal domain scoring becomes the mechanism; the competency is the
+  reporting unit.
+- A learner's competency score is **aggregated across every sim that touches it**
+  (weighted by recency and difficulty), so one weak run never defines them; the
+  pattern across evidence does.
+- The dashboard is **competency-first**: competency profile at the top, sims as
+  drill-down evidence underneath ("this competency was evidenced by these sims").
+
+**Anchor it to recognised standards (the commercial unlock).** The framework is a
+bespoke PracticE Ready competency set **crosswalked to CQC quality statements
+(Safe / Effective / Caring / Responsive / Well-led) and the Care Certificate.**
+We own a stable spine, and we can still report "evidence against CQC's Safe
+domain" or "Care Certificate Standard 12", which turns the dashboard into
+inspection evidence, not just training data.
+
+**"Good" must be explicit.** Every competency carries a **target** ("good" =
+meeting it), shown as a marker on every bar and used to flag who is below it, plus
+a plain one-line description and its CQC / Care Certificate mapping. A manager
+should never have to guess what "good at Larkfield House" means: they see the
+competency, its plain meaning, the score, and the target it is measured against.
+
+**Working framework (v0, seeded from the current sim domains, to confirm with Emma):**
+
+| Competency | Plain meaning | CQC | Care Cert |
+|---|---|---|---|
+| Using records & information | Reads the plan and connects the clues before acting | Safe / Effective | 9, 14 |
+| Safe preparation & following the plan | Prepares to the prescribed plan (e.g. IDDSI texture) | Safe / Effective | 8, 13 |
+| Person-centred practice & dignity | Protects choice and dignity; no blanket restriction | Caring / Responsive | 5, 7 |
+| Mental capacity & consent | Best-interests process; compliance is not consent | Effective / Caring | 3 |
+| Recognising & responding to deterioration | Spots emerging signs early; runs the response in time | Safe / Responsive | 3, 12 |
+| Judgement under pressure | Holds safe practice calmly under disruption | Safe / Effective | 13 |
+| Teamwork, escalation & delegation | Escalates in time; checks colleagues before delegating | Well-led / Safe | 6 |
+| Record-keeping & handover | Documents accurately; hands over safely | Safe / Well-led | 14 |
+
+**Data-model impact:** add a competency layer. Each scored item carries a
+`competency_id`; rollups aggregate by competency across attempts and across sims.
+The recommendations engine and development journeys key off **weak competencies**
+(mapped to courses tagged with the same competencies), not weak sims.
+
+---
+
 ## 4. Architecture
 
 The sim stays a single self-contained file. Around it:
