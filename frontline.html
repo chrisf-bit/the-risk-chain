@@ -1381,8 +1381,8 @@ function flow(){
 /* Near-miss recovery sequence (Path B). */
 const RECOVERY_STEPS_S1 = [
   'Recognise the signs and stop the meal straight away.',
-  'Keep Daniel upright and encourage him to cough.',
-  'Allow him to recover; do not offer food or drink to “clear it”.',
+  'Keep Daniel upright and encourage them to cough.',
+  'Allow them to recover; do not offer food or drink to “clear it”.',
   'Shout for help and escalate to the shift leader.',
   'Record a near miss (TK5.5b) once he is safe.',
   'Add an Early Watch entry (TK5.1) and get the plan reviewed.',
@@ -1501,8 +1501,15 @@ const PARAMEDICS_NODE = { order:9, time:'', label:'Handover to the paramedics', 
 function bindScenarioData(){
   var b=(SC&&SC.build)||{};
   NODES=b.nodes||{}; DOCS=b.docs||{}; DOC_ORDER=b.docOrder||[]; FLOW=b.base||[];
-  SCENE_IMG=b.sceneImg||{}; RECOVERY_STEPS=b.recovery||[]; WORKER_STEPS=b.worker||[];
-  ORG_STEPS=b.org||[]; ORG_STEP_FATAL=b.orgFatal||'';
+  SCENE_IMG=b.sceneImg||{};
+  // The post-incident step arrays (recovery / worker / org) are shared from the
+  // S1 build, so any person name baked into them must be re-pointed at the active
+  // scenario's person, or Daniel leaks into Priya, Aaron and Marcus. Map to new
+  // arrays (never mutate the shared S1 constants in place).
+  var person=(SC&&SC.person)||'Daniel';
+  var toPerson=function(s){ return typeof s==='string' ? s.split('Daniel').join(person) : s; };
+  RECOVERY_STEPS=(b.recovery||[]).map(toPerson); WORKER_STEPS=(b.worker||[]).map(toPerson);
+  ORG_STEPS=(b.org||[]).map(toPerson); ORG_STEP_FATAL=toPerson(b.orgFatal||'');
   NODES.QP = PARAMEDICS_NODE;   // shared post-emergency handover step
   // Warm the scene images so the first time a node is shown the photo is already
   // decoded in cache (render() recreates the <img> each time; a cached + sync-

@@ -12,15 +12,15 @@
   --ink:#1a2330; --ink-2:#48546a; --ink-3:#6b7789; --line:#dbe1e8;
   --ground:#eef2f7; --surface:#fff; --surface-2:#f5f8fb; --surface-3:#e9eef4;
   --good:#1a8f4c; --good-tint:#e7f4ec; --warn:#b9741f; --warn-tint:#fbf0e0;
-  --bad:#d5281b; --bad-tint:#fbe6e4; --sheen:rgba(255,255,255,.7);
+  --bad:#d5281b; --bad-tint:#fbe6e4; --sheen:rgba(255,255,255,.7); --on-band:#fff;
   --shadow:0 1px 2px rgba(16,32,64,.06),0 6px 20px rgba(16,32,64,.06);
   --r:10px; --r-lg:16px;
 }
 :root[data-theme="dark"]{
-  --navy:#0a1730;--navy-2:#0a1226;--teal:#3fc9db;--teal-deep:#16afc2;--ink:#e9eef6;--ink-2:#aab6c9;--ink-3:#818ea3;--line:#26304a;--ground:#080b14;--surface:#111726;--surface-2:#161d30;--surface-3:#1e2740;--good:#3ecf82;--good-tint:#10331f;--warn:#e6a04a;--warn-tint:#33260f;--bad:#ff7b6e;--bad-tint:#3a1512;--sheen:rgba(255,255,255,.05);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --navy:#0a1730;--navy-2:#0a1226;--teal:#3fc9db;--teal-deep:#16afc2;--ink:#e9eef6;--ink-2:#aab6c9;--ink-3:#818ea3;--line:#26304a;--ground:#080b14;--surface:#111726;--surface-2:#161d30;--surface-3:#1e2740;--good:#3ecf82;--good-tint:#10331f;--warn:#e6a04a;--warn-tint:#33260f;--bad:#ff7b6e;--bad-tint:#3a1512;--on-band:#0a1226;--sheen:rgba(255,255,255,.05);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --navy:#0a1730;--navy-2:#0a1226;--teal:#3fc9db;--teal-deep:#16afc2;--ink:#e9eef6;--ink-2:#aab6c9;--ink-3:#818ea3;--line:#26304a;--ground:#080b14;--surface:#111726;--surface-2:#161d30;--surface-3:#1e2740;--good:#3ecf82;--good-tint:#10331f;--warn:#e6a04a;--warn-tint:#33260f;--bad:#ff7b6e;--bad-tint:#3a1512;--sheen:rgba(255,255,255,.05);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --navy:#0a1730;--navy-2:#0a1226;--teal:#3fc9db;--teal-deep:#16afc2;--ink:#e9eef6;--ink-2:#aab6c9;--ink-3:#818ea3;--line:#26304a;--ground:#080b14;--surface:#111726;--surface-2:#161d30;--surface-3:#1e2740;--good:#3ecf82;--good-tint:#10331f;--warn:#e6a04a;--warn-tint:#33260f;--bad:#ff7b6e;--bad-tint:#3a1512;--on-band:#0a1226;--sheen:rgba(255,255,255,.05);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
 }}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--ground);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased}
@@ -248,6 +248,14 @@ var LEARNERS=[];
   }
 })();
 var BANDS={good:{label:'On track',color:'var(--good)',ic:I.good},warn:{label:'Some gaps',color:'var(--warn)',ic:I.warn},bad:{label:'Needs support',color:'var(--bad)',ic:I.bad}};
+/* Accessibility: the trend bars must not rely on colour alone. Draw the band's
+   symbol inside each segment (redundant to the fill) using --on-band, which
+   flips white/dark by theme so the glyph stays legible on either band palette. */
+function bandGlyph(k,cx,cy){
+  var inner=(I[k]||'').replace(/^<svg[^>]*>/,'').replace(/<\/svg>\s*$/,'');
+  var s=0.62; // 24px source viewBox -> ~15px glyph
+  return '<g transform="translate('+(cx-12*s).toFixed(1)+','+(cy-12*s).toFixed(1)+') scale('+s+')" style="color:var(--on-band);pointer-events:none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+inner+'</g>';
+}
 
 var state={cohort:'all',range:6,sortKey:'name',sortDir:1};
 function scope(){ return state.cohort==='all'?LEARNERS:LEARNERS.filter(function(l){return l.cohort===state.cohort;}); }
@@ -312,7 +320,7 @@ function renderTrend(){
   for(var gy=0;gy<=maxT;gy+=Math.ceil(maxT/4)){ var y=H-pad-(gy/maxT)*(H-pad*2); svg+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/><text x="'+(pad-6)+'" y="'+(y+3)+'" text-anchor="end" font-size="10" fill="var(--ink-3)">'+gy+'</text>'; }
   data.forEach(function(d,i){
     var x=pad+(i+.5)*((W-pad*2)/data.length)-bw/2, y=H-pad;
-    [['bad',d.bad],['warn',d.warn],['good',d.good]].forEach(function(seg){ var hh=(seg[1]/maxT)*(H-pad*2); if(hh<=0)return; y-=hh; svg+='<rect x="'+x+'" y="'+(y+1)+'" width="'+bw+'" height="'+Math.max(0,hh-2)+'" rx="3" fill="'+BANDS[seg[0]].color+'" class="tseg" data-m="'+d.m+'" data-k="'+seg[0]+'" data-v="'+seg[1]+'" data-t="'+d.total+'"/>'; });
+    [['bad',d.bad],['warn',d.warn],['good',d.good]].forEach(function(seg){ var hh=(seg[1]/maxT)*(H-pad*2); if(hh<=0)return; y-=hh; svg+='<rect x="'+x+'" y="'+(y+1)+'" width="'+bw+'" height="'+Math.max(0,hh-2)+'" rx="3" fill="'+BANDS[seg[0]].color+'" class="tseg" data-m="'+d.m+'" data-k="'+seg[0]+'" data-v="'+seg[1]+'" data-t="'+d.total+'"/>'; if(hh>=17){ svg+=bandGlyph(seg[0], x+bw/2, y+hh/2); } });
     svg+='<text x="'+(x+bw/2)+'" y="'+(H-pad+15)+'" text-anchor="middle" font-size="11" fill="var(--ink-3)">'+d.m+'</text>';
   });
   svg+='</svg>';
