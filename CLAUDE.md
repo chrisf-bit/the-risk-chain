@@ -507,6 +507,28 @@ debrief / both). Also: **SCORM must report the questionnaire results** (each ans
 `flagged` boolean + completion/declaration) to the LMS. See auto-memory
 `frontline-scorm-questionnaire-reporting`.
 
+### DONE (2026-09-25 session, last-minute review fixes)
+Two client review fixes, committed + pushed (`bc76abd`, deploys to Render):
+- **Reporting dashboard accessibility (`reporting-dashboard.html`), "Readiness over time" trend
+  chart:** the stacked bars distinguished On track / Some gaps / Needs support by **colour alone**
+  (WCAG 1.4.1 fail). Now each segment carries its **band symbol** (the check / warning-triangle /
+  cross that already appears in the legend), redundant to the fill. New `bandGlyph(k,cx,cy)` helper
+  strips the outer `<svg>` off `I[k]` and draws the glyph centred in the segment, gated on segment
+  height (`hh>=17px`) so tiny slivers don't clutter; `pointer-events:none` so it doesn't steal the
+  segment's hover tooltip. Glyph colour is a new **`--on-band` token** (light theme `#fff`, both dark
+  blocks `#0a1226`) so it stays legible on the dark bands (light theme) AND the light bands (dark
+  theme) — graphical-object 3:1 bar met in both. Legend already showed the same symbols, so there's
+  now a symbol→meaning key plus symbols on the bars.
+- **Frontline (`frontline.html`) "Daniel" leaking into other people:** the post-incident step arrays
+  (`RECOVERY_STEPS_S1` / `WORKER_STEPS_S1` / `ORG_STEPS_S1`) are shared verbatim into S2 (Priya), S3
+  (Aaron) and S4 (Marcus), and had "Daniel" baked in — so the wrong name showed in all three later
+  scenarios (client spotted it at Marcus, "Step 2"). Fixed centrally in `bindScenarioData()`: the
+  reused arrays are now `.map()`-ed through `toPerson()` which swaps `'Daniel'` for `SC.person`
+  (mapped to NEW arrays — never mutate the shared S1 constants; S1 is a no-op). Also made two
+  `RECOVERY_STEPS_S1` pronouns neutral (`him/he` -> `them`), which the name-swap would otherwise have
+  exposed for Priya (she/her); reads correctly for all four people. `orgFatal` is already per-scenario
+  so it was unaffected. Both files pass the brace-balance + `node -c` checks.
+
 ### OPEN THREADS
 - **ALL ASSETS COMPLETE** (2026‑08): every scenario has its intro + handover + all 4 debrief
   clips (25 videos, compressed to ~38MB total via ffmpeg 720p CRF23) and all node scene images
