@@ -894,8 +894,10 @@ const SCENE_IMG_S1 = {
   handover:{src:'assets/frontline/scene-handover.jpg', pos:'50% 14%'},
   N1:{src:'assets/frontline/scene-plate.jpg', pos:'50% 56%'},
   N2:{src:'assets/frontline/scene-door.jpg', pos:'50% 44%', glow:{left:'82%', top:'34%'}},
+  N3:{src:'assets/frontline/scene-phone.jpg', pos:'50% 45%'},
   N4:{src:'assets/frontline/scene-housemate.jpg', pos:'50% 40%'},
   N5:{src:'assets/frontline/scene-signs.jpg', pos:'50% 30%'},
+  N6:{src:'assets/frontline/scene-emergency.jpg', pos:'50% 45%'},
 };
 /* The emergency node reuses the emerging-signs illustration (SVG fallback). */
 SCENES.N6 = SCENES.N5;
@@ -1531,7 +1533,7 @@ function markComplete(id){ if(id && !PROG[id]){ PROG[id]=true; saveProg(); } }
 /* TESTING SWITCH: unlock every scenario so all four are selectable without
    completing the previous one. Set back to false to restore gated progression
    (each unlocks when the previous is complete) before launch. */
-const UNLOCK_ALL = true;
+const UNLOCK_ALL = false;   // sequential unlock: a scenario opens once the previous is completed
 function isUnlocked(id){ if(UNLOCK_ALL) return true; var i=SCEN_ORDER.indexOf(id); if(i<=0) return true; return !!PROG[SCEN_ORDER[i-1]]; }
 
 /* ---------- State ---------- */
@@ -1928,7 +1930,7 @@ function topbar(){
     + nav
     +'<button class="tb-btn" data-act="mute" aria-label="'+(S.muted?'Unmute':'Mute')+'">'+svg(S.muted?I.mute:I.sound)+'</button>'
     +'<button class="tb-btn" data-act="fullscreen" aria-label="'+(isFs()?'Exit full screen':'Full screen')+'">'+svg(isFs()?I.compress:I.expand)+'</button>'
-    +'<button class="tb-btn" data-act="theme" aria-label="Switch light or dark theme">'+svg(themeIc)+'</button>'
+    /* Theme toggle hidden: sim is light-only for now (dark mode backlogged). */
     +'</header>';
 }
 
@@ -3922,7 +3924,47 @@ function resolve(){
   markComplete(S.scenario);   // reaching the outcome completes the scenario, unlocking the next
   S.stage='outcome'; save(); render();
 }
-function toDebrief(){ S.stage='debrief'; save(); render(); }
+/* When the sim runs embedded in the PracticE Ready platform (inside an iframe),
+   post the finished run's results to the parent so they can be saved. Fires once
+   per run, only when embedded; the standalone sim is completely unaffected and
+   nothing here can break the sim (all wrapped, best-effort). */
+var CONTROL_LABELS={
+  S1:{cc1:'Supervision break',            cc2:'Off-plan food or drink served'},
+  S2:{cc1:'Off-plan food or drink served',cc2:'Unverified handover acted on'},
+  S3:{cc1:'Off-plan food or drink served',cc2:'Unverified handover acted on'},
+  S4:{cc1:'Off-plan food or drink served',cc2:'Decision made without authority'}
+};
+function emitAttempt(){
+  try{
+    // Report to the platform: the opener window (SCORM-style popup launch) or the
+    // parent frame (embedded iframe). Standalone (neither) = nothing to report.
+    var target = (window.opener && window.opener!==window) ? window.opener
+               : (window.parent && window.parent!==window ? window.parent : null);
+    if(!target || S._emitted) return;
+    S._emitted=true;
+    var v=readinessVerdict();
+    var band=v.band==='Ready'?'green':(v.band==='Developing'?'amber':'red');
+    var domains={}; try{ scoreProfile().forEach(function(d){ domains[d.k]=d.v; }); }catch(e){}
+    var lab=CONTROL_LABELS[S.scenario]||{};
+    var controls=[];
+    if(S.cc1) controls.push(lab.cc1||'Critical control 1');
+    if(S.cc2) controls.push(lab.cc2||'Critical control 2');
+    var records=[]; try{ Object.keys(S.opened||{}).forEach(function(k){ if(S.opened[k]) records.push(k); }); }catch(e){}
+    var attempt={
+      scenario_id:S.scenario,
+      scenario_name:(SC&&SC.title)||S.scenario,
+      outcome:S.outcome||null,
+      readiness:band,
+      controls_tripped:controls,
+      records_opened:records,
+      domains:domains,
+      quiz:S.quiz||{},
+      payload:{ choices:S.choices, events:S.events, quizFree:S.quizFree||null, quizFlag:!!S.quizFlag }
+    };
+    target.postMessage({type:'PR_ATTEMPT_COMPLETE', attempt:attempt}, window.location.origin);
+  }catch(e){ /* never break the sim over telemetry */ }
+}
+function toDebrief(){ emitAttempt(); S.stage='debrief'; save(); render(); }
 
 var docView=null; // transient (not persisted): which doc is open, and when, for dwell_ms
 function recordDwell(){
@@ -4057,6 +4099,11 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape' && S.modal
    build bundle has been defined above. Guard against a stale/removed scenario. */
 if(S.scenario && SCENARIOS[S.scenario] && SCENARIOS[S.scenario].built){ SC = SCENARIOS[S.scenario]; bindScenarioData(); }
 else if(S.scenario && (!SCENARIOS[S.scenario] || !SCENARIOS[S.scenario].built)){ S.scenario=null; S.stage='picker'; }
+/* Light mode only for now: pin the sim to light and ignore any persisted or
+   query theme. The in-sim toggle is hidden. Dark mode for the user view is
+   backlogged (needs contrast tweaks). To re-enable, restore the ?theme inherit
+   below and the theme button in the top bar. */
+try{ S.theme='light'; save(); }catch(e){}
 applyTheme();
 render();
 /* Wake the audio engine on the first (and any) user interaction, so UI cues
