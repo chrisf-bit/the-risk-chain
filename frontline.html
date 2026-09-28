@@ -1702,8 +1702,11 @@ function render(){
   if(S.stage==='handover'){ setupHandoverVideo(); startShiftClock(); }
   if(S.stage==='debrief'){ setupDebriefVideo(); }
   wireScrollCues();
-  // First-time users: auto-run the gameplay tour once, when the first moment loads.
-  if(S.stage==='node' && !flTourSeen()){ markTourSeen(); setTimeout(function(){ if(S.stage==='node' && !tourActive()){ startTour(); } }, 450); }
+  // First time a learner reaches each stage, auto-run that stage's short tour so
+  // guidance appears exactly when they need to act (choosing a scenario, the
+  // intro, the handover, the table, the debrief). Revisit any time via "How to
+  // play". Seen-state is tracked per stage (frontline_tour_v2).
+  if(tourForStage().length && !flTourSeen(S.stage)){ var _tst=S.stage; markTourSeen(_tst); setTimeout(function(){ if(S.stage===_tst && !tourActive()){ startTour(); } }, 450); }
 }
 /* ---------- How-to-play coach tour (contextual by stage) ---------- */
 var TOURS={
@@ -1730,8 +1733,8 @@ var TOURS={
   ],
 };
 var flTourSteps=[], flTourIdx=0;
-function flTourSeen(){ try{ return localStorage.getItem('frontline_tour_v1')==='1'; }catch(e){ return false; } }
-function markTourSeen(){ try{ localStorage.setItem('frontline_tour_v1','1'); }catch(e){} }
+function flTourSeen(stage){ try{ return (localStorage.getItem('frontline_tour_v2')||'').split(',').indexOf(stage)>=0; }catch(e){ return false; } }
+function markTourSeen(stage){ try{ var v=(localStorage.getItem('frontline_tour_v2')||'').split(',').filter(Boolean); if(v.indexOf(stage)<0){ v.push(stage); localStorage.setItem('frontline_tour_v2', v.join(',')); } }catch(e){} }
 function flTourEl(){ var e=document.getElementById('fl-tour-root'); if(!e){ e=document.createElement('div'); e.id='fl-tour-root'; document.body.appendChild(e); } return e; }
 function tourActive(){ return !!flTourEl().innerHTML; }
 function tourForStage(){ return TOURS[S.stage] || []; }
