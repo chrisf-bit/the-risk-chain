@@ -1768,12 +1768,17 @@ function showTourStep(i){
   var tryPlace=function(name){ if(name==='left'&&left()){plClass='pl-left';return true;} if(name==='top'&&above()){plClass='pl-top';return true;} if(name==='right'&&right()){plClass='pl-right';return true;} if(name==='bottom'&&below()){plClass='pl-bottom';return true;} return false; };
   done=tryPlace(step.place);
   if(!done){ if(below()){plClass='pl-bottom';} else if(above()){plClass='pl-top';} else if(left()){plClass='pl-left';} else { right(); plClass='pl-right'; } }
+  // Point the arrow at the target's centre (the popover is centred on the target,
+  // so a fixed arrow offset would miss it).
+  var arrowStyle=(plClass==='pl-top'||plClass==='pl-bottom')
+    ? 'left:'+Math.round(cl(r.left+r.width/2-popL-7,12,popW-26))+'px'
+    : 'top:'+Math.round(cl(r.top+r.height/2-popT-7,12,popH-26))+'px';
   var last=i===flTourSteps.length-1;
   flTourEl().innerHTML='<div class="fl-tour">'
     +'<div class="fl-tour-block" data-act="tour-skip"></div>'
     +'<div class="fl-tour-spot" style="top:'+spot.t+'px;left:'+spot.l+'px;width:'+spot.w+'px;height:'+spot.h+'px"></div>'
     +'<div class="fl-pop '+plClass+'" style="top:'+Math.round(popT)+'px;left:'+Math.round(popL)+'px" role="dialog" aria-label="'+step.h+'">'
-    +'<div class="fp-arrow"></div>'
+    +'<div class="fp-arrow" style="'+arrowStyle+'"></div>'
     +'<span class="fp-num">Step '+(i+1)+' of '+flTourSteps.length+'</span>'
     +'<h4><span class="fp-ico">'+svg(I[step.ico]||I.info)+'</span>'+step.h+'</h4>'
     +'<p>'+step.p+'</p>'
