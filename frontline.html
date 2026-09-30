@@ -344,7 +344,7 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 
 /* instrument cluster */
 .superstrip{flex:none;display:flex;align-items:stretch;gap:10px;margin-bottom:13px}
-.sv-clock{flex:none;background:linear-gradient(180deg,var(--hud-1),var(--hud-2));color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:9px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:118px;position:relative}
+.sv-clock{flex:none;background:linear-gradient(180deg,var(--hud-1),var(--hud-2));color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:9px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:152px;position:relative}
 .sv-clock .cl{font-family:var(--mono);font-size:32px;font-weight:800;letter-spacing:1px}
 .sv-clock .cw{font-size:var(--t-nano);letter-spacing:.09em;text-transform:uppercase;color:var(--hud-label);font-weight:700}
 .cl-pause{position:absolute;top:5px;right:6px;width:22px;height:22px;display:grid;place-items:center;border:none;background:transparent;color:var(--hud-label);cursor:pointer;border-radius:6px;padding:0}
@@ -1683,7 +1683,8 @@ function render(){
   else if(S.stage==='outcome') view=viewOutcome();
   else if(S.stage==='debrief') view=viewDebrief();
   else if(S.stage==='questionnaire') view=viewQuestionnaire();
-  app.innerHTML = topbar() + view + (S.modal?docModal(S.modal.id):'');
+  app.innerHTML = topbar() + view;
+  renderModal();
   // Entrance animations should play only when the SCREEN changes (a new node, a
   // consequence reveal, a stage change), not on every in-place re-render (e.g.
   // adjusting scoops, selecting a tin, answering the on-call). render() rebuilds
@@ -3984,6 +3985,16 @@ function recordDwell(){
   }
   docView=null;
 }
+/* The doc modal lives in its own body-level root (like the coach tour) so opening,
+   switching or closing a record does NOT rebuild the view. A full render() recreates
+   the handover <video>, which restarts it — the "video refreshes when reading a
+   document" bug. Clicks still work because the delegated listener is on document. */
+function flModalRoot(){ var e=document.getElementById('fl-modal-root'); if(!e){ e=document.createElement('div'); e.id='fl-modal-root'; document.body.appendChild(e); } return e; }
+function renderModal(){ flModalRoot().innerHTML = S.modal ? docModal(S.modal.id) : ''; }
+/* Re-render just the evidence rail in place (to mark a record as opened) without
+   touching the video or the rest of the view. */
+function refreshRail(){ var r=document.querySelector('.evi'); if(r){ r.outerHTML=eviRail(); wireScrollCues(); } }
+
 function openDoc(id){
   if(docView){ recordDwell(); }               // switching straight to another doc
   if(!S.opened[id]){
@@ -3992,10 +4003,10 @@ function openDoc(id){
   }
   docView={id:id, at:Date.now()};
   AUDIO.sfx('open');
-  S.modal={id:id}; save(); render();
+  S.modal={id:id}; save(); renderModal(); refreshRail();
 }
-function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); AUDIO.sfx('confirm'); save(); render(); }
-function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); render(); }
+function flagMed(){ S.medFlagged=true; log('MEDCLUE_FLAGGED',{bool:true}); AUDIO.sfx('confirm'); save(); renderModal(); }
+function closeModal(){ recordDwell(); AUDIO.sfx('close'); S.modal=null; save(); renderModal(); }
 
 function restart(){ const keep={theme:S.theme,muted:S.muted}; const sc=S.scenario; resetShiftClock(); stopBuzzSequence(); AUDIO.ambienceStop(); S=Object.assign(initState(),keep); S.scenario=sc; SC=SCENARIOS[sc]||SCENARIOS.S1; bindScenarioData(); S.stage=SC.built?'landing':'brief'; applyTheme(); save(); render(); }   // restart the current scenario (its landing; intro plays inline there)
 function toggleMute(){
