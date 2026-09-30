@@ -4109,8 +4109,17 @@ document.addEventListener('click', function(e){
     case 'tour-skip': endTour(); break;
   }
 });
-document.addEventListener('fullscreenchange', render);
-document.addEventListener('webkitfullscreenchange', render);
+// Entering/exiting full screen must NOT call render(): a full re-render recreates
+// the <video> elements and interrupts playback (the handover clip stopped
+// autoplaying because the just-started element was rebuilt; the debrief clip
+// "started again"). Sync only the toolbar button in place. The tour and scroll
+// cues already re-run on the resize event that a fullscreen change fires.
+function syncFsBtn(){
+  var btn=document.querySelector('[data-act="fullscreen"]');
+  if(btn){ btn.setAttribute('aria-label', isFs()?'Exit full screen':'Full screen'); btn.innerHTML=svg(isFs()?I.compress:I.expand); }
+}
+document.addEventListener('fullscreenchange', syncFsBtn);
+document.addEventListener('webkitfullscreenchange', syncFsBtn);
 document.addEventListener('keydown', function(e){ if(e.key==='Escape' && S.modal){ closeModal(); } });   // WCAG 2.1.2: Esc closes the reader
 
 /* ---------- Boot ---------- */
