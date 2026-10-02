@@ -3962,6 +3962,9 @@ function emitAttempt(){
     var attempt={
       scenario_id:S.scenario,
       scenario_name:(SC&&SC.title)||S.scenario,
+      // The sim's full scenario list, so the platform can show "X of N" progress
+      // and keep scenario names in sync without manual upkeep.
+      scenarios:SCEN_ORDER.map(function(id,i){ return {id:id, name:(SCENARIOS[id]&&SCENARIOS[id].title)||id, order:i+1}; }),
       outcome:S.outcome||null,
       readiness:band,
       controls_tripped:controls,
