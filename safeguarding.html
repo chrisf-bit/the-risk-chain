@@ -71,6 +71,8 @@ a{color:var(--teal-strong)}
 .tb-sp{flex:1}
 .tb-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#eaf1fb;border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:650}
 .tb-btn:hover{background:rgba(255,255,255,.16)}
+.tb-btn.tb-icon{padding:7px 9px}
+.tb-btn svg{flex:none}
 
 .eyebrow{font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-strong)}
 .btn-go{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,#0d8091,#0a6675);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 6px 18px rgba(13,132,148,.42),inset 0 0 0 1px rgba(34,201,223,.22);transition:filter .15s,transform .1s}
@@ -365,6 +367,8 @@ a{color:var(--teal-strong)}
   <button class="tb-btn" id="howToBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg> How to play</button>
   <button class="tb-btn" id="scenariosBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Scenarios</button>
   <button class="tb-btn" id="restartBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> Restart</button>
+  <button class="tb-btn tb-icon" id="muteBtn" aria-label="Mute"></button>
+  <button class="tb-btn tb-icon" id="fsBtn" aria-label="Full screen"></button>
 </header>
 <main class="wrap" id="app"></main>
 <div id="scrollCue" class="scroll-cue" aria-hidden="true">More below ↓</div>
@@ -805,7 +809,7 @@ function initState(){
     opened:{}, choices:{}, flags:{}, telem:[], confidence:{}, pending:null, order:{},
     ccTripped:{}, ccRecovered:{}, recoverFrom:null,
     clockLeft:SCN.clockSeconds, clockRunning:false, deadlineHit:false,
-    transfer:{action:"", owner:"", date:""}, optedOut:false
+    transfer:{action:"", owner:"", date:""}, optedOut:false, muted:false
   };
 }
 let S = load() || initState();
@@ -843,9 +847,32 @@ const ICONS = {
   info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
   arrowR:'<path d="M5 12h14M13 6l6 6-6 6"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>'
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  sound:'<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/>',
+  mute:'<path d="M11 5 6 9H2v6h4l5 4z"/><path d="m23 9-6 6M17 9l6 6"/>',
+  expand:'<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  compress:'<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>'
 };
 function icon(name,size){ const p=ICONS[name]||ICONS.alert; const s=size||22; return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`; }
+
+// Lightweight synthesized UI sound effects (Web Audio), gated by S.muted. Primed on first gesture.
+const AUDIO = (function(){
+  var ctx=null, master=null;
+  function ensure(){ if(ctx) return ctx; try{ var AC=window.AudioContext||window.webkitAudioContext; ctx=new AC(); master=ctx.createGain(); master.gain.value=0.45; master.connect(ctx.destination); }catch(e){ ctx=null; } return ctx; }
+  function unlock(){ if(!ensure()) return; if(ctx.state==="suspended") ctx.resume(); }
+  function tone(type,freq,t0,dur,peak){ var o=ctx.createOscillator(), g=ctx.createGain(); o.type=type; o.frequency.setValueAtTime(freq,t0); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(peak,t0+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur); o.connect(g).connect(master); o.start(t0); o.stop(t0+dur+0.02); }
+  function sfx(name){
+    if(S.muted||!ensure()) return;
+    if(ctx.state==="suspended"){ ctx.resume(); }
+    var t=ctx.currentTime;
+    if(name==="select"){ tone("sine",520,t,0.09,0.11); }
+    else if(name==="confirm"){ tone("sine",470,t,0.08,0.11); tone("sine",700,t+0.07,0.12,0.10); }
+    else if(name==="open"){ tone("triangle",380,t,0.09,0.09); }
+    else if(name==="nav"){ tone("sine",440,t,0.07,0.08); }
+    else if(name==="warn"){ tone("sine",300,t,0.14,0.13); tone("sine",232,t+0.1,0.2,0.11); }
+  }
+  return { unlock:unlock, sfx:sfx };
+})();
 
 /* =========================================================================
    CLOCK  (real running deadline, maps 16:10 -> 18:00)
@@ -905,12 +932,16 @@ function render(){
   window.scrollTo(0,0);
   requestAnimationFrame(updateScrollCue);
   setupVideoCaptions();
-  const sb=document.getElementById("scenariosBtn");
-  if(sb) sb.style.display = (S.stage==="picker") ? "none" : "inline-flex";
-  const htb=document.getElementById("howToBtn");
-  if(htb) htb.style.display = tourForStage().length ? "inline-flex" : "none";
+  updateChrome();
   // Auto-run the tour once per stage on first visit (matches the choking sim).
   if(tourForStage().length && !tourSeen(S.stage)){ const st=S.stage; markTourSeen(st); setTimeout(()=>{ if(S.stage===st && !tourActive()) startTour(); }, 450); }
+}
+function isFs(){ return !!(document.fullscreenElement||document.webkitFullscreenElement); }
+function updateChrome(){
+  const sb=document.getElementById("scenariosBtn"); if(sb) sb.style.display=(S.stage==="picker")?"none":"inline-flex";
+  const htb=document.getElementById("howToBtn"); if(htb) htb.style.display=tourForStage().length?"inline-flex":"none";
+  const mb=document.getElementById("muteBtn"); if(mb){ mb.innerHTML=icon(S.muted?"mute":"sound",16); mb.setAttribute("aria-label",S.muted?"Unmute":"Mute"); }
+  const fb=document.getElementById("fsBtn"); if(fb){ fb.innerHTML=icon(isFs()?"compress":"expand",16); fb.setAttribute("aria-label",isFs()?"Exit full screen":"Full screen"); }
 }
 // Custom caption overlay (native <track> is blocked on file:// and ignored by iOS fullscreen).
 // Reads the VTT text we already hold and paints the active line over the video.
@@ -939,6 +970,7 @@ function parseVTT(s){
 function setupVideoCaptions(){
   const wrap=document.querySelector(".vid-wrap"); if(!wrap) return;
   const v=wrap.querySelector("video"), cap=wrap.querySelector(".vid-cap"); if(!v||!cap) return;
+  v.muted=!!S.muted;
   let vtt=null;
   if(S.stage==="landing" && SCN.intro) vtt=SCN.intro.vtt;
   else if(S.stage==="handover" && SCN.handover) vtt=SCN.handover.vtt;
@@ -1372,6 +1404,8 @@ function bind(){
   });
 }
 function handle(act, el){
+  const SFX={begin:"nav",toNotice:"nav",toHandover:"nav",optOut:"nav",startRun:"nav",next:"nav",toDebrief:"nav",toPicker:"nav",restart:"nav",select:"select",submit:"confirm",conf:"select",doc:"open",recover:"select"};
+  if(SFX[act]) AUDIO.sfx(SFX[act]);
   switch(act){
     case "begin": go("landing"); break;
     case "toNotice": go("notice"); break;
@@ -1541,8 +1575,14 @@ window.addEventListener('resize',()=>{ if(tourActive()) showTourStep(tourIdx); }
 document.getElementById("howToBtn").addEventListener("click",()=>startTour());
 
 /* restart chrome */
-document.getElementById("restartBtn").addEventListener("click",()=>{ stopClock(); S=initState(); render(); });
-document.getElementById("scenariosBtn").addEventListener("click",()=>{ stopClock(); S.clockRunning=false; S.stage="picker"; save(); render(); });
+function toggleFs(){ try{ if(isFs()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } else { const el=document.documentElement; (el.requestFullscreen||el.webkitRequestFullscreen).call(el); } }catch(e){} }
+document.getElementById("restartBtn").addEventListener("click",()=>{ AUDIO.sfx("nav"); stopClock(); S=initState(); render(); });
+document.getElementById("scenariosBtn").addEventListener("click",()=>{ AUDIO.sfx("nav"); stopClock(); S.clockRunning=false; S.stage="picker"; save(); render(); });
+document.getElementById("muteBtn").addEventListener("click",()=>{ S.muted=!S.muted; document.querySelectorAll("video").forEach(v=>v.muted=S.muted); save(); AUDIO.unlock(); updateChrome(); });
+document.getElementById("fsBtn").addEventListener("click",()=>toggleFs());
+document.addEventListener("fullscreenchange", updateChrome);
+document.addEventListener("webkitfullscreenchange", updateChrome);
+document.addEventListener("pointerdown", ()=>AUDIO.unlock(), {once:true});
 
 // On a mid-run reload the previous countdown timer is gone, so always restart it
 // (the saved clockRunning flag is stale after a refresh). Resumes from the saved time left.
