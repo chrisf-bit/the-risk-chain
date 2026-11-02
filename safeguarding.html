@@ -101,8 +101,11 @@ a{color:var(--teal-strong)}
 .status-pill{font-size:var(--t-cap);font-weight:750;border-radius:100px;padding:5px 13px}
 .status-pill.ready{background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line)}
 .status-pill.build{background:rgba(120,134,156,.14);color:var(--ink-3);border:1px solid var(--line)}
-.scn-card.build{opacity:.72}
+.scn-card.build{opacity:.75}
+.scn-card.build .scn-badge{filter:grayscale(.55);opacity:.85}
 .scn-go{font-weight:800;color:var(--teal-strong)}
+.scn-go.sc-locked{color:var(--ink-3);font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.scn-go.sc-locked svg{flex:none}
 
 /* ---- Landing ---- */
 .land-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:stretch}
@@ -331,7 +334,8 @@ a{color:var(--teal-strong)}
 <header class="topbar">
   <div class="brand"><img class="brand-mark" src="assets/safeguarding/brand-icon.png" alt=""> <span>PracticE R<span class="pr-e">e</span>ady</span> <small>Safeguarding Adults</small></div>
   <div class="tb-sp"></div>
-  <button class="tb-btn" id="restartBtn">Restart</button>
+  <button class="tb-btn" id="scenariosBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Scenarios</button>
+  <button class="tb-btn" id="restartBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> Restart</button>
 </header>
 <main class="wrap" id="app"></main>
 <div id="scrollCue" class="scroll-cue" aria-hidden="true">More below ↓</div>
@@ -798,7 +802,10 @@ const ICONS = {
   phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
   alert:'<path d="m10.29 3.86-8.48 14.14a2 2 0 0 0 1.71 3h16.95a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>',
   history:'<path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/>',
-  play:'<path d="M7 4v16l13-8z"/>'
+  play:'<path d="M7 4v16l13-8z"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  restart:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'
 };
 function icon(name,size){ const p=ICONS[name]||ICONS.alert; const s=size||22; return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`; }
 
@@ -860,6 +867,8 @@ function render(){
   window.scrollTo(0,0);
   requestAnimationFrame(updateScrollCue);
   setupVideoCaptions();
+  const sb=document.getElementById("scenariosBtn");
+  if(sb) sb.style.display = (S.stage==="picker") ? "none" : "inline-flex";
 }
 // Custom caption overlay (native <track> is blocked on file:// and ignored by iOS fullscreen).
 // Reads the VTT text we already hold and paints the active line over the video.
@@ -934,8 +943,8 @@ function viewPicker(){
           </div>
         </div>
         <div class="scn-foot">
-          <span class="status-pill ${c.ready?'ready':'build'}">${c.ready?'Ready':'In build'}</span>
-          ${c.ready?'<span class="scn-go">Start this shift →</span>':''}
+          <span class="status-pill ${c.ready?'ready':'build'}">${c.ready?'Ready':'Coming soon'}</span>
+          ${c.ready?'<span class="scn-go">Start this shift →</span>':`<span class="scn-go sc-locked">${icon('lock',15)} Locked</span>`}
         </div>
       </button>`).join("")}
   </div>`;
@@ -1402,6 +1411,7 @@ function nextNode(){
 
 /* restart chrome */
 document.getElementById("restartBtn").addEventListener("click",()=>{ stopClock(); S=initState(); render(); });
+document.getElementById("scenariosBtn").addEventListener("click",()=>{ stopClock(); S.clockRunning=false; S.stage="picker"; save(); render(); });
 
 // On a mid-run reload the previous countdown timer is gone, so always restart it
 // (the saved clockRunning flag is stale after a refresh). Resumes from the saved time left.
