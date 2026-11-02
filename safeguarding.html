@@ -346,118 +346,180 @@ const LOCAL = { // configurable placeholder layer (spec s3.2)
 // Approximate captions for the intro (timing estimated from the script; swap for the avatar tool's VTT export for exact timing).
 const INTRO_F3_VTT = `WEBVTT
 
-00:00.000 --> 00:03.800
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
+
+00:00:00.600 --> 00:00:02.956
 Welcome to She Tells You at Ten Past Four.
 
-00:03.800 --> 00:07.800
-You are on a late shift, on your own, with four people to support.
+00:00:03.206 --> 00:00:06.074
+You're on a late shift, on your own, with four people
+to support.
 
-00:07.800 --> 00:12.000
-In the next couple of hours one of them is going to trust you with something,
+00:00:06.224 --> 00:00:10.944
+In the next couple of hours one of them is going to
+trust you with something, and a clock is already running
 
-00:12.000 --> 00:15.000
-and a clock is already running toward the end of your shift.
+00:00:10.944 --> 00:00:12.384
+toward the end of your shift.
 
-00:15.000 --> 00:17.500
+00:00:12.384 --> 00:00:14.595
 There are no hints, and no single right answer.
 
-00:17.500 --> 00:20.000
+00:00:14.745 --> 00:00:17.865
 What happens is whatever your choices make happen.
 
-00:20.000 --> 00:23.000
-What matters most is not what you work out. It is what you do with what you are told.
+00:00:17.865 --> 00:00:20.425
+What matters most here is not what you work out.
 
-00:23.000 --> 00:25.396
-When you are ready, begin your shift.
+00:00:20.425 --> 00:00:22.425
+It is what you do with what you are told.
+
+00:00:22.425 --> 00:00:24.195
+When you're ready, begin your shift.
 `;
 
 // Approximate captions for the handover (timing estimated from the script; swap for the avatar tool's VTT export for exact timing).
 const HANDOVER_F3_VTT = `WEBVTT
 
-00:00.000 --> 00:04.000
-It is ten past four, and the house is yours for the rest of the shift.
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
 
-00:04.000 --> 00:07.500
+00:00:00.600 --> 00:00:03.618
+It's ten past four, and the house is yours for the
+rest of the shift.
+
+00:00:03.868 --> 00:00:06.028
 Three of the people here are settled for now.
 
-00:07.500 --> 00:11.000
-The fourth has been upstairs since lunchtime and has just come down.
+00:00:06.028 --> 00:00:08.828
+The fourth has been upstairs since lunchtime and has
+just come down.
 
-00:11.000 --> 00:13.500
+00:00:08.828 --> 00:00:09.824
 Her bag is by the door.
 
-00:13.500 --> 00:17.000
-Someone is collecting her at six, the way they do most Fridays.
+00:00:09.974 --> 00:00:12.772
+Someone is collecting her at six, the way they do
+most Fridays.
 
-00:17.000 --> 00:20.000
-That is the shape of the next couple of hours, and the clock is already running.
+00:00:13.022 --> 00:00:16.862
+That's the shape of the next couple of hours, and
+the clock is already running.
 
-00:20.000 --> 00:23.500
-Before you go through, take a proper look at what the house holds about the people you are supporting.
+00:00:16.862 --> 00:00:21.149
+Before you go through, take a proper look at what
+the house holds about the people you are supporting.
 
-00:23.500 --> 00:25.500
-The thing that matters today may not be the thing that is flagged.
+00:00:21.399 --> 00:00:23.976
+The thing that matters today may not be the thing
+that's flagged.
 
-00:25.500 --> 00:26.936
+00:00:24.226 --> 00:00:25.736
 When you are ready, go to the kitchen.
 `;
 
 // Debrief clips, one per outcome (A protected / B delayed / C harm). Captions estimated from the script.
 const DEBRIEF_F3_A_VTT = `WEBVTT
 
-00:00.000 --> 00:03.500
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
+
+00:00:00.600 --> 00:00:02.898
 Nothing dramatic happened, and that is the point.
 
-00:03.500 --> 00:07.500
-Someone trusted you with something difficult, and you took it seriously without taking it over.
+00:00:03.388 --> 00:00:08.257
+Someone trusted you with something difficult, and
+you took it seriously without taking it over.
 
-00:07.500 --> 00:11.000
-You kept her safe, you kept her trust,
+00:00:08.507 --> 00:00:13.627
+You kept her safe, you kept her trust, and you made
+sure it reached the person whose job it is to help,
 
-00:11.000 --> 00:15.500
-and you made sure it reached the person whose job it is to help, before your shift ended.
+00:00:13.627 --> 00:00:14.869
+before your shift ended.
 
-00:15.500 --> 00:21.799
-The screen shows how each part of your practice held up, and the two things this shift really turned on.
+00:00:15.119 --> 00:00:20.239
+The screen shows how each part of your practice held
+up, and the two things this shift really turned
+
+00:00:20.239 --> 00:00:20.599
+on.
 `;
 
 const DEBRIEF_F3_B_VTT = `WEBVTT
 
-00:00.000 --> 00:02.500
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
+
+00:00:00.600 --> 00:00:01.800
 You got there.
 
-00:02.500 --> 00:06.500
-But it came later and closer than it should have, and the screen shows where the time went.
+00:00:01.800 --> 00:00:05.801
+But it came later and closer than it should have,
+and the screen shows where the time went.
 
-00:06.500 --> 00:11.500
-Recognising that something is wrong and putting a poor first instinct right is real practice, and it counts.
+00:00:06.211 --> 00:00:11.811
+Recognising that something is wrong and putting a
+poor first instinct right is real practice, and it
 
-00:11.500 --> 00:16.000
-What we look at now is the moment the response started to lag behind the risk,
+00:00:11.811 --> 00:00:12.413
+counts.
 
-00:16.000 --> 00:20.539
-because on a different day that gap is the whole story.
+00:00:12.663 --> 00:00:17.623
+What we look at now is the moment the response started
+to lag behind the risk, because on a different day
+
+00:00:17.783 --> 00:00:19.339
+that gap is the whole story.
 `;
 
 const DEBRIEF_F3_C_VTT = `WEBVTT
 
-00:00.000 --> 00:02.800
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
+
+00:00:00.600 --> 00:00:01.946
 Take a moment before we go on.
 
-00:02.800 --> 00:08.500
-By the end of this shift, what you were trusted with had not reached anyone who could act on it, and you have seen what followed.
+00:00:02.356 --> 00:00:07.476
+By the end of this shift, what you were trusted with
+had not reached anyone who could act on it, and you
 
-00:08.500 --> 00:12.000
+00:00:07.476 --> 00:00:08.605
+have seen what followed.
+
+00:00:08.855 --> 00:00:12.152
 This was not one mistake, and it is not about blame.
 
-00:12.000 --> 00:17.500
-It was a handful of choices across one afternoon, and any one of them, made differently, would have changed the ending.
+00:00:12.562 --> 00:00:18.002
+It was a handful of choices across one afternoon,
+and any one of them, made differently, would have
 
-00:17.500 --> 00:20.000
-The screen walks through each of them.
+00:00:18.002 --> 00:00:18.904
+changed the ending.
 
-00:20.000 --> 00:27.303
-Sit with it, because the whole of this training exists to keep a shift from reaching that point.
+00:00:19.154 --> 00:00:21.255
+The breakdown below walks through each of them.
+
+00:00:21.505 --> 00:00:26.103
+Sit with it, because the whole of this training exists
+to keep a shift from reaching that point.
 `;
 
 const SCN = {

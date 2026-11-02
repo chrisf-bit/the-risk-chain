@@ -115,7 +115,7 @@ no category names, no "call 999", no legal duties spoken.*
 > Take a moment before we go on. By the end of this shift, what you were trusted with had not
 > reached anyone who could act on it, and you have seen what followed. This was not one mistake, and
 > it is not about blame. It was a handful of choices across one afternoon, and any one of them, made
-> differently, would have changed the ending. The screen walks through each of them. Sit with it,
+> differently, would have changed the ending. The breakdown below walks through each of them. Sit with it,
 > because the whole of this training exists to keep a shift from reaching that point.
 
 ### 2b. What is on-screen, not spoken (nothing is lost)
