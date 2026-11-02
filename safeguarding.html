@@ -421,11 +421,52 @@ and you made sure it reached the person whose job it is to help, before your shi
 The screen shows how each part of your practice held up, and the two things this shift really turned on.
 `;
 
+const DEBRIEF_F3_B_VTT = `WEBVTT
+
+00:00.000 --> 00:02.500
+You got there.
+
+00:02.500 --> 00:06.500
+But it came later and closer than it should have, and the screen shows where the time went.
+
+00:06.500 --> 00:11.500
+Recognising that something is wrong and putting a poor first instinct right is real practice, and it counts.
+
+00:11.500 --> 00:16.000
+What we look at now is the moment the response started to lag behind the risk,
+
+00:16.000 --> 00:20.539
+because on a different day that gap is the whole story.
+`;
+
+const DEBRIEF_F3_C_VTT = `WEBVTT
+
+00:00.000 --> 00:02.800
+Take a moment before we go on.
+
+00:02.800 --> 00:08.500
+By the end of this shift, what you were trusted with had not reached anyone who could act on it, and you have seen what followed.
+
+00:08.500 --> 00:12.000
+This was not one mistake, and it is not about blame.
+
+00:12.000 --> 00:17.500
+It was a handful of choices across one afternoon, and any one of them, made differently, would have changed the ending.
+
+00:17.500 --> 00:20.000
+The screen walks through each of them.
+
+00:20.000 --> 00:27.303
+Sit with it, because the whole of this training exists to keep a shift from reaching that point.
+`;
+
 const SCN = {
   code:"SG-F3", title:"She Tells You at Ten Past Four",
   intro:{ video:"assets/safeguarding/intro-f3.mp4", vtt:INTRO_F3_VTT },
   handover:{ video:"assets/safeguarding/handover-f3.mp4", vtt:HANDOVER_F3_VTT },
-  debrief:{ A:{ video:"assets/safeguarding/debrief-f3-a.mp4", vtt:DEBRIEF_F3_A_VTT } },
+  debrief:{ A:{ video:"assets/safeguarding/debrief-f3-a.mp4", vtt:DEBRIEF_F3_A_VTT },
+            B:{ video:"assets/safeguarding/debrief-f3-b.mp4", vtt:DEBRIEF_F3_B_VTT },
+            C:{ video:"assets/safeguarding/debrief-f3-c.mp4", vtt:DEBRIEF_F3_C_VTT } },
   person:"Nadia", age:29, pronoun:"she", poss:"her", obj:"her",
   setting:"Sandhill Road", settingDesc:"a shared supported living house",
   startClock:"16:10", deadlineClock:"18:00", deadlineLabel:"Collection",
