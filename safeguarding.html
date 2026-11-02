@@ -85,11 +85,12 @@ a{color:var(--teal-strong)}
 .pick-head{margin:0 0 20px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:28px 32px}
 .pick-head h1{font-size:var(--t-h1);letter-spacing:-.02em}
 .pick-head p{font-size:var(--t-h3);line-height:1.5;color:var(--ink-2);margin-top:12px;max-width:68ch}
+.pick-head .pick-cta{margin-top:10px;font-weight:800;color:var(--ink)}
 .scn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.scn-card{text-align:left;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;transition:transform .16s,box-shadow .16s,border-color .16s;width:100%;color:inherit}
+.scn-card{position:relative;text-align:left;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;transition:transform .16s,box-shadow .16s,border-color .16s;width:100%;color:inherit}
 .scn-card.ready{cursor:pointer}
 .scn-card.ready:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 var(--sheen),0 10px 28px rgba(7,42,107,.16);border-color:var(--teal)}
-.scn-top{display:flex;align-items:flex-start;gap:14px}
+.scn-top{display:flex;align-items:flex-start;gap:14px;padding-right:118px}
 .scn-badge{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:22px;background:linear-gradient(150deg,var(--teal),#0a5f70)}
 .scn-card[data-accent="navy"] .scn-badge{background:linear-gradient(150deg,#0e3a86,var(--navy))}
 .scn-card[data-accent="violet"] .scn-badge{background:linear-gradient(150deg,var(--violet),#6d2fa8)}
@@ -98,9 +99,10 @@ a{color:var(--teal-strong)}
 .scn-who{font-size:var(--t-sm);color:var(--ink-2);margin:0}
 .scn-who b{color:var(--ink);font-weight:700}
 .scn-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
-.status-pill{font-size:var(--t-cap);font-weight:750;border-radius:100px;padding:5px 13px}
-.status-pill.ready{background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line)}
-.status-pill.build{background:rgba(120,134,156,.14);color:var(--ink-3);border:1px solid var(--line)}
+.status-pill{position:absolute;top:18px;right:20px;display:inline-flex;align-items:center;gap:6px;font-size:var(--t-cap);font-weight:750;border-radius:100px;padding:5px 12px}
+.status-pill svg{flex:none}
+.status-pill.ready,.status-pill.done{background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line)}
+.status-pill.build,.status-pill.locked{background:rgba(120,134,156,.14);color:var(--ink-3);border:1px solid var(--line)}
 .scn-card.build{opacity:.75}
 .scn-card.build .scn-badge{filter:grayscale(.55);opacity:.85}
 .scn-go{font-weight:800;color:var(--teal-strong)}
@@ -780,7 +782,11 @@ function initState(){
   };
 }
 let S = load() || initState();
+S.stage = "picker"; // always open on the scenario select
 let timer=null;
+// Completion persists separately from run-state so a Restart keeps the Completed badge.
+let PROG = (function(){ try{ return JSON.parse(localStorage.getItem("sg_prog_v1"))||{}; }catch(e){ return {}; } })();
+function markComplete(){ if(!PROG.SGF3){ PROG.SGF3=true; try{ localStorage.setItem("sg_prog_v1", JSON.stringify(PROG)); }catch(e){} } }
 
 function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -805,7 +811,8 @@ const ICONS = {
   play:'<path d="M7 4v16l13-8z"/>',
   grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
-  restart:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'
+  restart:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>'
 };
 function icon(name,size){ const p=ICONS[name]||ICONS.alert; const s=size||22; return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`; }
 
@@ -920,7 +927,7 @@ window.addEventListener("resize", updateScrollCue);
 
 function viewPicker(){
   const cards=[
-    {code:"SG-F3", title:SCN.title, who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, ic:"message", accent:"teal"},
+    {code:"SG-F3", title:SCN.title, who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, done:!!PROG.SGF3, ic:"message", accent:"teal"},
     {code:"SG-F1", title:"Something Doesn't Add Up", who:"<b>Tomas</b> · Ashcombe House · morning personal care", ready:false, ic:"search", accent:"navy"},
     {code:"SG-F2", title:"A Friend Who Helps Out", who:"<b>Yvonne</b> · her own flat · domiciliary call", ready:false, ic:"users", accent:"violet"},
     {code:"SG-F4", title:"The Way We Do Things Here", who:"<b>Colin</b> · Ashcombe House · late shift", ready:false, ic:"building", accent:"navy"}
@@ -928,12 +935,26 @@ function viewPicker(){
   return `
   <section class="pick-head">
     <div class="eyebrow">Safeguarding Adults · Frontline track</div>
-    <h1>One shift. One concern. What you do in the next two hours.</h1>
-    <p>Four frontline scenarios, each a different kind of concern in a different setting. There are no hints and no single right answer. What happens is whatever your choices make happen. Start with the one that is ready.</p>
+    <h1>Choose a scenario</h1>
+    <p>Four frontline scenarios, each a different kind of concern in a different setting. There are no hints and no single right answer. What happens is whatever your choices make happen.</p>
+    <p class="pick-cta">Start with She Tells You at Ten Past Four.</p>
   </section>
   <div class="scn-grid">
-    ${cards.map(c=>`
+    ${cards.map(c=>{
+      const state = !c.ready ? "locked" : (c.done ? "done" : "ready");
+      const pill = state==="done"
+        ? `<span class="status-pill done">${icon('check',14)} Completed</span>`
+        : state==="ready"
+        ? `<span class="status-pill ready">${icon('play',14)} Ready to play</span>`
+        : `<span class="status-pill locked">${icon('lock',14)} Locked</span>`;
+      const foot = state==="done"
+        ? '<span class="scn-go">Play again →</span>'
+        : state==="ready"
+        ? '<span class="scn-go">Start this shift →</span>'
+        : '<span class="scn-go sc-locked">Coming soon</span>';
+      return `
       <button class="scn-card ${c.ready?'ready':'build'}" data-accent="${c.accent}" ${c.ready?'data-act="begin"':'disabled'}>
+        ${pill}
         <div class="scn-top">
           <div class="scn-badge">${icon(c.ic,24)}</div>
           <div>
@@ -942,11 +963,9 @@ function viewPicker(){
             <p class="scn-who">${c.who}</p>
           </div>
         </div>
-        <div class="scn-foot">
-          <span class="status-pill ${c.ready?'ready':'build'}">${c.ready?'Ready':'Coming soon'}</span>
-          ${c.ready?'<span class="scn-go">Start this shift →</span>':`<span class="scn-go sc-locked">${icon('lock',15)} Locked</span>`}
-        </div>
-      </button>`).join("")}
+        <div class="scn-foot">${foot}</div>
+      </button>`;
+    }).join("")}
   </div>`;
 }
 
@@ -1399,6 +1418,7 @@ function nextNode(){
   if(S.nodeIdx >= SCN.nodes.length-1){
     stopClock();
     const path=outcomePath();
+    markComplete();
     if(path==="A"){ go("debrief"); }
     else { go("aftermath"); }
     return;
