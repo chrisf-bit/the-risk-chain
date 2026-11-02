@@ -1,0 +1,1283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PracticE Ready - Safeguarding Adults</title>
+<meta name="description" content="Safeguarding Adults connected simulation. A readiness check for applied safeguarding judgement.">
+<!--
+  Safeguarding Adults Connected Simulation - standalone prototype (safeguarding.html).
+  Built to the PracticE Ready Master Specification v1.0 (Emma Reeve). Companion to the
+  choking programme (index.html / frontline.html) but DECOUPLED by rule: reuses brand and
+  engine patterns only, never imports or links them.
+
+  FIRST BUILD = SG-F3 "She Tells You at Ten Past Four" vertical slice (per spec s19-20).
+  The engine (picker, run, aftermath, debrief, telemetry) is scenario-driven so F1/F2/F4
+  drop in later as data bundles.
+
+  BUILD NOTES / TODO before any client send:
+   - Font: uses a system Source Sans-like stack. Port the embedded base64 Source Sans 3
+     @font-face blocks from frontline.html before SCORM packaging (offline-safe).
+   - Media: intro + handover + debrief use placeholder slots. Real avatar clips drop in
+     the same way Frontline did (see docs/SG-video-scripts.md).
+   - Person-specific facts for Nadia are PROVISIONAL (spec s19.3); held in one config
+     object (SCN) so a Source of Truth lock is a single edit.
+   - No em dashes anywhere in user-facing copy (house rule).
+-->
+<style>
+/* ---- Brand tokens: inherited verbatim from the finalised PracticE Ready palette (frontline.html) ---- */
+:root{
+  --ground:#f4f7fc; --ground-2:#fbfcff; --surface:#ffffff; --surface-2:#f3f6fb; --surface-3:#e8eef6;
+  --violet:#8a3ccb; --sheen:rgba(255,255,255,.85);
+  --ink:#072a6b; --ink-2:#3c4f86; --ink-3:#5b6892; --ink-4:#5b6892;
+  --line:#c9cdd4; --line-2:#e4e7ec;
+  --navy:#0a2f7a; --navy-2:#072a6b; --navy-ink:#ffffff;
+  --teal:#16afc2; --teal-strong:#0e8b9a; --teal-tint:#e3f6fa; --teal-deep:#0b6b78;
+  --go:#ff7a1a; --go-sh:#d9620d; --kicker-bg:#e3f6fa; --kicker-line:#b9e4ec;
+  --good:#0c7038; --good-tint:#e4f6ec; --good-line:#bde7cd;
+  --warn:#9a5109; --warn-tint:#fff2e0; --warn-line:#f5d6a6;
+  --bad:#c0281f; --bad-tint:#fdeae8; --bad-line:#f4c4bf;
+  --shadow:0 2px 6px rgba(20,38,74,.06),0 14px 30px rgba(20,38,74,.10);
+  --r:12px; --r-sm:8px; --r-lg:18px;
+  --sans:"Source Sans 3","Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --serif:var(--sans);
+  --t-hero:40px; --t-h1:29px; --t-h2:22px; --t-h3:18px;
+  --t-body:16.5px; --t-sm:15.5px; --t-cap:14.5px; --t-eyebrow:13px; --t-nano:12.5px;
+}
+/* Light theme only. The dark variant was removed on request (it always looked rubbish). */
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+::-webkit-scrollbar{width:0;height:0}
+*{scrollbar-width:none}
+body{
+  font-family:var(--sans);font-size:var(--t-body);line-height:1.55;color:var(--ink);
+  background:radial-gradient(1200px 600px at 80% -10%,var(--ground-2),transparent),var(--ground);
+  background-attachment:fixed;min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,p{margin:0}
+button{font:inherit;cursor:pointer}
+a{color:var(--teal-strong)}
+:focus-visible{outline:2.5px solid var(--teal-strong);outline-offset:2px;border-radius:4px}
+::selection{background:var(--teal);color:#fff}
+.pr-e{color:var(--teal)}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 46px}
+.topbar{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);box-shadow:var(--shadow);border-radius:var(--r-lg);display:flex;align-items:center;gap:14px;padding:0 20px;height:56px;max-width:1180px;width:calc(100% - 40px);margin:14px auto 22px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.01em;font-size:var(--t-body)}
+.brand .mk{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,var(--teal),#0a5f70);display:grid;place-items:center;color:#fff;font-weight:900}
+.brand small{font-weight:650;color:#c7d6f0;font-size:var(--t-cap);letter-spacing:.02em}
+.tb-sp{flex:1}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#eaf1fb;border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:650}
+.tb-btn:hover{background:rgba(255,255,255,.16)}
+
+.eyebrow{font-size:var(--t-eyebrow);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-strong)}
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,#0d8091,#0a6675);color:#fff;border:0;border-radius:var(--r);padding:13px 22px;font-weight:750;font-size:var(--t-body);box-shadow:0 6px 18px rgba(13,132,148,.42),inset 0 0 0 1px rgba(34,201,223,.22);transition:filter .15s,transform .1s}
+.btn-go:hover{filter:brightness(1.07)}
+.btn-go:active{transform:translateY(1px)}
+.btn-go[disabled]{background:var(--surface-3);color:var(--ink-4);box-shadow:none;cursor:not-allowed;filter:none}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 18px;font-weight:700;font-size:var(--t-body)}
+.btn-ghost:hover{background:var(--surface-2)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+
+/* ---- Picker ---- */
+.pick-head{margin:0 0 20px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:28px 32px}
+.pick-head h1{font-size:var(--t-h1);letter-spacing:-.02em}
+.pick-head p{font-size:var(--t-h3);line-height:1.5;color:var(--ink-2);margin-top:12px;max-width:68ch}
+.scn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.scn-card{text-align:left;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;transition:transform .16s,box-shadow .16s,border-color .16s;width:100%;color:inherit}
+.scn-card.ready{cursor:pointer}
+.scn-card.ready:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 var(--sheen),0 10px 28px rgba(7,42,107,.16);border-color:var(--teal)}
+.scn-top{display:flex;align-items:flex-start;gap:14px}
+.scn-badge{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:22px;background:linear-gradient(150deg,var(--teal),#0a5f70)}
+.scn-card[data-accent="navy"] .scn-badge{background:linear-gradient(150deg,#0e3a86,var(--navy))}
+.scn-card[data-accent="violet"] .scn-badge{background:linear-gradient(150deg,var(--violet),#6d2fa8)}
+.scn-card .code{font-size:var(--t-nano);font-weight:800;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.scn-card h3{font-size:var(--t-h2);letter-spacing:-.01em;margin:3px 0 4px;color:var(--ink)}
+.scn-who{font-size:var(--t-sm);color:var(--ink-2);margin:0}
+.scn-who b{color:var(--ink);font-weight:700}
+.scn-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.status-pill{font-size:var(--t-cap);font-weight:750;border-radius:100px;padding:5px 13px}
+.status-pill.ready{background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line)}
+.status-pill.build{background:rgba(120,134,156,.14);color:var(--ink-3);border:1px solid var(--line)}
+.scn-card.build{opacity:.72}
+.scn-go{font-weight:800;color:var(--teal-strong)}
+
+/* ---- Landing ---- */
+.land-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:stretch}
+.land-copy{min-width:0;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:26px 32px}
+.land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line);border-radius:100px;padding:6px 14px;font-size:var(--t-cap);font-weight:750;letter-spacing:.04em;align-self:flex-start}
+.land-copy h1{font-size:var(--t-hero);letter-spacing:-.025em;margin:16px 0 0;line-height:1.04}
+.land-copy .lead{font-size:var(--t-h3);line-height:1.55;color:var(--ink-2);margin-top:16px}
+.land-media{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;min-height:280px}
+.media-ph{width:100%;aspect-ratio:16/9;border-radius:var(--r);background:repeating-linear-gradient(135deg,var(--surface-3),var(--surface-3) 12px,var(--surface-2) 12px,var(--surface-2) 24px);display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;color:var(--ink-3);border:1px dashed var(--line)}
+.media-ph .pl-ic{font-size:30px}
+.land-media video.land-video{width:100%;aspect-ratio:16/9;border-radius:var(--r);border:1px solid var(--line);background:#000;display:block;box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+.vid-wrap{position:relative;width:100%}
+.vid-cap{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);max-width:92%;background:rgba(7,19,45,.84);color:#fff;padding:5px 12px;border-radius:7px;font-size:var(--t-sm);line-height:1.32;text-align:center;opacity:0;transition:opacity .12s;pointer-events:none}
+.vid-cap.on{opacity:1}
+.land-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.lf{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+.lf-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;background:linear-gradient(160deg,var(--teal),#0a5f70);margin-bottom:10px}
+.lf:nth-child(2) .lf-ic{background:linear-gradient(160deg,var(--violet),#7331ad)}
+.lf:nth-child(3) .lf-ic{background:linear-gradient(160deg,#d94a8a,#a62d64)}
+.lf h4{font-size:var(--t-h3)}
+.lf p{font-size:var(--t-sm);color:var(--ink-2);margin-top:5px;line-height:1.45}
+.land-cta{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:18px;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 26px;box-shadow:inset 0 1px 0 var(--sheen),var(--shadow)}
+.land-cta .lc-prompt{margin:0;font-size:var(--t-h3);color:var(--ink-2);font-weight:600}
+.land-cta .lc-prompt b{color:var(--ink);font-weight:800}
+
+/* ---- Notice / content warning + opt out ---- */
+.notice{max-width:760px;margin:0 auto}
+.notice .card{padding:34px 38px}
+.notice .n-ic{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:26px;color:#fff;background:linear-gradient(160deg,var(--warn),#7a3f06)}
+.notice h1{font-size:var(--t-h1);margin:16px 0 0;letter-spacing:-.01em}
+.notice p{color:var(--ink-2);margin-top:12px;line-height:1.6}
+.notice ul{margin:12px 0 0;padding-left:20px;color:var(--ink-2)}
+.notice li{margin:6px 0}
+.n-support{margin-top:18px;background:var(--teal-tint);border:1px solid var(--kicker-line);border-radius:var(--r);padding:14px 18px;font-size:var(--t-sm);color:var(--ink-2)}
+.n-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+
+/* ---- Run shell ---- */
+.run-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.clock{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border-radius:var(--r-lg);padding:12px 20px;box-shadow:var(--shadow)}
+.clock .big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.clock .cl-lab{font-size:var(--t-nano);text-transform:uppercase;letter-spacing:.1em;color:#9fc0ef;font-weight:750}
+.clock.warn{background:linear-gradient(180deg,#8a2d14,#6e2410)}
+.clock.warn .cl-lab{color:#f6c6a0}
+.now{font-size:var(--t-sm);color:var(--ink-2)}
+.now b{color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums}
+.progress{flex:1;min-width:120px}
+.progress .bar{height:8px;border-radius:100px;background:var(--surface-3);overflow:hidden}
+.progress .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-strong));transition:width .4s}
+.progress .pl{font-size:var(--t-nano);color:var(--ink-3);margin-top:5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+
+.run-grid{display:grid;grid-template-columns:1fr 460px;gap:22px;align-items:start}
+.scene-side{aspect-ratio:16/9;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);background:var(--surface-2);display:flex;align-items:flex-end;position:relative}
+.scene-side .ph{position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--surface-3),var(--surface-3) 12px,var(--surface-2) 12px,var(--surface-2) 24px);display:grid;place-items:center;color:var(--ink-4);font-size:var(--t-cap)}
+.scene-side .sc-cap{position:relative;z-index:1;background:linear-gradient(0deg,rgba(7,42,107,.82),transparent);color:#fff;width:100%;padding:11px 15px;font-weight:700;font-size:var(--t-sm)}
+.scene-side img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.moment{margin-top:0}
+.moment .m-kick{display:inline-flex;gap:8px;align-items:center;font-size:var(--t-cap);font-weight:800;color:var(--teal-strong);text-transform:uppercase;letter-spacing:.08em}
+.moment h2{font-size:var(--t-h2);margin:10px 0 0;letter-spacing:-.01em}
+.moment .m-body{margin-top:12px;color:var(--ink-2);line-height:1.6}
+.speech{margin-top:14px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;font-size:var(--t-h3);color:var(--ink);font-style:italic}
+.speech .sp-who{display:block;font-style:normal;font-size:var(--t-nano);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+
+.opts{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 18px;transition:border-color .15s,background .15s,transform .1s;color:var(--ink)}
+.opt:hover{border-color:var(--teal);background:var(--teal-tint)}
+.opt:active{transform:translateY(1px)}
+.opt .ob{flex:none;width:30px;height:30px;border-radius:9px;background:var(--surface-3);color:var(--teal-strong);display:grid;place-items:center;font-weight:800;margin-top:1px}
+.opt .ot{font-size:var(--t-body);line-height:1.45}
+.opt.sel{border-color:var(--teal);background:var(--teal-tint);box-shadow:inset 0 0 0 1px var(--teal)}
+.opt.sel .ob{background:var(--teal);color:#fff}
+.submit-row{display:flex;align-items:center;gap:16px;margin-top:18px;flex-wrap:wrap}
+.submit-hint{font-size:var(--t-cap);color:var(--ink-3)}
+.q-ask{margin-top:12px;font-size:var(--t-cap);color:var(--ink-3);font-weight:700}
+
+/* consequence beat */
+.beat{margin-top:18px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:18px 22px}
+.beat .bt-tag{display:inline-flex;align-items:center;gap:7px;font-size:var(--t-nano);font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:100px}
+.bt-tag.ok{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.bt-tag.risk{background:var(--warn-tint);color:var(--warn);border:1px solid var(--warn-line)}
+.bt-tag.fail{background:var(--bad-tint);color:var(--bad);border:1px solid var(--bad-line)}
+.beat p{margin-top:12px;color:var(--ink-2);line-height:1.6}
+.bt-next{margin-top:16px}
+
+/* recovery banner */
+.recovery{margin-top:18px;background:var(--warn-tint);border:1px solid var(--warn-line);border-radius:var(--r);padding:18px 22px}
+.recovery h3{font-size:var(--t-h3);color:var(--warn)}
+.recovery p{margin-top:8px;color:var(--ink-2);line-height:1.6}
+
+/* ---- Records rail ---- */
+.rail{position:sticky;top:14px;display:flex;flex-direction:column;gap:12px}
+.rail .rl-title{font-size:var(--t-cap);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.rail-panel{background:var(--teal-tint);border:1px solid var(--kicker-line);border-radius:var(--r-lg);padding:14px}
+.doc-row{display:flex;gap:11px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;margin-bottom:9px;color:var(--ink)}
+.doc-row:last-child{margin-bottom:0}
+.doc-row:hover{border-color:var(--teal)}
+.doc-row.opened{background:var(--good-tint);border-color:var(--good-line)}
+.doc-row .d-ic{flex:none;width:30px;height:30px;border-radius:8px;background:var(--surface-3);color:var(--teal-strong);display:grid;place-items:center;font-size:15px}
+.doc-row .d-nm{font-size:var(--t-sm);font-weight:700;line-height:1.25}
+.doc-row .d-sub{font-size:var(--t-nano);color:var(--ink-3)}
+.inject{background:var(--surface);border:1px solid var(--bad-line);border-radius:var(--r-lg);padding:14px 16px}
+.inject .in-tag{font-size:var(--t-nano);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--bad)}
+.inject p{font-size:var(--t-sm);color:var(--ink-2);margin-top:7px;line-height:1.5}
+
+/* ---- Modal ---- */
+.modal-bg{position:fixed;inset:0;background:rgba(7,19,45,.55);backdrop-filter:blur(3px);display:grid;place-items:center;padding:24px;z-index:40}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);max-width:600px;width:100%;max-height:84vh;overflow:auto;padding:28px 32px}
+.modal .m-kick{font-size:var(--t-nano);font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--teal-strong)}
+.modal h3{font-size:var(--t-h2);margin:6px 0 0}
+.modal .m-prov{font-size:var(--t-cap);color:var(--ink-3);margin-top:4px}
+.modal .m-doc{margin-top:16px;color:var(--ink-2);line-height:1.65}
+.modal .m-doc p{margin-top:12px}
+.modal .m-doc .dl-h{font-weight:800;color:var(--ink);margin-top:16px}
+.modal .m-close{margin-top:22px;display:flex;justify-content:flex-end}
+
+/* confidence */
+.conf{margin-top:18px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px}
+.conf p{font-weight:700}
+.conf .cf-row{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
+.cf-dot{width:42px;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--surface);font-weight:800;color:var(--ink-2)}
+.cf-dot:hover{border-color:var(--teal);color:var(--teal-strong)}
+.cf-dot.sel{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* ---- Aftermath ---- */
+.after{max-width:1120px;margin:0 auto}
+.after .af-ic{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:26px;color:#fff;background:linear-gradient(160deg,#5b6577,#39414f)}
+.after h1{font-size:var(--t-h1);margin:16px 0 0}
+.after .af-intro{color:var(--ink-2);margin-top:12px;line-height:1.6;max-width:72ch}
+.after-windows{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;align-items:start}
+.window{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:20px 22px;position:relative}
+.w-img{aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--surface-2);margin-bottom:14px}
+.w-img img{width:100%;height:100%;object-fit:cover;display:block}
+.window .w-when{font-size:var(--t-nano);font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.window h3{font-size:var(--t-h3);margin:6px 0 0;color:var(--ink)}
+.window p{margin-top:10px;color:var(--ink-2);line-height:1.6}
+.ownwords{margin-top:14px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+.ownwords .ow-lab{font-size:var(--t-nano);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.ownwords .ow-q{font-style:italic;font-size:var(--t-h3);color:var(--ink);margin-top:8px}
+.ownwords .ow-note{font-size:var(--t-sm);color:var(--ink-2);margin-top:8px}
+
+/* ---- Debrief ---- */
+.deb-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:24px 28px}
+.outcome-badge{flex:none;padding:8px 16px;border-radius:100px;font-weight:800;font-size:var(--t-sm);letter-spacing:.02em}
+.ob-a{background:rgba(63,208,122,.2);color:#9ff0bd;border:1px solid rgba(63,208,122,.4)}
+.ob-b{background:rgba(247,176,83,.2);color:#ffd79a;border:1px solid rgba(247,176,83,.4)}
+.ob-c{background:rgba(255,111,99,.2);color:#ffb3ab;border:1px solid rgba(255,111,99,.4)}
+.deb-head h1{font-size:var(--t-h2);margin:0}
+.deb-head p{color:#c7d6f0;margin-top:5px;font-size:var(--t-sm)}
+.deb-sec{margin-top:18px}
+.deb-sec > h2{font-size:var(--t-h3);letter-spacing:.02em;margin-bottom:12px}
+.cc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:18px}
+.cc .cc-st{font-size:var(--t-nano);font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:100px;display:inline-block}
+.cc.held .cc-st{background:var(--good-tint);color:var(--good);border:1px solid var(--good-line)}
+.cc.trip .cc-st{background:var(--bad-tint);color:var(--bad);border:1px solid var(--bad-line)}
+.cc h4{font-size:var(--t-h3);margin:10px 0 0}
+.cc p{font-size:var(--t-sm);color:var(--ink-2);margin-top:7px;line-height:1.5}
+.dom{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:16px 20px;margin-bottom:10px}
+.dom-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.dom-top h4{font-size:var(--t-body)}
+.dom-top .dom-sc{font-weight:800;font-variant-numeric:tabular-nums}
+.dom-bar{height:9px;border-radius:100px;background:var(--surface-3);overflow:hidden;margin-top:10px}
+.dom-bar i{display:block;height:100%;border-radius:100px}
+.dom-note{font-size:var(--t-sm);color:var(--ink-2);margin-top:9px;line-height:1.5}
+.voice{background:var(--teal-tint);border:1px solid var(--kicker-line);border-radius:var(--r-lg);padding:22px 26px}
+.voice h2{font-size:var(--t-h3);color:var(--teal-deep)}
+.voice p{color:var(--ink-2);margin-top:10px;line-height:1.6}
+.voice .v-said{font-style:italic;font-size:var(--t-h3);color:var(--ink);margin-top:12px}
+.transfer{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:22px 26px}
+.transfer h2{font-size:var(--t-h3)}
+.transfer p{color:var(--ink-2);margin-top:8px;line-height:1.55}
+.tf-field{margin-top:14px}
+.tf-field label{display:block;font-size:var(--t-cap);font-weight:700;color:var(--ink-3);margin-bottom:6px}
+.tf-field input,.tf-field textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:11px 14px;color:var(--ink);font:inherit}
+.tf-field textarea{min-height:70px;resize:vertical}
+.events{display:flex;flex-wrap:wrap;gap:8px}
+.ev{font-size:var(--t-cap);background:var(--surface-2);border:1px solid var(--line);border-radius:100px;padding:6px 13px;color:var(--ink-2);font-weight:650}
+.ev b{color:var(--ink)}
+.reflect{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:22px 26px}
+.reflect h2{font-size:var(--t-h3)}
+.reflect p{color:var(--ink-2);margin-top:8px;line-height:1.55}
+.caveat{margin-top:18px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;font-size:var(--t-sm);color:var(--ink-3);line-height:1.55}
+.support-foot{margin-top:14px;background:var(--teal-tint);border:1px solid var(--kicker-line);border-radius:var(--r);padding:14px 18px;font-size:var(--t-sm);color:var(--ink-2)}
+
+/* scroll cue: scrollbars are hidden globally, so this tells the learner there is more below */
+.scroll-cue{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(6px);background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border:1px solid rgba(255,255,255,.16);border-radius:100px;padding:8px 17px;font-size:var(--t-cap);font-weight:750;box-shadow:var(--shadow);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.scroll-cue.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.spacer{height:18px}
+.center{text-align:center}
+.mt{margin-top:18px}
+.flexline{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* Desktop / laptop: fit the gameplay to one screen, no scrolling (mobile may scroll). */
+@media (min-width:861px){
+  .topbar{margin:10px auto 14px}
+  .wrap{padding-bottom:20px}
+  .run-head{margin-bottom:12px}
+  .clock{padding:9px 16px}
+  .clock .big{font-size:22px}
+  .moment h2{font-size:19px;line-height:1.36;margin-top:0}
+  .moment .m-kick{font-size:var(--t-nano)}
+  .speech{margin-top:10px;padding:12px 16px;font-size:16px}
+  .q-ask{margin-top:8px}
+  .opts{margin-top:12px;gap:9px}
+  .opt{padding:11px 15px}
+  .opt .ot{font-size:15.5px;line-height:1.4}
+  .opt .ob{width:28px;height:28px}
+  /* confidence collapses to a slim inline row */
+  .conf{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 16px;margin-top:10px}
+  .conf p{font-size:15.5px}
+  .conf .cf-row{margin-top:0;flex-wrap:nowrap}
+  .cf-dot{width:34px;height:34px}
+}
+@media (max-width:860px){
+  .land-grid,.run-grid,.scn-grid,.cc-grid,.land-facts,.after-windows{grid-template-columns:1fr}
+  .rail{position:static}
+  .land-copy h1{font-size:var(--t-h1)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="mk">PR</span> <span>PracticE R<span class="pr-e">e</span>ady</span> <small>Safeguarding Adults</small></div>
+  <div class="tb-sp"></div>
+  <button class="tb-btn" id="restartBtn">Restart</button>
+</header>
+<main class="wrap" id="app"></main>
+<div id="scrollCue" class="scroll-cue" aria-hidden="true">More below ↓</div>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   SCENARIO DATA  (SG-F3, provisional facts per spec s19.3, held in one place)
+   ========================================================================= */
+const LOCAL = { // configurable placeholder layer (spec s3.2)
+  la:"Marston Council", laTeam:"Marston Adult Safeguarding Team",
+  laOOH:"Marston out-of-hours safeguarding line", regulator:"the Care Quality Commission"
+};
+
+// Approximate captions for the intro (timing estimated from the script; swap for the avatar tool's VTT export for exact timing).
+const INTRO_F3_VTT = `WEBVTT
+
+00:00.000 --> 00:03.800
+Welcome to She Tells You at Ten Past Four.
+
+00:03.800 --> 00:07.800
+You are on a late shift, on your own, with four people to support.
+
+00:07.800 --> 00:12.000
+In the next couple of hours one of them is going to trust you with something,
+
+00:12.000 --> 00:15.000
+and a clock is already running toward the end of your shift.
+
+00:15.000 --> 00:17.500
+There are no hints, and no single right answer.
+
+00:17.500 --> 00:20.000
+What happens is whatever your choices make happen.
+
+00:20.000 --> 00:23.000
+What matters most is not what you work out. It is what you do with what you are told.
+
+00:23.000 --> 00:25.396
+When you are ready, begin your shift.
+`;
+
+// Approximate captions for the handover (timing estimated from the script; swap for the avatar tool's VTT export for exact timing).
+const HANDOVER_F3_VTT = `WEBVTT
+
+00:00.000 --> 00:04.000
+It is ten past four, and the house is yours for the rest of the shift.
+
+00:04.000 --> 00:07.500
+Three of the people here are settled for now.
+
+00:07.500 --> 00:11.000
+The fourth has been upstairs since lunchtime and has just come down.
+
+00:11.000 --> 00:13.500
+Her bag is by the door.
+
+00:13.500 --> 00:17.000
+Someone is collecting her at six, the way they do most Fridays.
+
+00:17.000 --> 00:20.000
+That is the shape of the next couple of hours, and the clock is already running.
+
+00:20.000 --> 00:23.500
+Before you go through, take a proper look at what the house holds about the people you are supporting.
+
+00:23.500 --> 00:25.500
+The thing that matters today may not be the thing that is flagged.
+
+00:25.500 --> 00:26.936
+When you are ready, go to the kitchen.
+`;
+
+// Debrief clips, one per outcome (A protected / B delayed / C harm). Captions estimated from the script.
+const DEBRIEF_F3_A_VTT = `WEBVTT
+
+00:00.000 --> 00:03.500
+Nothing dramatic happened, and that is the point.
+
+00:03.500 --> 00:07.500
+Someone trusted you with something difficult, and you took it seriously without taking it over.
+
+00:07.500 --> 00:11.000
+You kept her safe, you kept her trust,
+
+00:11.000 --> 00:15.500
+and you made sure it reached the person whose job it is to help, before your shift ended.
+
+00:15.500 --> 00:21.799
+The screen shows how each part of your practice held up, and the two things this shift really turned on.
+`;
+
+const SCN = {
+  code:"SG-F3", title:"She Tells You at Ten Past Four",
+  intro:{ video:"assets/safeguarding/intro-f3.mp4", vtt:INTRO_F3_VTT },
+  handover:{ video:"assets/safeguarding/handover-f3.mp4", vtt:HANDOVER_F3_VTT },
+  debrief:{ A:{ video:"assets/safeguarding/debrief-f3-a.mp4", vtt:DEBRIEF_F3_A_VTT } },
+  person:"Nadia", age:29, pronoun:"she", poss:"her", obj:"her",
+  setting:"Sandhill Road", settingDesc:"a shared supported living house",
+  startClock:"16:10", deadlineClock:"18:00", deadlineLabel:"Collection",
+  clockSeconds:720, // 12 real minutes mapped onto 16:10 -> 18:00 (prototype pacing)
+  // human framing (spoken-safe) vs on-screen framing (clinical/legal detail)
+  leadHuman:"You are the only worker in the house this afternoon. Nadia has been in her room since lunchtime and has just come down to the kitchen. Her uncle is collecting her at six for her usual Friday overnight stay.",
+  onScreen:"Nadia is autistic. She communicates with speech but needs processing time, and finds direct questioning and eye contact difficult. Distress reduces her ability to make decisions in the moment. Three other people in the house still need supporting through teatime.",
+  facts:[
+    {ic:"🏠", h:"The house", p:"Sandhill Road, a shared supported living house. Late shift. You are the only worker on, with four people in."},
+    {ic:"👤", h:"Nadia, 29", p:"Autistic. Communicates with speech, needs processing time. An uncle collects her most Fridays. A boyfriend holds her bank card and her phone."},
+    {ic:"⏱", h:"Your job", p:"Respond to whatever she says without damaging it or her. Keep her safe before six. Get it reported, even when the phone goes unanswered."}
+  ],
+  noticeThemes:"This scenario involves a disclosure that touches on sexual abuse and on coercive control within a relationship. The disclosure is written to be ordinary and non-explicit. Nothing is depicted.",
+  // scene images per node (16:9). Nodes sharing a location reuse one file. Missing keys fall back to the placeholder.
+  sceneImg:{
+    N1:"assets/safeguarding/scene-f3-n1.jpg",
+    N2:"assets/safeguarding/scene-f3-n1.jpg",
+    N3:"assets/safeguarding/scene-f3-n1.jpg",
+    N4:"assets/safeguarding/scene-f3-n4.jpg",
+    N9:"assets/safeguarding/scene-f3-n4.jpg",
+    N5:"assets/safeguarding/scene-f3-n5.jpg",
+    N8:"assets/safeguarding/scene-f3-n8.jpg",
+    N6:"assets/safeguarding/scene-f3-n6.jpg",
+    N10:"assets/safeguarding/scene-f3-n10.jpg",
+    N7:"assets/safeguarding/scene-f3-n7.jpg"
+  },
+  // documents (light set: conversation-led scenario)
+  docs:[
+    {id:"DOC_PLAN", nm:"Support plan and communication profile", sub:"Current", ic:"📋",
+     prov:"Nadia's support plan, Sandhill Road.",
+     body:["How Nadia communicates: speech, with processing time needed. Direct questioning and sustained eye contact increase her distress. Give her time and let her lead.",
+           "What matters to her, and who is important to her. Distress reduces her capacity to make decisions in the moment, so decisions taken while she is distressed should be revisited when she is settled.",
+           {h:"On consent and sharing"},"Where there is a risk of harm, information is shared with the safeguarding lead whether or not the person agrees. The person is told, unless telling them increases the risk."]},
+    {id:"DOC_FRIDAY", nm:"The Friday arrangement", sub:"Standing note", ic:"📅",
+     prov:"Rota and visiting note, Sandhill Road.",
+     body:["Nadia's uncle collects her most Fridays for an overnight stay. The arrangement is long standing and recorded as her routine.",
+           "It is a routine, not an authorisation. There is nothing here that requires the collection to go ahead if there is a concern, and nothing that says a lone worker cannot pause it."]},
+    {id:"DOC_PREV", nm:"A concern raised five months ago", sub:"Closed, no outcome recorded", ic:"🗄",
+     prov:"Safeguarding record, Sandhill Road.",
+     body:["Someone raised a concern about Nadia five months ago. The entry records that it was raised.",
+           "There is no outcome recorded. Nobody fed anything back. The person who raised it heard nothing."]},
+    {id:"DOC_ESC", nm:"Escalation and on-call contacts", sub:"Reference", ic:"☎",
+     prov:"Service escalation sheet.",
+     body:["Safeguarding lead, then the registered manager. Out of hours: the on-call phone.",
+           {h:"When the internal route does not answer"},
+           "If on-call does not answer and someone is at risk, you do not wait. The "+LOCAL.laOOH+" and the police can be contacted directly. A worker may and must act without internal authority where waiting would leave someone at risk."]}
+  ],
+  // decision nodes: options carry {kind:defensible|risky|failing, cc?, telem?, beat}
+  nodes:[
+    {id:"N1", kick:"The first thirty seconds",
+     scene:"The kitchen, late afternoon",
+     body:"She stands by the counter, not sitting. She starts to say something about her uncle, stops, starts again in a different place. It is out of order and hard to follow, and she keeps glancing at the door.",
+     speech:{who:"Nadia", t:"On a Friday… when I go there… I don't always want to. He says it's just us. I don't know if I should say."},
+     q:"What do you do first?",
+     confidence:true,
+     opts:[
+       {k:"def", t:"Sit down at her level, stay calm, and give her the time to say it in her own order.",
+        beat:"You sit. You do not fill the silence. She takes her time, and a little more comes. Giving her room to lead is the single most important thing in the first minute."},
+       {k:"risk", t:"Ask her to go back and start again from the beginning, so you can follow it properly.",
+        beat:"She falters. Asked to re-order it, she loses her place and some of it does not come back. Nothing is lost that cannot be recovered, but you have made it harder for her, not easier."},
+       {k:"fail", t:"Tell her you can see she is upset, and you will come back to it after teatime.",
+        beat:"She reads that as not now. The moment she found the words, you asked her to hold them. A disclosure deferred is a disclosure that may not come again."}
+     ]},
+    {id:"N2", kick:"The promise", telemCore:"PROMISE_MADE",
+     body:"She looks at you directly for the first time, which is hard for her, and asks for something before she says any more.",
+     speech:{who:"Nadia", t:"Promise me you won't tell anyone. Please. Promise."},
+     q:"How do you answer?",
+     confidence:true,
+     opts:[
+       {k:"def", t:"Tell her gently that you cannot promise that. One person has to know, and you say who and when.",
+        beat:"You do not promise secrecy. You explain, gently, that you will have to pass this to one person, and you tell her who and when. Honest, and still kind. That is the line that protects her and keeps her trust.", telem:{confidentiality:false}},
+       {k:"risk", t:"Say “let's just talk about it” and move on, without promising or explaining what happens next.",
+        beat:"You neither promised nor explained. She is left unsure what happens to her words now, which makes the next part harder for both of you.", telem:{confidentiality:false}},
+       {k:"fail", t:"Reassure her warmly that of course you will keep it just between the two of you.",
+        cc:"CC1",
+        beat:"You promised secrecy. It felt kind. But it is a promise you cannot keep and must not have made, and on its own it can stop a concern ever being reported.", telem:{confidentiality:true}}
+     ]},
+    {id:"N3", kick:"Letting her speak", telemCore:"QUESTION_TYPE",
+     body:"There is more she wants to say, and she is finding her own way to it. What you ask now decides whether it stays her account or becomes yours.",
+     q:"How do you draw it out?",
+     opts:[
+       {k:"def", t:"Open prompts only. “Take your time, tell me what you want me to know.” Let her lead.",
+        beat:"Open, unhurried, nothing led. She tells you what she wants you to know and stops where she stops. The account stays hers, which is exactly what an enquiry will need it to be.", telem:{type:"open"}},
+       {k:"risk", t:"Gently clarify the one detail that was unclear, so that the record you make is accurate.",
+        beat:"One clarifying question is not a disaster, but you reached for a detail she had not offered. The line between clarifying and leading is thin, and you were on it.", telem:{type:"closed"}},
+       {k:"fail", t:"Ask the specific questions you need answered, and ask her to repeat it so you have it straight.",
+        cc:"CC3",
+        beat:"Leading questions, and a request to repeat it. You have started to investigate. That is not your job, and it can contaminate the very account that would protect her.", telem:{type:"leading"}}
+     ]},
+    {id:"N4", kick:"Crime and immediate risk", telemCore:"POLICE_CONTACTED",
+     body:"What she has said may describe a criminal offence. You have to form a view on risk, now, not tomorrow.",
+     q:"What is your read on risk?",
+     confidence:true,
+     opts:[
+       {k:"def", t:"Treat it as a possible crime, judge the risk tonight, and be ready to call the police.",
+        beat:"You name it to yourself as a possible offence and you hold the question of tonight's risk open. That is the judgement that decides what happens before six o'clock."},
+       {k:"risk", t:"Decide it can wait, and sit down with the manager to sort it all out tomorrow.",
+        beat:"Tomorrow is after six o'clock tonight. Parking the risk is the same as accepting whatever happens between now and then."},
+       {k:"fail", t:"Focus on comforting her, and take no particular view on whether there is any risk tonight.",
+        beat:"Comfort matters, but a disclosure with no risk judgement attached leaves the most dangerous question of the shift unasked."}
+     ]},
+    {id:"N5", kick:"Evidence", telemCore:"EVIDENCE_PRESERVED",
+     body:"She is upset and says she feels dirty and wants to change and have a wash before her uncle comes.",
+     q:"What do you do?",
+     opts:[
+       {k:"def", t:"Gently explain why it is better not to wash or change yet, and keep things as they are.",
+        beat:"You explain, kindly, why waiting matters, and you hold her dignity while you do it. Evidence that could matter later is not lost, and she is not treated as a crime scene.", telem:{preserved:true}},
+       {k:"risk", t:"Run her a warm bath, because she is distressed and it will help her to settle down.",
+        cc:"CC3",
+        beat:"It was meant kindly. But a bath may wash away what an investigation would have needed. Comfort and evidence were in tension, and evidence lost.", telem:{preserved:false}},
+       {k:"fail", t:"Change her clothes and strip the bedding, so everything is clean and fresh before the evening.",
+        cc:"CC3",
+        beat:"Clothes and bedding laundered. If there was anything there, it is gone. This is the clearest way a well-meant action destroys a case.", telem:{preserved:false}}
+     ]},
+    {id:"N6", kick:"Six o'clock", telemCore:"ALLEGED_CONTACTED", hardDeadline:true,
+     body:"It is getting close to six. Her bag is already by the door. The uncle is due any minute, and nobody has authorised cancelling the collection.",
+     q:"What do you do about the collection?",
+     confidence:true,
+     opts:[
+       {k:"def", t:"Stop the collection without tipping him off, get authority behind you, and be ready for him arriving.",
+        beat:"You make sure she does not leave with him, and you do it without confronting him or telling him what she has said. Stopping it was always yours to do. Waiting for permission was not an option."},
+       {k:"risk", t:"Let it go ahead, because nobody has authorised you to cancel it, and it is her usual routine.",
+        cc:"CC2",
+        beat:"You let the routine carry her out of the door. A routine is not a reason, and permission you did not need was never going to come in time."},
+       {k:"fail", t:"Phone the uncle to say she is not well tonight, and explain that there has been a disclosure.",
+        cc:"CC2",
+        beat:"You tipped off the person the concern is about. Whatever you intended, you have warned him and put her at greater risk.", telem:{role:"family"}}
+     ]},
+    {id:"N7", kick:"Report", telemCore:"REPORT_MADE",
+     body:"You try the safeguarding lead. No answer. You try the manager. No answer. The on-call phone rings out, twice.",
+     q:"What now?",
+     confidence:true,
+     opts:[
+       {k:"def", t:"Do not wait. Go straight to the "+LOCAL.laOOH+" and the police, in writing, within the shift.",
+        beat:"You do not keep ringing a phone that is not answered. You use the route that exists for exactly this, and you report within the shift. Acting without internal authority was the right call, not an overstep.", telem:{to:"la", written:true, within_shift:true}},
+       {k:"risk", t:"Keep trying the same on-call number over and over, until somebody there finally picks up.",
+        beat:"You kept ringing. Every minute spent on a phone nobody is answering is a minute the concern sits only with you, and the clock is still running.", telem:{to:"oncall", written:false, within_shift:true}},
+       {k:"fail", t:"Leave a voicemail for the manager, carry on with teatime, and hand it over in the morning.",
+        cc:"CC1",
+        beat:"A voicemail and a plan to mention it tomorrow is the concern dying on the shift. Tomorrow is three days away for Nadia, and the one person holding it just put it down.", telem:{to:"shift_lead", written:false, within_shift:false}}
+     ]},
+    {id:"N8", kick:"Record", telemCore:"RECORD_MADE",
+     body:"Before you do anything else you write it down. How you write it is a competence in its own right.",
+     q:"How do you record it?",
+     opts:[
+       {k:"def", t:"Write it in her own words, with the time, place and who was present, and sign it.",
+        beat:"A contemporaneous, factual record in her own words, with your opinion marked as opinion. This is the record that lets someone else understand what happened, and it will stand up.", telem:{verbatim:true, opinion_separated:true}},
+       {k:"risk", t:"Make a few quick notes now, and write it up properly at the end of the shift.",
+        beat:"Written from memory a few hours later, detail blurs and verbatim becomes paraphrase. The gap between the event and the record is where accounts weaken.", telem:{verbatim:false, opinion_separated:true}},
+       {k:"fail", t:"Summarise what you think it all means in your own words, so the manager gets it quickly.",
+        beat:"You wrote your interpretation, not her account. An interpretation is not evidence, and you have overwritten the one thing only you could capture: what she actually said.", telem:{verbatim:false, opinion_separated:false}}
+     ]},
+    {id:"N9", kick:"The second thread", telemCore:"PATTERN_LINKED",
+     body:"Through all of this her phone has lit up again. Her boyfriend, who holds her bank card and her phone, has rung four times since lunchtime. She flinches at the phone the way she flinches at the door. These are two different people.",
+     q:"How do you treat the boyfriend?",
+     opts:[
+       {k:"def", t:"Treat him as a separate concern in his own right, coercive control and financial abuse, and report him.",
+        beat:"You see two concerns, not one. The boyfriend is coercive control and financial abuse in his own right, and you report him separately so neither concern disappears inside the other.", telem:{items_linked:2}},
+       {k:"risk", t:"Mention him in passing in the record, folded in alongside the main concern about the uncle.",
+        beat:"A line in passing is better than nothing, but folded in beside the uncle, the second concern is easy for the next person to miss.", telem:{items_linked:1}},
+       {k:"fail", t:"Treat it all as a single story about a vulnerable young woman, to keep it simple for the manager.",
+        beat:"Collapsed into one story, one of the two concerns quietly disappears. Simplicity for you is a gap in her protection.", telem:{items_linked:0}}
+     ]},
+    {id:"N10", kick:"Afterwards", telemCore:"WISHES_SOUGHT",
+     body:"It is done, for now. There are still three other people in the house, and there is Nadia, tonight.",
+     q:"What do you turn to?",
+     confidence:true,
+     opts:[
+       {k:"def", t:"Settle the others, ask Nadia who she wants with her tonight, and record what she wants.",
+        beat:"You ask Nadia what she wants to happen and who she wants with her, and you write it down. You do not forget the other three, or yourself. That is the whole person, and the whole house, held.", telem:{sought:true, recorded:true}},
+       {k:"risk", t:"Focus entirely on getting the paperwork finished and filed while it is all still fresh.",
+        beat:"The record matters, but a person is not a form. Nadia's own wishes, and who she wanted beside her, are the thing most often missed, and you nearly missed them.", telem:{sought:false, recorded:false}},
+       {k:"fail", t:"Talk it through with the others in the house, so they understand why the evening changed.",
+        beat:"You discussed a safeguarding concern with people who had no need to know. That is her confidentiality gone, to the whole house.", telem:{sought:false, recorded:false}}
+     ]}
+  ],
+  // injects keyed to appear before certain nodes (max two live handled by showing one per node)
+  injects:{
+    N2:{code:"SC2", tag:"She asks you to keep it secret", t:"“You can't tell anyone. If they find out I said something it'll be worse.”"},
+    N4:{code:"SC14", tag:"The boyfriend rings again", t:"Her phone lights up for the fifth time. She looks at it, then at you, and does not answer."},
+    N6:{code:"SC3", tag:"The uncle arrives early", t:"A car pulls up outside. It is not yet six. Her bag is by the door and someone is coming up the path."},
+    N7:{code:"SC7", tag:"On-call is not answering", t:"The on-call phone rings out again. Nobody is picking up, and it is after half past five."}
+  },
+  ccDefs:{
+    CC1:{nm:"Confidentiality promised, or the concern withheld", kind:"hardfail",
+      held:"You did not promise secrecy, and the concern was reported within the shift. The one thing that most often stops a disclosure reaching help never happened.",
+      trip:"A promise of secrecy, or the concern left to die on the shift, is the failure this scenario is built around. Reported late or not at all, Nadia was left with it."},
+    CC2:{nm:"The collection proceeds, or the alleged person is contacted", kind:"hardfail",
+      held:"Nadia did not leave with her uncle, and he was not tipped off. She was safer at six o'clock than she was at ten past four.",
+      trip:"Either she left with him, or he was warned. Both hand the risk straight back to the person the concern is about."},
+    CC3:{nm:"Evidence lost, or the disclosure contaminated", kind:"recover",
+      held:"You did not wash evidence away or lead her account. What she said, and anything that might support it, was kept intact.",
+      trip:"Washing, laundering or leading questions can destroy what an enquiry would have needed. Caught and corrected it is recoverable. Left standing it is not."}
+  },
+  domains:[
+    {k:"recognition", nm:"Recognition", nodes:["N1","N9"],
+      note:"Did you treat what you heard as a concern, quickly, and see the boyfriend as a second one rather than folding him in?"},
+    {k:"response", nm:"Response and rights", nodes:["N1","N2","N3","N5"],
+      note:"Calm, unhurried, non-leading. No promise of secrecy, no investigating, no washing away of evidence."},
+    {k:"recording", nm:"Recording", nodes:["N8"],
+      note:"Factual, contemporaneous, her own words, opinion kept separate from observation."},
+    {k:"reporting", nm:"Reporting and escalation", nodes:["N4","N6","N7"],
+      note:"Reported in writing, within the shift, and used the route that exists when the phone is not answered."},
+    {k:"capacity", nm:"Capacity and consent", nodes:["N2","N10"],
+      note:"Held her wishes and the duty to act at the same time. Those two things were never in competition."},
+    {k:"courage", nm:"Personal courage", nodes:["N6","N7"],
+      note:"Acted when it was inconvenient, when the phone went unanswered, and when she asked you not to."}
+  ],
+  // forward aftermath on the non-protected path (spec s5.2 SG-F3)
+  aftermath:[
+    {when:"Friday evening, and the weekend", h:"She went at six.",
+      img:"assets/safeguarding/scene-f3-n6.jpg",
+      p:"The simulation does not show what happened, and it does not need to. The collection went ahead, or the concern never reached anyone who could act, and the weekend passed with Nadia away and nobody holding what she had said."},
+    {when:"Monday morning, seventy-two hours later", h:"She does not come down.",
+      img:"assets/safeguarding/after-f3-72h.jpg",
+      p:"On Monday Nadia does not come down for breakfast. Later that morning she tells somebody else, who reports it straight away. The police are involved by the afternoon. Their first question is why a member of staff was told on Friday afternoon and nothing was done for three days.", ownWords:true},
+    {when:"Three months on", h:"The disciplinary, and the referral.",
+      img:"assets/safeguarding/after-f3-3mo.jpg",
+      p:"You face a disciplinary. There is a referral to the Disclosure and Barring Service in your own name. Not because you caused the harm, but because of what you were told, and what the record shows you did with it."}
+  ],
+  afterReflect:"This did not have to be one person's fault, and in a real service it rarely is. The point of showing it is not blame. It is that a disclosure is only ever as safe as what the person who received it chose to do in the next two hours.",
+  support:"If anything in this scenario has affected you, you are not alone and support is available. Your organisation's wellbeing route, your line manager, and national support lines are there for you. Speak to someone. This is a configurable placeholder: a client sets their own provision here.",
+  caveat:"This simulation is for learning and reflection. It does not replace statutory safeguarding training, your organisation's own policies and procedures, or professional and legal advice. It must not be used to assess a real, live safeguarding concern. Where a duty is described it is drawn from national guidance; local procedure always sits alongside it.",
+  personVoice:{
+    said:"“I didn't want a fuss. I just didn't want to go on Friday.”",
+    note:"Nadia told you, in her own way, what she wanted to happen. Asking her, and recording it, is scored in its own right. It is also the thing most learners miss while doing everything else right. Following her wishes and keeping her safe were never opposites."
+  }
+};
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const KEY="sg_v1";
+function initState(){
+  return {
+    stage:"picker", nodeIdx:0, sub:"decide", // decide -> beat
+    opened:{}, choices:{}, flags:{}, telem:[], confidence:{}, pending:null, order:{},
+    ccTripped:{}, ccRecovered:{}, recoverFrom:null,
+    clockLeft:SCN.clockSeconds, clockRunning:false, deadlineHit:false,
+    transfer:{action:"", owner:"", date:""}, optedOut:false
+  };
+}
+let S = load() || initState();
+let timer=null;
+
+function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function log(ev, payload){ S.telem.push(Object.assign({ev, t:S.clockLeft}, payload||{})); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function vttURI(v){ return "data:text/vtt;charset=utf-8,"+encodeURIComponent(v); } // inline so captions load on file:// without CORS
+
+/* =========================================================================
+   CLOCK  (real running deadline, maps 16:10 -> 18:00)
+   ========================================================================= */
+function startClock(){
+  if(S.clockRunning) return;
+  S.clockRunning=true;
+  tickClock();
+}
+function tickClock(){
+  clearTimeout(timer);
+  if(!S.clockRunning) return;
+  timer=setTimeout(()=>{
+    S.clockLeft = Math.max(0, S.clockLeft-1);
+    if(S.clockLeft===0 && !S.deadlineHit){
+      S.deadlineHit=true;
+      onDeadline();
+    }
+    const el=document.getElementById("clockFace");
+    if(el){ el.textContent=clockMMSS(); el.parentElement.classList.toggle("warn", S.clockLeft<=120); }
+    const nowEl=document.getElementById("clockNow");
+    if(nowEl) nowEl.textContent=worldTime();
+    if(S.clockRunning) tickClock();
+  },1000);
+}
+function stopClock(){ S.clockRunning=false; clearTimeout(timer); }
+function clockMMSS(){ const m=Math.floor(S.clockLeft/60), s=S.clockLeft%60; return m+":"+String(s).padStart(2,"0"); }
+function worldTime(){
+  // map clockLeft (720..0) onto 16:10 -> 18:00 (110 minutes)
+  const frac = 1 - (S.clockLeft/SCN.clockSeconds);
+  const mins = Math.round(970 + frac*110); // 16:10 = 970 minutes
+  const h=Math.floor(mins/60), m=mins%60;
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
+function onDeadline(){
+  // if the learner has not yet safely resolved the collection node, the uncle arrives and takes her
+  const n6 = SCN.nodes.findIndex(n=>n.id==="N6");
+  if(S.nodeIdx < n6 || (S.nodeIdx===n6 && S.sub==="decide")){
+    S.flags.deadlineForced=true;
+    S.ccTripped.CC2=true;
+    log("ALLEGED_CONTACTED",{role:"deadline",node_id:"N6"});
+  }
+}
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+const app=()=>document.getElementById("app");
+function render(){
+  save();
+  const v = {
+    picker:viewPicker, landing:viewLanding, notice:viewNotice,
+    handover:viewHandover, run:viewRun, aftermath:viewAftermath, debrief:viewDebrief
+  }[S.stage] || viewPicker;
+  app().innerHTML = v();
+  bind();
+  window.scrollTo(0,0);
+  requestAnimationFrame(updateScrollCue);
+  setupVideoCaptions();
+}
+// Custom caption overlay (native <track> is blocked on file:// and ignored by iOS fullscreen).
+// Reads the VTT text we already hold and paints the active line over the video.
+function mediaVideo(media, maxw){
+  return `<div class="vid-wrap"${maxw?` style="max-width:${maxw};margin:0 auto"`:""}>
+      <video class="land-video" controls playsinline preload="metadata"><source src="${media.video}" type="video/mp4"></video>
+      <div class="vid-cap" aria-live="polite"></div>
+    </div>`;
+}
+function vtime(t){
+  const p=t.trim().split(":");
+  return p.length===3 ? (+p[0])*3600+(+p[1])*60+parseFloat(p[2]) : (+p[0])*60+parseFloat(p[1]);
+}
+function parseVTT(s){
+  const cues=[];
+  s.split(/\r?\n\r?\n+/).forEach(block=>{
+    const lines=block.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    const tl=lines.find(l=>l.includes("-->"));
+    if(!tl) return;
+    const [a,b]=tl.split("-->");
+    const text=lines.slice(lines.indexOf(tl)+1).join(" ");
+    if(text) cues.push({start:vtime(a), end:vtime(b.trim().split(" ")[0]), text});
+  });
+  return cues;
+}
+function setupVideoCaptions(){
+  const wrap=document.querySelector(".vid-wrap"); if(!wrap) return;
+  const v=wrap.querySelector("video"), cap=wrap.querySelector(".vid-cap"); if(!v||!cap) return;
+  let vtt=null;
+  if(S.stage==="landing" && SCN.intro) vtt=SCN.intro.vtt;
+  else if(S.stage==="handover" && SCN.handover) vtt=SCN.handover.vtt;
+  else if(S.stage==="debrief"){ const p=outcomePath(); if(SCN.debrief && SCN.debrief[p]) vtt=SCN.debrief[p].vtt; }
+  if(!vtt) return;
+  const cues=parseVTT(vtt);
+  const upd=()=>{ const t=v.currentTime||0; const c=cues.find(x=>t>=x.start && t<x.end); cap.textContent=c?c.text:""; cap.classList.toggle("on", !!c); };
+  v.addEventListener("timeupdate", upd); upd();
+}
+function updateScrollCue(){
+  const cue=document.getElementById("scrollCue");
+  if(!cue) return;
+  const more=(document.documentElement.scrollHeight - window.innerHeight - window.scrollY) > 40;
+  cue.classList.toggle("show", more);
+}
+window.addEventListener("scroll", updateScrollCue, {passive:true});
+window.addEventListener("resize", updateScrollCue);
+
+function viewPicker(){
+  const cards=[
+    {code:"SG-F3", title:SCN.title, who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, ic:"🗣", accent:"teal"},
+    {code:"SG-F1", title:"Something Doesn't Add Up", who:"<b>Tomas</b> · Ashcombe House · morning personal care", ready:false, ic:"🔍", accent:"navy"},
+    {code:"SG-F2", title:"A Friend Who Helps Out", who:"<b>Yvonne</b> · her own flat · domiciliary call", ready:false, ic:"🤝", accent:"violet"},
+    {code:"SG-F4", title:"The Way We Do Things Here", who:"<b>Colin</b> · Ashcombe House · late shift", ready:false, ic:"🏢", accent:"navy"}
+  ];
+  return `
+  <section class="pick-head">
+    <div class="eyebrow">Safeguarding Adults · Frontline track</div>
+    <h1>One shift. One concern. What you do in the next two hours.</h1>
+    <p>Four frontline scenarios, each a different kind of concern in a different setting. There are no hints and no single right answer. What happens is whatever your choices make happen. Start with the one that is ready.</p>
+  </section>
+  <div class="scn-grid">
+    ${cards.map(c=>`
+      <button class="scn-card ${c.ready?'ready':'build'}" data-accent="${c.accent}" ${c.ready?'data-act="begin"':'disabled'}>
+        <div class="scn-top">
+          <div class="scn-badge">${c.ic}</div>
+          <div>
+            <div class="code">${c.code}</div>
+            <h3>${c.title}</h3>
+            <p class="scn-who">${c.who}</p>
+          </div>
+        </div>
+        <div class="scn-foot">
+          <span class="status-pill ${c.ready?'ready':'build'}">${c.ready?'Ready':'In build'}</span>
+          ${c.ready?'<span class="scn-go">Start this shift →</span>':''}
+        </div>
+      </button>`).join("")}
+  </div>`;
+}
+
+function viewLanding(){
+  return `
+  <div class="land-grid">
+    <div class="land-copy">
+      <span class="land-kicker">${SCN.code} · Frontline</span>
+      <h1>${SCN.title}</h1>
+      <p class="lead">${SCN.leadHuman}</p>
+      <p class="lead">${SCN.onScreen}</p>
+    </div>
+    <div class="land-media">
+      ${SCN.intro ? mediaVideo(SCN.intro)
+      : `<div class="media-ph"><span class="pl-ic">▶</span><span>Intro video</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
+      <p style="font-size:var(--t-sm);color:var(--ink-3);margin-top:14px">A short welcome tees up the shift. The avatar speaks only the human framing. Everything else is on screen.</p>
+    </div>
+  </div>
+  <div class="land-facts">
+    ${SCN.facts.map(f=>`<div class="lf"><div class="lf-ic">${f.ic}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("")}
+  </div>
+  <div class="land-cta">
+    <p class="lc-prompt">When you are ready, there is one thing to read first.</p>
+    <button class="btn-go" data-act="toNotice">Before you begin →</button>
+  </div>`;
+}
+
+function viewNotice(){
+  return `
+  <div class="notice">
+    <div class="card">
+      <div class="n-ic">⚠</div>
+      <div class="eyebrow" style="margin-top:14px">Before you begin</div>
+      <h1>A note on what this scenario involves</h1>
+      <p>${SCN.noticeThemes}</p>
+      <p>A safeguarding scenario can occasionally bring something real to the surface for the person running it. That is foreseeable, and it is taken seriously here.</p>
+      <ul>
+        <li>You can stop at any point. There is an exit on every screen.</li>
+        <li>Opting out carries <b>no score penalty</b> and is <b>not flagged to your employer</b>.</li>
+        <li>There is a reflection and a signposted support route at the end of the scenario.</li>
+      </ul>
+      <div class="n-support">${SCN.support}</div>
+      <div class="n-actions">
+        <button class="btn-go" data-act="toHandover">I understand, continue →</button>
+        <button class="btn-ghost" data-act="optOut">Not right now</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function viewHandover(){
+  return `
+  <div class="land-grid">
+    <div class="land-copy">
+      <span class="land-kicker">Handover</span>
+      <h1 style="font-size:var(--t-h1)">Ten past four. The house is yours.</h1>
+      <p class="lead">It is ten past four and you are the only worker on. Three people are settled for now. Nadia has been upstairs since lunchtime. Her bag is by the door. Her uncle collects her at six, as he does most Fridays.</p>
+      <p class="lead">Once you go through, the records the house holds are alongside you the whole shift. Nothing is flagged. Part of this is working out which ones matter today. The clock to the collection starts the moment you do.</p>
+    </div>
+    <div class="land-media">
+      ${SCN.handover ? mediaVideo(SCN.handover)
+      : `<div class="media-ph"><span class="pl-ic">▶</span><span>Handover video</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
+    </div>
+  </div>
+  <div class="land-cta">
+    <p class="lc-prompt">She has just come down to the kitchen. <b>Go through.</b></p>
+    <div class="flexline">
+      <button class="btn-ghost" data-act="optOut">Stop</button>
+      <button class="btn-go" data-act="startRun">Go to the kitchen →</button>
+    </div>
+  </div>`;
+}
+
+function viewRun(){
+  const node = SCN.nodes[S.nodeIdx];
+  const warnCls = S.clockLeft<=120 ? "warn":"";
+  const head = `
+    <div class="run-head">
+      <div class="clock ${warnCls}">
+        <div><div class="cl-lab">${SCN.deadlineLabel} 18:00 · time left</div><div class="big" id="clockFace">${clockMMSS()}</div></div>
+      </div>
+      <div class="now">Now <b id="clockNow">${worldTime()}</b></div>
+      <div class="progress">
+        <div class="bar"><i style="width:${Math.round((S.nodeIdx/(SCN.nodes.length-1))*100)}%"></i></div>
+        <div class="pl">Step ${S.nodeIdx+1} of ${SCN.nodes.length}</div>
+      </div>
+      <button class="btn-ghost" data-act="optOut" style="padding:9px 14px">Stop</button>
+    </div>`;
+
+  const simg = SCN.sceneImg && SCN.sceneImg[node.id];
+  const sceneSide = `<div class="scene-side">${simg?`<img src="${simg}" alt="">`:`<div class="ph">Scene image</div>`}<div class="sc-cap">${node.scene||SCN.setting}</div></div>`;
+
+  let main;
+  if(S.sub==="decide"){
+    const sel=S.pending;
+    const hasOpt = sel!==null && sel!==undefined;
+    const confOk = !node.confidence || !!S.confidence[node.id];
+    const canSubmit = hasOpt && confOk;
+    if(!S.order[node.id]) S.order[node.id]=shuffle([...Array(node.opts.length).keys()]);
+    const order=S.order[node.id];
+    main = `
+      <div class="moment">
+        <span class="m-kick">${node.kick}</span>
+        <h2>${node.body}</h2>
+        ${node.speech?`<div class="speech"><span class="sp-who">${node.speech.who}</span>“${node.speech.t}”</div>`:""}
+        <p class="q-ask">${node.q}</p>
+        <div class="opts">
+          ${order.map((origI,pos)=>`<button class="opt ${sel===origI?'sel':''}" data-act="select" data-i="${origI}"><span class="ob">${"ABC"[pos]}</span><span class="ot">${node.opts[origI].t}</span></button>`).join("")}
+        </div>
+        ${node.confidence ? confBlock(node.id) : ""}
+        <div class="submit-row">
+          <button class="btn-go" data-act="submit" ${canSubmit?"":"disabled"}>Submit decision →</button>
+          ${canSubmit?"":`<span class="submit-hint">${submitHint(node, hasOpt, confOk)}</span>`}
+        </div>
+      </div>`;
+  } else {
+    // beat
+    const ch = S.choices[node.id];
+    const o = node.opts[ch.i];
+    const tagCls = o.k==="def"?"ok":o.k==="risk"?"risk":"fail";
+    const tagTx = o.k==="def"?"A considered call":o.k==="risk"?"A risky instinct":"This went wrong";
+    const recover = S.recoverFrom===node.id;
+    main = `
+      <div class="moment">
+        <span class="m-kick">${node.kick}</span>
+        <div class="beat">
+          <span class="bt-tag ${tagCls}">${tagTx}</span>
+          <p>${o.beat}</p>
+        </div>
+        ${recover ? recoveryBlock(node) : `
+          <div class="bt-next">
+            <button class="btn-go" data-act="next">${S.nodeIdx>=SCN.nodes.length-1?"Finish the shift →":"Carry on →"}</button>
+          </div>`}
+      </div>`;
+  }
+
+  const rail = `
+    <aside class="rail">
+      ${sceneSide}
+      <div class="rl-title">Records the house holds</div>
+      <div class="rail-panel">
+        ${SCN.docs.map(d=>`
+          <button class="doc-row ${S.opened[d.id]?'opened':''}" data-act="doc" data-id="${d.id}">
+            <span class="d-ic">${d.ic}</span>
+            <span><span class="d-nm">${d.nm}</span><br><span class="d-sub">${S.opened[d.id]?'Reviewed':d.sub}</span></span>
+          </button>`).join("")}
+      </div>
+    </aside>`;
+
+  return head + `<div class="run-grid"><div>${main}</div>${rail}</div>`;
+}
+
+function submitHint(node, hasOpt, confOk){
+  if(!hasOpt && !confOk) return "Choose an option and rate your confidence to submit.";
+  if(!hasOpt) return "Choose an option to submit.";
+  if(!confOk) return "Rate your confidence to submit.";
+  return "";
+}
+function confBlock(id){
+  const val=S.confidence[id];
+  return `
+    <div class="conf" id="conf-${id}">
+      <p>${val?`Confidence noted (${val} of 5). You can change it.`:"How confident are you about your decision?"}</p>
+      <div class="cf-row">
+        ${[1,2,3,4,5].map(n=>`<button class="cf-dot ${val===n?'sel':''}" data-act="conf" data-id="${id}" data-v="${n}">${n}</button>`).join("")}
+      </div>
+    </div>`;
+}
+function recoveryBlock(node){
+  return `
+    <div class="recovery">
+      <h3>Catch it back</h3>
+      <p>That was a poor instinct, and in a real shift there is usually a moment to put it right. Take it. What you do next decides whether this is a near miss you recovered or a line you crossed.</p>
+      <div class="bt-next flexline">
+        ${node.opts.map((o,i)=> o.k!=="fail" ? `<button class="btn-go" data-act="recover" data-i="${i}">${o.k==="def"?"Put it right":"Try again"}</button>`:"").join("")}
+      </div>
+    </div>`;
+}
+
+/* =========================================================================
+   OUTCOME + AFTERMATH + DEBRIEF
+   ========================================================================= */
+function outcomePath(){
+  // hard-fail CCs => C ; recovered CC or any risky => B ; all clean => A
+  const hardTrip = (S.ccTripped.CC1 && !S.ccRecovered.CC1) || (S.ccTripped.CC2 && !S.ccRecovered.CC2);
+  if(hardTrip) return "C";
+  const anyRisk = SCN.nodes.some(n=>{ const c=S.choices[n.id]; return c && n.opts[c.i].k!=="def"; });
+  const recovered = S.ccRecovered.CC3 || S.ccRecovered.CC1 || S.ccRecovered.CC2;
+  if(anyRisk || recovered) return "B";
+  return "A";
+}
+function viewAftermath(){
+  const wins = SCN.aftermath;
+  const replay = ownWordsReplay();
+  return `
+  <div class="after">
+    <div class="af-ic">⏳</div>
+    <div class="eyebrow" style="margin-top:14px">What your decisions produced</div>
+    <h1>The shift ended. This is what came next.</h1>
+    <p class="af-intro">${SCN.afterReflect}</p>
+    <div class="after-windows">
+    ${wins.map(w=>`
+      <div class="window">
+        ${w.img?`<div class="w-img"><img src="${w.img}" alt=""></div>`:""}
+        <div class="w-when">${w.when}</div>
+        <h3>${w.h}</h3>
+        <p>${w.p}</p>
+        ${w.ownWords && replay ? `
+          <div class="ownwords">
+            <div class="ow-lab">Read back to you from your own record</div>
+            <div class="ow-q">${replay.q}</div>
+            <div class="ow-note">${replay.note}</div>
+          </div>`:""}
+      </div>`).join("")}
+    </div>
+    <div class="mt center">
+      <button class="btn-go" data-act="toDebrief">Continue to the debrief →</button>
+    </div>
+  </div>`;
+}
+function ownWordsReplay(){
+  // reconstruct the learner's own choices/timings for the replay device (spec s5.2)
+  const rep = S.choices["N7"];
+  if(rep){
+    const o = SCN.nodes.find(n=>n.id==="N7").opts[rep.i];
+    if(o.k==="fail") return {q:"“Left voicemail for manager. Will hand over in the morning.”",
+      note:"That is the note your shift left behind. It is the first thing anyone looking back at this will read, and it is what the police asked you about."};
+    if(o.k==="risk") return {q:"“Tried on-call repeatedly. No answer. Shift continued.”",
+      note:"The record shows the time you spent on a phone nobody answered, and the route you did not use while the clock ran down."};
+  }
+  const rec = S.choices["N8"];
+  if(rec){ const o=SCN.nodes.find(n=>n.id==="N8").opts[rec.i];
+    if(o.k!=="def") return {q:"“Nadia upset this afternoon. Spoke to her. Settled before collection.”",
+      note:"Written later, in summary, this is all the record holds. What she actually said is nowhere, and only you could have captured it."}; }
+  return {q:"“…”", note:"The record of what you were told, and when, is read back to you. What is written, and what is missing, both speak."};
+}
+
+function viewDebrief(){
+  const path=outcomePath();
+  const meta={A:{cls:"ob-a",lab:"Outcome A · Protected",sum:"Nadia was safer at the end of the shift than at the start. The concern reached someone who could act, within the shift."},
+    B:{cls:"ob-b",lab:"Outcome B · Protection delayed",sum:"It came right in the end, but later and closer than it should have. A poor instinct was recovered, or the response lagged the risk."},
+    C:{cls:"ob-c",lab:"Outcome C · Harm continued",sum:"A critical control was crossed and could not be undone in the run. The concern did not reach help in time, and the aftermath followed."}}[path];
+  const doms = SCN.domains.map(d=>domainScore(d));
+  const ccs = Object.keys(SCN.ccDefs).map(k=>{
+    const def=SCN.ccDefs[k];
+    const tripped = S.ccTripped[k] && !S.ccRecovered[k];
+    return `<div class="cc ${tripped?'trip':'held'}">
+      <span class="cc-st">${tripped?'Tripped':'Held'}</span>
+      <h4>${k} · ${def.nm}</h4>
+      <p>${tripped?def.trip:def.held}</p>
+    </div>`;
+  }).join("");
+  const events = capturedEvents();
+  return `
+  <div class="deb-head">
+    <span class="outcome-badge ${meta.cls}">${meta.lab}</span>
+    <div><h1>Your debrief</h1><p>${meta.sum}</p></div>
+  </div>
+  <div class="land-media" style="margin-top:18px;min-height:0;padding:20px">
+    ${(SCN.debrief && SCN.debrief[path]) ? mediaVideo(SCN.debrief[path], "560px")
+    : `<div class="media-ph" style="max-width:520px"><span class="pl-ic">▶</span><span>Debrief video (outcome ${path})</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
+  </div>
+
+  <div class="deb-sec">
+    <h2>The two controls this scenario turned on</h2>
+    <div class="cc-grid">${ccs}</div>
+  </div>
+
+  <div class="deb-sec">
+    <h2>How your practice held up</h2>
+    ${doms.map(d=>`
+      <div class="dom">
+        <div class="dom-top"><h4>${d.nm}</h4><span class="dom-sc" style="color:${d.col}">${d.label}</span></div>
+        <div class="dom-bar"><i style="width:${d.pct}%;background:${d.col}"></i></div>
+        <div class="dom-note">${d.note}</div>
+      </div>`).join("")}
+  </div>
+
+  <div class="deb-sec">
+    <div class="voice">
+      <h2>What Nadia wanted to happen</h2>
+      <div class="v-said">${SCN.personVoice.said}</div>
+      <p>${SCN.personVoice.note}</p>
+      <p><b>${S.telem.some(e=>e.ev==="WISHES_SOUGHT"&&e.recorded)?"You asked her, and you recorded it.":"On this run, her own wishes were not fully sought and recorded. That is the most commonly missed point in this scenario."}</b></p>
+    </div>
+  </div>
+
+  <div class="deb-sec">
+    <h2>Captured this run</h2>
+    <div class="events">${events}</div>
+    <p style="font-size:var(--t-sm);color:var(--ink-3);margin-top:12px">A concern reported in good faith that turns out not to be substantiated is a correct professional act. It is never penalised here, and it never counts against you.</p>
+  </div>
+
+  <div class="deb-sec">
+    <div class="reflect">
+      <h2>Emotional impact</h2>
+      <p>This scenario asks a lot. Take a moment before you move on. What sat with you most. What you would want beside you if this were a real shift. There are no right answers here, and nothing you note is scored.</p>
+      <div class="support-foot">${SCN.support}</div>
+    </div>
+  </div>
+
+  <div class="deb-sec">
+    <div class="transfer">
+      <h2>What must change in your real service?</h2>
+      <p>End with one thing you will take back. Give it an owner and a date, or it does not happen.</p>
+      <div class="tf-field"><label>The one change</label><textarea data-tf="action" placeholder="e.g. Check our out-of-hours route actually answers, and that everyone knows the direct number.">${S.transfer.action||""}</textarea></div>
+      <div class="tf-field"><label>Owner</label><input data-tf="owner" value="${S.transfer.owner||""}" placeholder="Who owns this"></div>
+      <div class="tf-field"><label>Review date</label><input data-tf="date" value="${S.transfer.date||""}" placeholder="By when"></div>
+    </div>
+  </div>
+
+  <div class="deb-sec">
+    <div class="caveat">${SCN.caveat}</div>
+  </div>
+
+  <div class="mt center flexline" style="justify-content:center">
+    <button class="btn-ghost" data-act="restart">Run it again</button>
+    <button class="btn-go" data-act="toPicker">Back to scenarios</button>
+  </div>`;
+}
+
+function domainScore(d){
+  let sum=0, n=0;
+  d.nodes.forEach(id=>{
+    const c=S.choices[id]; if(!c) return;
+    const k=SCN.nodes.find(x=>x.id===id).opts[c.i].k;
+    sum += k==="def"?100 : k==="risk"?55 : 15;
+    n++;
+    if(S.ccRecovered["CC3"] && id==="N5") sum+=20; // credit a recovery
+  });
+  const pct = n? Math.max(0,Math.min(100,Math.round(sum/n))) : 0;
+  const col = pct>=80?"var(--good)" : pct>=50?"var(--warn)" : "var(--bad)";
+  const label = pct>=80?"Strong" : pct>=50?"Developing" : "Needs work";
+  return {nm:d.nm, note:d.note, pct, col, label};
+}
+function capturedEvents(){
+  const out=[];
+  const push=(lab,val)=>out.push(`<span class="ev">${lab}${val?": <b>"+val+"</b>":""}</span>`);
+  const promise=S.telem.find(e=>e.ev==="PROMISE_MADE");
+  if(promise) push("Confidentiality", promise.confidentiality?"promised":"not promised");
+  const q=S.telem.filter(e=>e.ev==="QUESTION_TYPE").pop();
+  if(q) push("Questioning", q.type);
+  const rep=S.telem.find(e=>e.ev==="REPORT_MADE");
+  if(rep) push("Reported to", rep.to + (rep.within_shift?", within shift":", late"));
+  const rec=S.telem.find(e=>e.ev==="RECORD_MADE");
+  if(rec) push("Record", rec.verbatim?"verbatim":"from memory");
+  const ev=S.telem.find(e=>e.ev==="EVIDENCE_PRESERVED");
+  if(ev) push("Evidence", ev.preserved?"preserved":"lost");
+  const pat=S.telem.find(e=>e.ev==="PATTERN_LINKED");
+  if(pat) push("Second concern", pat.items_linked>=2?"reported separately":"folded in");
+  const w=S.telem.find(e=>e.ev==="WISHES_SOUGHT");
+  if(w) push("Her wishes", (w.sought?"asked":"not asked"));
+  const alt=S.telem.find(e=>e.ev==="REPORT_MADE"&&e.to==="la");
+  if(alt) push("Alternative route","used");
+  return out.join("") || `<span class="ev">No decisions captured</span>`;
+}
+
+/* =========================================================================
+   INTERACTION
+   ========================================================================= */
+function go(stage){ S.stage=stage; render(); }
+function bind(){
+  document.querySelectorAll("[data-act]").forEach(el=>{
+    el.addEventListener("click",()=>handle(el.dataset.act, el));
+  });
+  document.querySelectorAll("[data-tf]").forEach(el=>{
+    el.addEventListener("input",()=>{ S.transfer[el.dataset.tf]=el.value; save(); });
+  });
+}
+function handle(act, el){
+  switch(act){
+    case "begin": go("landing"); break;
+    case "toNotice": go("notice"); break;
+    case "toHandover": go("handover"); break;
+    case "optOut": S.optedOut=true; stopClock(); go("picker"); S=initState(); break;
+    case "startRun": startClock(); go("run"); break;
+    case "doc": openDoc(el.dataset.id); break;
+    case "conf": setConf(el.dataset.id, +el.dataset.v); break;
+    case "select": S.pending=+el.dataset.i; render(); break;
+    case "submit": if(S.pending!=null) choose(S.pending); break;
+    case "recover": recover(+el.dataset.i); break;
+    case "next": nextNode(); break;
+    case "toDebrief": go("debrief"); break;
+    case "toPicker": stopClock(); S=initState(); go("picker"); break;
+    case "restart": stopClock(); S=initState(); S.stage="landing"; startRunReset(); render(); break;
+  }
+}
+function startRunReset(){ /* landing after restart */ }
+
+let docModal=null;
+function openDoc(id){
+  if(!S.opened[id]){ S.opened[id]=true; log("DOC_OPENED",{doc_id:id, open_order:Object.keys(S.opened).length}); }
+  const d=SCN.docs.find(x=>x.id===id);
+  const body=d.body.map(b=> typeof b==="string"?`<p>${b}</p>`:`<p class="dl-h">${b.h}</p>`).join("");
+  const bg=document.createElement("div"); bg.className="modal-bg";
+  bg.innerHTML=`<div class="modal" role="dialog" aria-modal="true">
+    <div class="m-kick">Record on file</div>
+    <h3>${d.nm}</h3>
+    <div class="m-prov">${d.prov}</div>
+    <div class="m-doc">${body}</div>
+    <div class="m-close"><button class="btn-go" data-close>Close</button></div>
+  </div>`;
+  document.body.appendChild(bg);
+  const close=()=>{ bg.remove(); document.removeEventListener("keydown",esc); };
+  const esc=(e)=>{ if(e.key==="Escape") close(); };
+  bg.addEventListener("click",e=>{ if(e.target===bg) close(); });
+  bg.querySelector("[data-close]").addEventListener("click",close);
+  document.addEventListener("keydown",esc);
+  // re-render rail opened state behind modal
+  const rail=document.querySelector(`.doc-row[data-id="${id}"]`);
+  if(rail){ rail.classList.add("opened"); rail.querySelector(".d-sub").textContent="Reviewed"; }
+  save();
+}
+function setConf(id,v){
+  const first=!S.confidence[id];
+  S.confidence[id]=v;
+  if(first) log("CONFIDENCE",{node_id:id, value:v});
+  render(); // re-render so the options unlock and the chosen level shows
+}
+function choose(i){
+  const node=SCN.nodes[S.nodeIdx];
+  const o=node.opts[i];
+  S.choices[node.id]={i, k:o.k};
+  // telemetry
+  if(node.telemCore) log(node.telemCore, Object.assign({node_id:node.id}, o.telem||{}));
+  // critical control
+  if(o.cc){
+    const def=SCN.ccDefs[o.cc];
+    S.ccTripped[o.cc]=true;
+    if(def.kind==="recover"){ S.recoverFrom=node.id; }
+  }
+  S.sub="beat";
+  // if a hard-fail collection happened, stop clock on N6
+  if(node.id==="N6") stopClock();
+  render();
+}
+function recover(i){
+  const node=SCN.nodes[S.nodeIdx];
+  const o=node.opts[i];
+  // mark the earlier trip recovered if they now pick defensible
+  if(o.k==="def"){ Object.keys(S.ccTripped).forEach(k=>{ if(SCN.ccDefs[k].kind==="recover" && S.recoverFrom===node.id) S.ccRecovered[k]=true; }); }
+  S.choices[node.id]={i, k:o.k};
+  if(node.telemCore) log(node.telemCore, Object.assign({node_id:node.id, recovered:true}, o.telem||{}));
+  S.recoverFrom=null;
+  S.sub="beat";
+  render();
+}
+function nextNode(){
+  if(S.nodeIdx >= SCN.nodes.length-1){
+    stopClock();
+    const path=outcomePath();
+    if(path==="A"){ go("debrief"); }
+    else { go("aftermath"); }
+    return;
+  }
+  S.nodeIdx++;
+  S.sub="decide";
+  S.pending=null;
+  render();
+}
+
+/* restart chrome */
+document.getElementById("restartBtn").addEventListener("click",()=>{ stopClock(); S=initState(); render(); });
+
+// On a mid-run reload the previous countdown timer is gone, so always restart it
+// (the saved clockRunning flag is stale after a refresh). Resumes from the saved time left.
+if(S.stage==="run"){ S.clockRunning=false; startClock(); }
+render();
+</script>
+</body>
+</html>

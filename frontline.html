@@ -694,6 +694,9 @@ button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
 .vband{position:relative;width:100%;aspect-ratio:16/9;background:#0b1016;border-bottom:1px solid var(--line);overflow:hidden}
 .vband.flush{border:0;border-bottom:1px solid var(--line);border-radius:0}
 .vplayer{width:100%;height:100%;display:block;object-fit:cover;background:#0b1016}
+.vcap{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);max-width:92%;background:rgba(7,19,45,.84);color:#fff;padding:5px 12px;border-radius:7px;font-size:15px;line-height:1.3;text-align:center;opacity:0;transition:opacity .12s;pointer-events:none;z-index:2}
+.vcap.on{opacity:1}
+@media(max-width:900px){.vcap{font-size:16.5px;bottom:9%}}
 /* gated intro video in the disclaimer lightbox */
 .disc-vband,.disc-video{background:#0b1016}
 .disc-playoverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,16,22,.5);color:#fff;border:0;font-size:var(--t-body);font-weight:700;cursor:pointer}
@@ -961,8 +964,7 @@ function debriefMedia(){
 function setupDebriefVideo(){
   var v=document.querySelector('.debrief-video'); if(!v) return;
   v.muted=!!S.muted;
-  function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
-  showCaps(); v.addEventListener('loadeddata', showCaps);
+  overlayCaps(v); v.addEventListener('loadeddata', function(){ overlayCaps(v); });
   var p=v.play(); if(p && p.catch){ p.catch(function(){}); }
 }
 const HANDOVER_VTT='data:text/vtt;base64,V0VCVlRUCgpTVFlMRQo6OmN1ZSB7CiAgICBjb2xvcjogd2hpdGU7CiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjMzgzOTQzQTM7Cn0KCjAwOjAwOjAwLjYwMCAtLT4gMDA6MDA6MDQuMDQwCkkgbmVlZCB0byBoZWFkIHVwc3RhaXJzIGZvciB0aGUgbWVkaWNhdGlvbiByb3VuZCwKc28geW91J2xsIGJlIGluIGNoYXJnZSBvZiB0ZWF0aW1lLgoKMDA6MDA6MDQuMjAwIC0tPiAwMDowMDowNi4xMTQKSXQncyBqdXN0IHlvdSBhbmQgdHdvIGhvdXNlbWF0ZXMgYXQgdGhlIHRhYmxlLgoKMDA6MDA6MDYuMjY0IC0tPiAwMDowMDoxMC44MjQKQmVmb3JlIHlvdSBzdGFydCwgbWFrZSBzdXJlIHRvIGNoZWNrIHRoZSBpbmZvcm1hdGlvbgp3ZSBoYXZlLCBsaWtlIHRoZSBtZWFsdGltZSBwbGFuLCBwYXRpZW50IHJlY29yZHMsCgowMDowMDoxMC44MjQgLS0+IDAwOjAwOjEyLjE4NAphbmQgcmVmZXJlbmNlIHRvb2xzLgoKMDA6MDA6MTIuMTg0IC0tPiAwMDowMDoxMy4wMTAKVGhleSdyZSBhbGwgb24gdGhlIHJpZ2h0LgoKMDA6MDA6MTMuMTYwIC0tPiAwMDowMDoxNy4yNDAKVGhlcmUncyBub3RoaW5nIHVyZ2VudCBmb3IgeW91LCBidXQgaXQncyBpbXBvcnRhbnQKdG8gbm90aWNlIHdoYXQgbWF0dGVycyB0b2RheS4KCjAwOjAwOjE3LjI0MCAtLT4gMDA6MDA6MTkuMTYwCk9uY2UgeW91J3JlIHJlYWR5LCBoZWFkIG92ZXIgdG8gdGhlIHRhYmxlLgoKMDA6MDA6MTkuMTYwIC0tPiAwMDowMDoxOS43NDIKWW91J3ZlIGdvdCB0aGlzLg==';
@@ -1886,12 +1888,43 @@ function badgeStyle(accent){
 /* Welcome intro clip on the landing: captions on, position preserved across
    re-renders (e.g. a theme toggle), and an autoplay attempt. Native controls
    provide the pause/play fallback if the browser blocks autoplaying sound. */
+/* Custom caption overlay: native <track> is blocked on file:// and ignored by iOS
+   fullscreen, so we read the VTT ourselves and paint the active line over the video. */
+function flVtime(t){ var p=t.trim().split(':'); return p.length===3 ? (+p[0])*3600+(+p[1])*60+parseFloat(p[2]) : (+p[0])*60+parseFloat(p[1]); }
+function flDecodeVtt(src){
+  if(/^data:text\/vtt;base64,/.test(src)){ var b=src.replace(/^data:text\/vtt;base64,/,''); try{ return decodeURIComponent(escape(atob(b))); }catch(e){ return atob(b); } }
+  if(/^data:text\/vtt[^,]*,/.test(src)) return decodeURIComponent(src.replace(/^data:text\/vtt[^,]*,/,''));
+  return src;
+}
+function flParseVTT(s){
+  var cues=[];
+  s.split(/\r?\n\r?\n+/).forEach(function(block){
+    var lines=block.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
+    var tl=null; for(var i=0;i<lines.length;i++){ if(lines[i].indexOf('-->')>-1){ tl=lines[i]; break; } }
+    if(!tl) return;
+    var parts=tl.split('-->'); var text=lines.slice(lines.indexOf(tl)+1).join(' ');
+    if(text) cues.push({start:flVtime(parts[0]), end:flVtime(parts[1].trim().split(' ')[0]), text:text});
+  });
+  return cues;
+}
+function overlayCaps(v){
+  if(!v) return;
+  try{ for(var i=0;i<v.textTracks.length;i++) v.textTracks[i].mode='hidden'; }catch(e){}
+  var band=v.closest ? v.closest('.vband') : v.parentNode; if(!band) return;
+  var tr=band.querySelector('track'); var src=tr?tr.getAttribute('src'):(v.getAttribute('data-vtt')||'');
+  if(!src) return;
+  var cap=band.querySelector('.vcap');
+  if(!cap){ cap=document.createElement('div'); cap.className='vcap'; cap.setAttribute('aria-live','polite'); band.appendChild(cap); }
+  if(v._capWired) return; v._capWired=true;
+  var cues=flParseVTT(flDecodeVtt(src));
+  function upd(){ var t=v.currentTime||0, c=null; for(var i=0;i<cues.length;i++){ if(t>=cues[i].start && t<cues[i].end){ c=cues[i]; break; } } cap.textContent=c?c.text:''; cap.className=c?'vcap on':'vcap'; }
+  v.addEventListener('timeupdate',upd); upd();
+}
 var introT=0;
 function setupIntroVideo(){
   var v=document.querySelector('.intro-video'); if(!v) return;
   v.muted=!!S.muted;
-  function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
-  showCaps(); v.addEventListener('loadeddata', showCaps);
+  overlayCaps(v); v.addEventListener('loadeddata', function(){ overlayCaps(v); });
   v.addEventListener('loadedmetadata', function(){ if(introT>0 && introT < v.duration-0.3){ try{ v.currentTime=introT; }catch(e){} } });
   v.addEventListener('timeupdate', function(){ introT=v.currentTime; });
   var p=v.play(); if(p && p.catch){ p.catch(function(){}); }
@@ -1903,8 +1936,7 @@ var handoverT=0, handoverEnded=false, handoverAutoplayed=false;
 function setupHandoverVideo(){
   var v=document.querySelector('.handover-video'); if(!v) return;
   v.muted=!!S.muted;
-  function showCaps(){ try{ if(v.textTracks && v.textTracks.length){ v.textTracks[0].mode='showing'; } }catch(e){} }
-  showCaps(); v.addEventListener('loadeddata', showCaps);
+  overlayCaps(v); v.addEventListener('loadeddata', function(){ overlayCaps(v); });
   v.addEventListener('loadedmetadata', function(){ if(handoverT>0 && handoverT < v.duration-0.3){ try{ v.currentTime=handoverT; }catch(e){} } });
   v.addEventListener('timeupdate', function(){ handoverT=v.currentTime; });
   v.addEventListener('ended', function(){ handoverEnded=true; });
@@ -3990,7 +4022,7 @@ function recordDwell(){
 }
 /* The doc modal lives in its own body-level root (like the coach tour) so opening,
    switching or closing a record does NOT rebuild the view. A full render() recreates
-   the handover <video>, which restarts it — the "video refreshes when reading a
+   the handover <video>, which restarts it, the "video refreshes when reading a
    document" bug. Clicks still work because the delegated listener is on document. */
 function flModalRoot(){ var e=document.getElementById('fl-modal-root'); if(!e){ e=document.createElement('div'); e.id='fl-modal-root'; document.body.appendChild(e); } return e; }
 function renderModal(){ flModalRoot().innerHTML = S.modal ? docModal(S.modal.id) : ''; }
