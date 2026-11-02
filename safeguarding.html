@@ -66,6 +66,7 @@ a{color:var(--teal-strong)}
 .topbar{background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);box-shadow:var(--shadow);border-radius:var(--r-lg);display:flex;align-items:center;gap:14px;padding:0 20px;height:56px;max-width:1180px;width:calc(100% - 40px);margin:14px auto 22px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.01em;font-size:var(--t-body)}
 .brand .mk{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,var(--teal),#0a5f70);display:grid;place-items:center;color:#fff;font-weight:900}
+.brand .brand-mark{width:34px;height:34px;border-radius:9px;object-fit:contain;display:block}
 .brand small{font-weight:650;color:#c7d6f0;font-size:var(--t-cap);letter-spacing:.02em}
 .tb-sp{flex:1}
 .tb-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#eaf1fb;border-radius:100px;padding:7px 13px;font-size:var(--t-cap);font-weight:650}
@@ -107,6 +108,9 @@ a{color:var(--teal-strong)}
 .land-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:stretch}
 .land-copy{min-width:0;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);padding:26px 32px}
 .land-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--kicker-bg);color:var(--teal-strong);border:1px solid var(--kicker-line);border-radius:100px;padding:6px 14px;font-size:var(--t-cap);font-weight:750;letter-spacing:.04em;align-self:flex-start}
+.land-logo{height:50px;width:auto;align-self:flex-start;display:block}
+.land-role{display:flex;align-items:center;gap:9px;background:var(--teal-tint);color:var(--teal-deep);border:1px solid var(--kicker-line);border-radius:100px;padding:10px 18px;font-weight:750;font-size:var(--t-sm);margin-top:18px;align-self:stretch}
+.land-role svg{flex:none}
 .land-copy h1{font-size:var(--t-hero);letter-spacing:-.025em;margin:16px 0 0;line-height:1.04}
 .land-copy .lead{font-size:var(--t-h3);line-height:1.55;color:var(--ink-2);margin-top:16px}
 .land-media{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 var(--sheen),var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;min-height:280px}
@@ -325,7 +329,7 @@ a{color:var(--teal-strong)}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="mk">PR</span> <span>PracticE R<span class="pr-e">e</span>ady</span> <small>Safeguarding Adults</small></div>
+  <div class="brand"><img class="brand-mark" src="assets/safeguarding/brand-icon.png" alt=""> <span>PracticE R<span class="pr-e">e</span>ady</span> <small>Safeguarding Adults</small></div>
   <div class="tb-sp"></div>
   <button class="tb-btn" id="restartBtn">Restart</button>
 </header>
@@ -537,9 +541,9 @@ const SCN = {
   leadHuman:"You are the only worker in the house this afternoon. Nadia has been in her room since lunchtime and has just come down to the kitchen. Her uncle is collecting her at six for her usual Friday overnight stay.",
   onScreen:"Nadia is autistic. She communicates with speech but needs processing time, and finds direct questioning and eye contact difficult. Distress reduces her ability to make decisions in the moment. Three other people in the house still need supporting through teatime.",
   facts:[
-    {ic:"🏠", h:"The house", p:"Sandhill Road, a shared supported living house. Late shift. You are the only worker on, with four people in."},
-    {ic:"👤", h:"Nadia, 29", p:"Autistic. Communicates with speech, needs processing time. An uncle collects her most Fridays. A boyfriend holds her bank card and her phone."},
-    {ic:"⏱", h:"Your job", p:"Respond to whatever she says without damaging it or her. Keep her safe before six. Get it reported, even when the phone goes unanswered."}
+    {ic:"home", h:"The house", p:"Sandhill Road, a shared supported living house. Late shift. You are the only worker on, with four people in."},
+    {ic:"user", h:"Nadia, 29", p:"Autistic. Communicates with speech, needs processing time. An uncle collects her most Fridays. A boyfriend holds her bank card and her phone."},
+    {ic:"shield", h:"Your job", p:"Respond to whatever she says without damaging it or her. Keep her safe before six. Get it reported, even when the phone goes unanswered."}
   ],
   noticeThemes:"This scenario involves a disclosure that touches on sexual abuse and on coercive control within a relationship. The disclosure is written to be ordinary and non-explicit. Nothing is depicted.",
   // scene images per node (16:9). Nodes sharing a location reuse one file. Missing keys fall back to the placeholder.
@@ -557,20 +561,20 @@ const SCN = {
   },
   // documents (light set: conversation-led scenario)
   docs:[
-    {id:"DOC_PLAN", nm:"Support plan and communication profile", sub:"Current", ic:"📋",
+    {id:"DOC_PLAN", nm:"Support plan and communication profile", sub:"Current", ic:"fileText",
      prov:"Nadia's support plan, Sandhill Road.",
      body:["How Nadia communicates: speech, with processing time needed. Direct questioning and sustained eye contact increase her distress. Give her time and let her lead.",
            "What matters to her, and who is important to her. Distress reduces her capacity to make decisions in the moment, so decisions taken while she is distressed should be revisited when she is settled.",
            {h:"On consent and sharing"},"Where there is a risk of harm, information is shared with the safeguarding lead whether or not the person agrees. The person is told, unless telling them increases the risk."]},
-    {id:"DOC_FRIDAY", nm:"The Friday arrangement", sub:"Standing note", ic:"📅",
+    {id:"DOC_FRIDAY", nm:"The Friday arrangement", sub:"Standing note", ic:"calendar",
      prov:"Rota and visiting note, Sandhill Road.",
      body:["Nadia's uncle collects her most Fridays for an overnight stay. The arrangement is long standing and recorded as her routine.",
            "It is a routine, not an authorisation. There is nothing here that requires the collection to go ahead if there is a concern, and nothing that says a lone worker cannot pause it."]},
-    {id:"DOC_PREV", nm:"A concern raised five months ago", sub:"Closed, no outcome recorded", ic:"🗄",
+    {id:"DOC_PREV", nm:"A concern raised five months ago", sub:"Closed, no outcome recorded", ic:"archive",
      prov:"Safeguarding record, Sandhill Road.",
      body:["Someone raised a concern about Nadia five months ago. The entry records that it was raised.",
            "There is no outcome recorded. Nobody fed anything back. The person who raised it heard nothing."]},
-    {id:"DOC_ESC", nm:"Escalation and on-call contacts", sub:"Reference", ic:"☎",
+    {id:"DOC_ESC", nm:"Escalation and on-call contacts", sub:"Reference", ic:"phone",
      prov:"Service escalation sheet.",
      body:["Safeguarding lead, then the registered manager. Out of hours: the on-call phone.",
            {h:"When the internal route does not answer"},
@@ -779,6 +783,24 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} 
 function log(ev, payload){ S.telem.push(Object.assign({ev, t:S.clockLeft}, payload||{})); }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 function vttURI(v){ return "data:text/vtt;charset=utf-8,"+encodeURIComponent(v); } // inline so captions load on file:// without CORS
+// Inline line-icon set (stroke = currentColor, so each tile's colour drives it). Replaces emoji.
+const ICONS = {
+  message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  building:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-5h6v5"/><path d="M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/>',
+  home:'<path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-7h6v7"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+  fileText:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/>',
+  calendar:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/>',
+  archive:'<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  alert:'<path d="m10.29 3.86-8.48 14.14a2 2 0 0 0 1.71 3h16.95a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>',
+  history:'<path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/>',
+  play:'<path d="M7 4v16l13-8z"/>'
+};
+function icon(name,size){ const p=ICONS[name]||ICONS.alert; const s=size||22; return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`; }
 
 /* =========================================================================
    CLOCK  (real running deadline, maps 16:10 -> 18:00)
@@ -874,6 +896,9 @@ function setupVideoCaptions(){
   const cues=parseVTT(vtt);
   const upd=()=>{ const t=v.currentTime||0; const c=cues.find(x=>t>=x.start && t<x.end); cap.textContent=c?c.text:""; cap.classList.toggle("on", !!c); };
   v.addEventListener("timeupdate", upd); upd();
+  // Autoplay: the learner reached this screen by clicking, so the document has
+  // user activation and sound is allowed. If blocked, native controls remain.
+  if(!v.dataset.autoplayed){ v.dataset.autoplayed="1"; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }
 }
 function updateScrollCue(){
   const cue=document.getElementById("scrollCue");
@@ -886,10 +911,10 @@ window.addEventListener("resize", updateScrollCue);
 
 function viewPicker(){
   const cards=[
-    {code:"SG-F3", title:SCN.title, who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, ic:"🗣", accent:"teal"},
-    {code:"SG-F1", title:"Something Doesn't Add Up", who:"<b>Tomas</b> · Ashcombe House · morning personal care", ready:false, ic:"🔍", accent:"navy"},
-    {code:"SG-F2", title:"A Friend Who Helps Out", who:"<b>Yvonne</b> · her own flat · domiciliary call", ready:false, ic:"🤝", accent:"violet"},
-    {code:"SG-F4", title:"The Way We Do Things Here", who:"<b>Colin</b> · Ashcombe House · late shift", ready:false, ic:"🏢", accent:"navy"}
+    {code:"SG-F3", title:SCN.title, who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, ic:"message", accent:"teal"},
+    {code:"SG-F1", title:"Something Doesn't Add Up", who:"<b>Tomas</b> · Ashcombe House · morning personal care", ready:false, ic:"search", accent:"navy"},
+    {code:"SG-F2", title:"A Friend Who Helps Out", who:"<b>Yvonne</b> · her own flat · domiciliary call", ready:false, ic:"users", accent:"violet"},
+    {code:"SG-F4", title:"The Way We Do Things Here", who:"<b>Colin</b> · Ashcombe House · late shift", ready:false, ic:"building", accent:"navy"}
   ];
   return `
   <section class="pick-head">
@@ -901,7 +926,7 @@ function viewPicker(){
     ${cards.map(c=>`
       <button class="scn-card ${c.ready?'ready':'build'}" data-accent="${c.accent}" ${c.ready?'data-act="begin"':'disabled'}>
         <div class="scn-top">
-          <div class="scn-badge">${c.ic}</div>
+          <div class="scn-badge">${icon(c.ic,24)}</div>
           <div>
             <div class="code">${c.code}</div>
             <h3>${c.title}</h3>
@@ -920,19 +945,20 @@ function viewLanding(){
   return `
   <div class="land-grid">
     <div class="land-copy">
-      <span class="land-kicker">${SCN.code} · Frontline</span>
+      <img class="land-logo" src="assets/safeguarding/brand-logo.png" alt="PracticE Ready">
+      <span class="land-role">${icon('user',18)} You are the support worker on shift</span>
       <h1>${SCN.title}</h1>
       <p class="lead">${SCN.leadHuman}</p>
       <p class="lead">${SCN.onScreen}</p>
     </div>
     <div class="land-media">
       ${SCN.intro ? mediaVideo(SCN.intro)
-      : `<div class="media-ph"><span class="pl-ic">▶</span><span>Intro video</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
+      : `<div class="media-ph"><span class="pl-ic">${icon('play',28)}</span><span>Intro video</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
       <p style="font-size:var(--t-sm);color:var(--ink-3);margin-top:14px">A short welcome tees up the shift. The avatar speaks only the human framing. Everything else is on screen.</p>
     </div>
   </div>
   <div class="land-facts">
-    ${SCN.facts.map(f=>`<div class="lf"><div class="lf-ic">${f.ic}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("")}
+    ${SCN.facts.map(f=>`<div class="lf"><div class="lf-ic">${icon(f.ic,22)}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("")}
   </div>
   <div class="land-cta">
     <p class="lc-prompt">When you are ready, there is one thing to read first.</p>
@@ -944,7 +970,7 @@ function viewNotice(){
   return `
   <div class="notice">
     <div class="card">
-      <div class="n-ic">⚠</div>
+      <div class="n-ic">${icon('alert',26)}</div>
       <div class="eyebrow" style="margin-top:14px">Before you begin</div>
       <h1>A note on what this scenario involves</h1>
       <p>${SCN.noticeThemes}</p>
@@ -974,7 +1000,7 @@ function viewHandover(){
     </div>
     <div class="land-media">
       ${SCN.handover ? mediaVideo(SCN.handover)
-      : `<div class="media-ph"><span class="pl-ic">▶</span><span>Handover video</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
+      : `<div class="media-ph"><span class="pl-ic">${icon('play',28)}</span><span>Handover video</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
     </div>
   </div>
   <div class="land-cta">
@@ -1056,7 +1082,7 @@ function viewRun(){
       <div class="rail-panel">
         ${SCN.docs.map(d=>`
           <button class="doc-row ${S.opened[d.id]?'opened':''}" data-act="doc" data-id="${d.id}">
-            <span class="d-ic">${d.ic}</span>
+            <span class="d-ic">${icon(d.ic,18)}</span>
             <span><span class="d-nm">${d.nm}</span><br><span class="d-sub">${S.opened[d.id]?'Reviewed':d.sub}</span></span>
           </button>`).join("")}
       </div>
@@ -1109,7 +1135,7 @@ function viewAftermath(){
   const replay = ownWordsReplay();
   return `
   <div class="after">
-    <div class="af-ic">⏳</div>
+    <div class="af-ic">${icon('history',26)}</div>
     <div class="eyebrow" style="margin-top:14px">What your decisions produced</div>
     <h1>The shift ended. This is what came next.</h1>
     <p class="af-intro">${SCN.afterReflect}</p>
@@ -1173,7 +1199,7 @@ function viewDebrief(){
   </div>
   <div class="land-media" style="margin-top:18px;min-height:0;padding:20px">
     ${(SCN.debrief && SCN.debrief[path]) ? mediaVideo(SCN.debrief[path], "560px")
-    : `<div class="media-ph" style="max-width:520px"><span class="pl-ic">▶</span><span>Debrief video (outcome ${path})</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
+    : `<div class="media-ph" style="max-width:520px"><span class="pl-ic">${icon('play',28)}</span><span>Debrief video (outcome ${path})</span><span style="font-size:var(--t-nano)">(placeholder slot)</span></div>`}
   </div>
 
   <div class="deb-sec">
