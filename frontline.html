@@ -1910,7 +1910,8 @@ function flParseVTT(s){
 function overlayCaps(v){
   if(!v) return;
   try{ for(var i=0;i<v.textTracks.length;i++) v.textTracks[i].mode='hidden'; }catch(e){}
-  var band=v.closest ? v.closest('.vband') : v.parentNode; if(!band) return;
+  var band=(v.closest && v.closest('.vband')) || v.parentNode; if(!band||band.nodeType!==1) return;
+  if(getComputedStyle(band).position==='static') band.style.position='relative';
   var tr=band.querySelector('track'); var src=tr?tr.getAttribute('src'):(v.getAttribute('data-vtt')||'');
   if(!src) return;
   var cap=band.querySelector('.vcap');
