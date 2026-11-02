@@ -298,6 +298,32 @@ a{color:var(--teal-strong)}
 .scroll-cue{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(6px);background:linear-gradient(180deg,var(--navy),var(--navy-2));color:var(--navy-ink);border:1px solid rgba(255,255,255,.16);border-radius:100px;padding:8px 17px;font-size:var(--t-cap);font-weight:750;box-shadow:var(--shadow);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 .scroll-cue.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* How-to-play coach tour (spotlight + anchored popover), ported from the choking sim */
+.fl-tour{position:fixed;inset:0;z-index:200}
+.fl-tour-block{position:fixed;inset:0}
+.fl-tour-spot{position:fixed;border-radius:12px;border:2px solid var(--teal);box-shadow:0 0 0 100vmax rgba(7,20,40,.66);transition:top .28s cubic-bezier(.2,.8,.2,1),left .28s cubic-bezier(.2,.8,.2,1),width .28s,height .28s;pointer-events:none}
+.fl-pop{position:fixed;width:320px;max-width:calc(100vw - 24px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:16px 18px;z-index:201;animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+.fl-pop .fp-num{display:inline-flex;align-items:center;gap:7px;font-size:var(--t-cap);font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--teal-strong)}
+.fl-pop h4{font-size:var(--t-body);margin-top:8px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.fl-pop .fp-ico{width:32px;height:32px;border-radius:9px;flex:none;display:grid;place-items:center;background:var(--navy);color:#fff}
+.fl-pop .fp-ico svg{width:17px;height:17px}
+.fl-pop p{font-size:var(--t-sm);color:var(--ink-2);margin-top:8px;line-height:1.5}
+.fl-pop .fp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px}
+.fl-pop .fp-dots{display:flex;gap:5px}
+.fl-pop .fp-dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.fl-pop .fp-dot.on{background:var(--teal);width:18px;border-radius:100px}
+.fl-pop .fp-btns{display:flex;gap:8px}
+.fl-tbtn{font-size:var(--t-sm);font-weight:700;padding:8px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.fl-tbtn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.fl-skip{background:none;border:0;color:var(--ink-3);font-size:var(--t-cap);cursor:pointer;padding:4px}
+.fl-pop .fp-arrow{position:absolute;width:14px;height:14px;background:var(--surface);border:1px solid var(--line);transform:rotate(45deg)}
+.fl-pop.pl-bottom .fp-arrow{top:-8px;left:26px;border-right:0;border-bottom:0}
+.fl-pop.pl-top .fp-arrow{bottom:-8px;left:26px;border-left:0;border-top:0}
+.fl-pop.pl-left .fp-arrow{right:-8px;top:26px;border-left:0;border-bottom:0}
+.fl-pop.pl-right .fp-arrow{left:-8px;top:26px;border-right:0;border-top:0}
+@keyframes pop{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fl-tour-spot{transition:none}.fl-pop{animation:none}}
+
 .spacer{height:18px}
 .center{text-align:center}
 .mt{margin-top:18px}
@@ -336,6 +362,7 @@ a{color:var(--teal-strong)}
 <header class="topbar">
   <div class="brand"><img class="brand-mark" src="assets/safeguarding/brand-icon.png" alt=""> <span>PracticE R<span class="pr-e">e</span>ady</span> <small>Safeguarding Adults</small></div>
   <div class="tb-sp"></div>
+  <button class="tb-btn" id="howToBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg> How to play</button>
   <button class="tb-btn" id="scenariosBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Scenarios</button>
   <button class="tb-btn" id="restartBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> Restart</button>
 </header>
@@ -812,7 +839,11 @@ const ICONS = {
   grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
   restart:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
-  check:'<path d="M20 6 9 17l-5-5"/>'
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  arrowR:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>'
 };
 function icon(name,size){ const p=ICONS[name]||ICONS.alert; const s=size||22; return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${p}</svg>`; }
 
@@ -876,6 +907,10 @@ function render(){
   setupVideoCaptions();
   const sb=document.getElementById("scenariosBtn");
   if(sb) sb.style.display = (S.stage==="picker") ? "none" : "inline-flex";
+  const htb=document.getElementById("howToBtn");
+  if(htb) htb.style.display = tourForStage().length ? "inline-flex" : "none";
+  // Auto-run the tour once per stage on first visit (matches the choking sim).
+  if(tourForStage().length && !tourSeen(S.stage)){ const st=S.stage; markTourSeen(st); setTimeout(()=>{ if(S.stage===st && !tourActive()) startTour(); }, 450); }
 }
 // Custom caption overlay (native <track> is blocked on file:// and ignored by iOS fullscreen).
 // Reads the VTT text we already hold and paints the active line over the video.
@@ -1327,7 +1362,7 @@ function capturedEvents(){
 /* =========================================================================
    INTERACTION
    ========================================================================= */
-function go(stage){ S.stage=stage; render(); }
+function go(stage){ endTour(); S.stage=stage; render(); }
 function bind(){
   document.querySelectorAll("[data-act]").forEach(el=>{
     el.addEventListener("click",()=>handle(el.dataset.act, el));
@@ -1428,6 +1463,82 @@ function nextNode(){
   S.pending=null;
   render();
 }
+
+/* ---- How-to-play coach tour (ported from the choking sim) ---- */
+const TOURS={
+  picker:[
+    {sel:'.scn-card',ico:'play',h:'Choose a scenario',p:'Pick a shift to play. Only the one marked Ready to play can be started; the others are coming soon.',place:'bottom'}
+  ],
+  landing:[
+    {sel:'.land-video',ico:'play',h:'Watch the intro',p:'A short clip sets up the shift and who you are supporting. It plays right here.',place:'left'},
+    {sel:'[data-act="toNotice"]',ico:'arrowR',h:'Before you begin',p:'When you have read the brief, there is one short notice to read, and then you start.',place:'top'}
+  ],
+  notice:[
+    {sel:'.n-support',ico:'shield',h:'You can stop any time',p:'This scenario can be heavy. You can opt out at any point, with no score penalty and no flag to your employer.',place:'top'}
+  ],
+  handover:[
+    {sel:'.land-video',ico:'play',h:'Your handover',p:'The handover briefing for the shift. Watch it, then go through to the kitchen. The clock starts when you do.',place:'left'}
+  ],
+  run:[
+    {sel:'.clock',ico:'clock',h:'Time left',p:'The shift runs on a live countdown to the six o’clock collection. Reading records and deciding both use time.',place:'bottom'},
+    {sel:'.moment',ico:'eye',h:'The moment',p:'Read the scene, pick an option, rate your confidence, then submit. Some options are plausible but not the safest.',place:'right'},
+    {sel:'.rail',ico:'fileText',h:'Records',p:'Open these to read what the house holds before you act. The debrief notes what you checked.',place:'left'}
+  ],
+  debrief:[
+    {sel:'.cc-grid',ico:'check',h:'What it turned on',p:'The two controls this scenario really turned on, shown held or tripped.',place:'bottom'},
+    {sel:'.dom',ico:'shield',h:'How your practice held up',p:'Your score across each domain of safe practice, with a note under each.',place:'right'}
+  ]
+};
+let tourSteps=[], tourIdx=0;
+function tourRoot(){
+  let e=document.getElementById('sg-tour-root');
+  if(!e){ e=document.createElement('div'); e.id='sg-tour-root'; document.body.appendChild(e);
+    e.addEventListener('click',ev=>{ const b=ev.target.closest('[data-tour]'); if(!b) return; const a=b.getAttribute('data-tour'); if(a==='next') tourNext(); else if(a==='prev') tourPrev(); else endTour(); });
+  }
+  return e;
+}
+function tourActive(){ return !!tourRoot().innerHTML; }
+function tourForStage(){ return TOURS[S.stage]||[]; }
+function tourSeen(st){ try{ return (localStorage.getItem('sg_tour_v1')||'').split(',').indexOf(st)>=0; }catch(e){ return false; } }
+function markTourSeen(st){ try{ const v=(localStorage.getItem('sg_tour_v1')||'').split(',').filter(Boolean); if(v.indexOf(st)<0){ v.push(st); localStorage.setItem('sg_tour_v1',v.join(',')); } }catch(e){} }
+function startTour(steps){ tourSteps=(steps&&steps.length)?steps:tourForStage(); tourIdx=0; if(!tourSteps.length) return; showTourStep(0); }
+function endTour(){ tourRoot().innerHTML=''; }
+function tourNext(){ if(tourIdx>=tourSteps.length-1){ endTour(); return; } showTourStep(++tourIdx); }
+function tourPrev(){ if(tourIdx<=0) return; showTourStep(--tourIdx); }
+function showTourStep(i){
+  const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const step=tourSteps[i];
+  const t=step && document.querySelector(step.sel);
+  const r=t && t.getBoundingClientRect();
+  if(!t||!r||(r.width===0&&r.height===0)){ if(i<tourSteps.length-1){ tourIdx=i+1; return showTourStep(i+1); } endTour(); return; }
+  const vw=window.innerWidth, vh=window.innerHeight, pad=8, popW=320, popH=200, gap=14;
+  const spot={t:r.top-pad,l:r.left-pad,w:r.width+pad*2,h:r.height+pad*2};
+  let popL=0, popT=0;
+  const below=()=>{ popT=r.bottom+gap; popL=cl(r.left+r.width/2-popW/2,12,vw-popW-12); return popT+popH<vh-8; };
+  const above=()=>{ popT=r.top-gap-popH; popL=cl(r.left+r.width/2-popW/2,12,vw-popW-12); return popT>8; };
+  const leftP=()=>{ popL=r.left-gap-popW; popT=cl(r.top,12,vh-popH-12); return popL>8; };
+  const rightP=()=>{ popL=r.right+gap; popT=cl(r.top,12,vh-popH-12); return popL+popW<vw-8; };
+  let plClass='pl-bottom';
+  const tryPlace=(name)=>{ if(name==='left'&&leftP()){plClass='pl-left';return true;} if(name==='top'&&above()){plClass='pl-top';return true;} if(name==='right'&&rightP()){plClass='pl-right';return true;} if(name==='bottom'&&below()){plClass='pl-bottom';return true;} return false; };
+  if(!tryPlace(step.place)){ if(below()){plClass='pl-bottom';} else if(above()){plClass='pl-top';} else if(leftP()){plClass='pl-left';} else { rightP(); plClass='pl-right'; } }
+  const arrowStyle=(plClass==='pl-top'||plClass==='pl-bottom') ? 'left:'+Math.round(cl(r.left+r.width/2-popL-7,12,popW-26))+'px' : 'top:'+Math.round(cl(r.top+r.height/2-popT-7,12,popH-26))+'px';
+  const last=i===tourSteps.length-1;
+  tourRoot().innerHTML='<div class="fl-tour">'
+    +'<div class="fl-tour-block" data-tour="skip"></div>'
+    +'<div class="fl-tour-spot" style="top:'+spot.t+'px;left:'+spot.l+'px;width:'+spot.w+'px;height:'+spot.h+'px"></div>'
+    +'<div class="fl-pop '+plClass+'" style="top:'+Math.round(popT)+'px;left:'+Math.round(popL)+'px" role="dialog" aria-label="'+step.h+'">'
+    +'<div class="fp-arrow" style="'+arrowStyle+'"></div>'
+    +'<span class="fp-num">Step '+(i+1)+' of '+tourSteps.length+'</span>'
+    +'<h4><span class="fp-ico">'+icon(step.ico,17)+'</span>'+step.h+'</h4>'
+    +'<p>'+step.p+'</p>'
+    +'<div class="fp-foot"><div class="fp-dots">'+tourSteps.map((_,j)=>'<span class="fp-dot '+(j===i?'on':'')+'"></span>').join('')+'</div>'
+    +'<div class="fp-btns">'
+    +(i>0?'<button class="fl-tbtn" data-tour="prev">Back</button>':'<button class="fl-skip" data-tour="skip">Skip</button>')
+    +'<button class="fl-tbtn primary" data-tour="next">'+(last?'Done':'Next')+'</button>'
+    +'</div></div></div></div>';
+}
+window.addEventListener('resize',()=>{ if(tourActive()) showTourStep(tourIdx); });
+document.getElementById("howToBtn").addEventListener("click",()=>startTour());
 
 /* restart chrome */
 document.getElementById("restartBtn").addEventListener("click",()=>{ stopClock(); S=initState(); render(); });
