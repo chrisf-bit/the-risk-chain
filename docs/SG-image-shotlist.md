@@ -96,3 +96,43 @@ The forward-aftermath windows (72 hours / three months) want a small, deliberate
 | **SG-F3 total** | **8** |
 
 Keep every export **under 2000px** so it can be reviewed in-thread.
+
+---
+
+## SG-F1 "Something Doesn't Add Up" (Tomas, Ashcombe House)
+
+*Recognition-and-recording scenario in a residential care home, morning personal care. Same house
+treatment. DIGNITY IS THE HARD RULE HERE: this is a personal-care setting, so **never show a body,
+a wound or a person being washed**. Use towels, care items, hands only, over-the-shoulder, or empty
+rooms. No bruising is ever depicted.*
+
+**Minimum distinct shots: 5 scene images + 2 aftermath stills.** N2 reuses the N1 bathroom; N4
+reuses N1; N6 reuses the N3 desk.
+
+| File to save | Covers | Subject |
+|---|---|---|
+| `scene-f1-n1.jpg` | N1 (notice and pause), N2, N4 | A dignified supported-living bathroom, mid-morning |
+| `scene-f1-n3.jpg` | N3 (record) | A blank body-map form and pen on a care-office desk |
+| `scene-f1-n5.jpg` | N5 (report) | A care-home staff office, a blank report being written |
+| `scene-f1-n6.jpg` | N6 (the explanation) | An open care record / seizure diary on a desk |
+| `scene-f1-n7.jpg` | N7 (wishes and capacity) | A communication passport and symbol cards on a table |
+
+**Generation prompts**
+- `scene-f1-n1` (bathroom): "A tidy supported-living bathroom in cool mid-morning daylight, folded towels on a rail, a shower chair and a care folder on the side, calm and dignified, no people and no body shown, documentary realism, slightly desaturated, 16:9."
+- `scene-f1-n3` (body map / record): "A blank body-map outline form and a pen on a care-office desk under soft light, the form blank with no readable text, shallow depth of field, no people, documentary realism, 16:9."
+- `scene-f1-n5` (office / report): "A small care-home staff office with a desk, a keyboard and an open ring-binder, cool morning light through a window, a blank report page on the desk, no readable text, no people, documentary realism, 16:9."
+- `scene-f1-n6` (records / explanation): "An open care record and a diary lying on a desk beside a pen, blank of readable text, cool even light, no people, shallow depth of field, documentary realism, 16:9."
+- `scene-f1-n7` (communication passport): "A communication passport booklet open on a table with a set of symbol and picture cards beside it, blank of readable text, warm but calm daylight, no people, documentary realism, 16:9."
+
+**Aftermath stills (cold, procedural; never depict harm)**
+- `after-f1-6wk` (hospital): "An empty hospital bed by a window with a folded blanket and a wrist support on the bedside table, cold clinical light, no people, muted and quiet, documentary realism, no text, 16:9."
+- `after-f1-enquiry` (the file): "A closed buff case file and a formal letter on a plain desk in cold even light, no readable text, procedural and impersonal, no people, slightly desaturated, 16:9." *(or reuse `after-f3-3mo.jpg`, which is the same shot.)*
+
+**Stock terms:** supported living bathroom towels no people · blank body map form desk · care home office ring binder report · care record diary desk · communication passport symbol cards · empty hospital bed window · closed case file letter desk.
+
+## Count (SG-F1)
+| Set | Images |
+|---|---|
+| Scene (5 distinct, N2/N4/N6 reuse) | 5 |
+| Aftermath stills | 2 (or 1 + reuse F3's file) |
+| **SG-F1 total** | **6-7** |

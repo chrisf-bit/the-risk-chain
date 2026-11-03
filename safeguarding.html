@@ -563,8 +563,9 @@ Sit with it, because the whole of this training exists
 to keep a shift from reaching that point.
 `;
 
-const SCN = {
+const SG_F3 = {
   code:"SG-F3", title:"She Tells You at Ten Past Four",
+  startMins:970, spanMins:110,
   intro:{ video:"assets/safeguarding/intro-f3.mp4", vtt:INTRO_F3_VTT },
   handover:{ video:"assets/safeguarding/handover-f3.mp4", vtt:HANDOVER_F3_VTT },
   debrief:{ A:{ video:"assets/safeguarding/debrief-f3-a.mp4", vtt:DEBRIEF_F3_A_VTT },
@@ -573,10 +574,13 @@ const SCN = {
   person:"Nadia", age:29, pronoun:"she", poss:"her", obj:"her",
   setting:"Sandhill Road", settingDesc:"a shared supported living house",
   startClock:"16:10", deadlineClock:"18:00", deadlineLabel:"Collection",
-  clockSeconds:720, // 12 real minutes mapped onto 16:10 -> 18:00 (prototype pacing)
+  clockSeconds:720, deadlineNode:"N6", deadlineCC:"CC2", // 12 real minutes mapped onto 16:10 -> 18:00
   // human framing (spoken-safe) vs on-screen framing (clinical/legal detail)
   leadHuman:"You are the only worker in the house this afternoon. Nadia has been in her room since lunchtime and has just come down to the kitchen. Her uncle is collecting her at six for her usual Friday overnight stay.",
   onScreen:"Nadia is autistic. She communicates with speech but needs processing time, and finds direct questioning and eye contact difficult. Distress reduces her ability to make decisions in the moment. Three other people in the house still need supporting through teatime.",
+  handoverTitle:"Ten past four. The house is yours.",
+  handoverLead:["It is ten past four and you are the only worker on. Three people are settled for now. Nadia has been upstairs since lunchtime. Her bag is by the door. Her uncle collects her at six, as he does most Fridays.","Once you go through, the records the house holds are alongside you the whole shift. Nothing is flagged. Part of this is working out which ones matter today. The clock to the collection starts the moment you do."],
+  handoverCta:"She has just come down to the kitchen. <b>Go through.</b>", handoverBtn:"Go to the kitchen →",
   facts:[
     {ic:"home", h:"The house", p:"Sandhill Road, a shared supported living house. Late shift. You are the only worker on, with four people in."},
     {ic:"user", h:"Nadia, 29", p:"Autistic. Communicates with speech, needs processing time. An uncle collects her most Fridays. A boyfriend holds her bank card and her phone."},
@@ -796,8 +800,200 @@ const SCN = {
   personVoice:{
     said:"“I didn't want a fuss. I just didn't want to go on Friday.”",
     note:"Nadia told you, in her own way, what she wanted to happen. Asking her, and recording it, is scored in its own right. It is also the thing most learners miss while doing everything else right. Following her wishes and keeping her safe were never opposites."
+  },
+  ownWords:function(S){
+    const rep=S.choices["N7"];
+    if(rep){ const o=SG_F3.nodes.find(n=>n.id==="N7").opts[rep.i];
+      if(o.k==="fail") return {q:"“Left voicemail for manager. Will hand over in the morning.”", note:"That is the note your shift left behind. It is the first thing anyone looking back at this will read, and it is what the police asked you about."};
+      if(o.k==="risk") return {q:"“Tried on-call repeatedly. No answer. Shift continued.”", note:"The record shows the time you spent on a phone nobody answered, and the route you did not use while the clock ran down."}; }
+    const rec=S.choices["N8"];
+    if(rec){ const o=SG_F3.nodes.find(n=>n.id==="N8").opts[rec.i];
+      if(o.k!=="def") return {q:"“Nadia upset this afternoon. Spoke to her. Settled before collection.”", note:"Written later, in summary, this is all the record holds. What she actually said is nowhere, and only you could have captured it."}; }
+    return {q:"“…”", note:"The record of what you were told, and when, is read back to you. What is written, and what is missing, both speak."};
   }
 };
+
+/* =========================================================================
+   SCENARIO DATA  (SG-F1 "Something Doesn't Add Up" - Tomas, Ashcombe House)
+   ========================================================================= */
+const SG_F1 = {
+  code:"SG-F1", title:"Something Doesn't Add Up",
+  startMins:590, spanMins:40,
+  person:"Tomas", age:36, pronoun:"he", poss:"his", obj:"him",
+  setting:"Ashcombe House", settingDesc:"a residential care home",
+  startClock:"09:50", deadlineClock:"10:30", deadlineLabel:"Handover",
+  clockSeconds:720, deadlineNode:"N5", deadlineCC:"CC2",
+  leadHuman:"You are supporting Tomas with washing and dressing this morning, as you do most mornings. He is quieter than usual. Handover is at half past ten, and the manager is off site until this afternoon.",
+  onScreen:"Tomas has a moderate learning disability and epilepsy, and limited speech. He uses a communication passport, objects of reference and around thirty signs. He has capacity for everyday choices but not for a decision about a safeguarding referral, so he needs communication support and an advocate.",
+  handoverTitle:"Ten to ten. Personal care, then handover.",
+  handoverLead:["It is ten to ten. You are helping Tomas wash and dress, as you do most mornings. He is quieter than usual, and you have just seen something that does not sit right. Handover is at half past ten, and the manager is off site until the afternoon.","Once you go through, the records the home holds are alongside you the whole shift. Nothing is flagged. Part of this is working out which ones matter today, and the clock to handover starts the moment you do."],
+  handoverCta:"Tomas is waiting, and the morning is short. <b>Go through.</b>", handoverBtn:"Go to Tomas →",
+  facts:[
+    {ic:"building", h:"The home", p:"Ashcombe House, a residential care home. Morning personal care. Handover is at half past ten, and the manager is off site until this afternoon."},
+    {ic:"user", h:"Tomas, 36", p:"A moderate learning disability and epilepsy. Limited speech; a communication passport and around thirty signs. Seizures have caused unexplained marks before."},
+    {ic:"shield", h:"Your job", p:"Notice what does not add up, without investigating it. Record it so it would stand up. Report it before handover, to someone outside the shift."}
+  ],
+  sceneImg:{},
+  docs:[
+    {id:"DOC_PLAN", nm:"Support plan and communication passport", sub:"Current", ic:"fileText",
+     prov:"Tomas's support plan, Ashcombe House.",
+     body:["How Tomas communicates: limited speech, a communication passport, objects of reference and around thirty signs. What distress looks like for him, and who is important to him.",
+           "He has capacity for everyday choices. He does not have capacity to decide about a safeguarding referral, so he needs communication support and an advocate.",
+           {h:"On being heard"},"His lack of speech is not an absence of a view. It is a reason to get him the right support, and an advocate, so that his view is heard."]},
+    {id:"DOC_NOTES", nm:"Daily notes, thirty days", sub:"Current, unsynthesised", ic:"calendar",
+     prov:"Daily record, Ashcombe House.",
+     body:["Read on their own, each entry is unremarkable. Read together, a picture forms.",
+           "“Declined breakfast” appears three mornings running, with no follow-up by anyone. He has been quieter. Each entry notes who was on shift."]},
+    {id:"DOC_EPILEPSY", nm:"Epilepsy profile and seizure diary", sub:"Current", ic:"clock",
+     prov:"Clinical profile, Ashcombe House.",
+     body:["Tomas has epilepsy. The diary records two unwitnessed seizures in the last month.",
+           "Seizure-related falls have caused marks before. This is a genuine, plausible explanation for a single mark. It does not explain a pattern, and it is not yours to rule in or out."]},
+    {id:"DOC_INCIDENT", nm:"Accident and incident log", sub:"Incomplete", ic:"archive",
+     prov:"Incident log, Ashcombe House.",
+     body:["Last week: “banged arm on wardrobe”, written and signed by Bev.",
+           "The earlier marks, the ones on the body map, were never logged at all. The log is not a full record of what has happened to Tomas."]},
+    {id:"DOC_BODYMAP", nm:"Body map from an earlier injury", sub:"Six months old", ic:"user",
+     prov:"Body map on file, Ashcombe House.",
+     body:["A body map completed six months ago for an earlier injury.",
+           "The sites recorded do not sit easily with a fall. On its own it proves nothing. Alongside today, it is part of a pattern."]},
+    {id:"DOC_ROTA", nm:"Rota for the last three weeks", sub:"Current", ic:"grid",
+     prov:"Staff rota, Ashcombe House.",
+     body:["Who was on shift, and when.",
+           "Set against the dates in the daily notes and the incident log, the rota shows who was present each time something was recorded. That is a pattern for someone to look at, not for you to act on."]},
+    {id:"DOC_PREV", nm:"A concern raised five months ago", sub:"Closed, no outcome recorded", ic:"archive",
+     prov:"Safeguarding record, Ashcombe House.",
+     body:["Somebody raised a concern about Tomas five months ago. The entry records that it was raised.",
+           "There is no outcome recorded. Nothing came back. This has been noticed before."]}
+  ],
+  nodes:[
+    {id:"N1", kick:"Notice and pause", scene:"The bathroom, morning care", confidence:true,
+     body:"You are helping Tomas wash and dress. There is bruising to his upper arm and to his inner thigh, at different stages of colour, so not from one event. He is quieter than usual. When the bathroom door opens and Bev, the shift lead, passes, he pulls away. He settles when she has gone.",
+     q:"What do you do?",
+     opts:[
+       {k:"def", t:"Stop the routine, keep Tomas warm, comfortable and covered, and look properly at what you are seeing.",
+        beat:"You slow down, hold his dignity, and let yourself actually see it: bruises at different ages, in places a fall does not reach, and a flinch when Bev passed. Noticing, and taking it seriously, is the whole of this first minute."},
+       {k:"risk", t:"Carry on with the wash and dress, and come back to the bruising once he is settled.",
+        beat:"You press on. Nothing is lost yet, but a concern you mean to return to is a concern that can slip, and the morning is short."},
+       {k:"fail", t:"Finish the routine and decide it is probably nothing worth a fuss.",
+        beat:"You talk yourself out of it. The marks, the pattern, the flinch, all reasoned away. This is exactly how a concern that was there to be seen never gets seen."}
+     ]},
+    {id:"N2", kick:"Ask, do not interrogate", telemCore:"QUESTION_TYPE", confidence:true,
+     body:"You want to understand, but Tomas has limited speech, and how you ask will either help him or close him down. Bev is just outside the door.",
+     q:"How do you ask?",
+     opts:[
+       {k:"def", t:"Use his communication passport, one open prompt, and accept whatever comes. Do not press, and not where others can hear.",
+        beat:"You use what helps him communicate, ask once, openly, and let him answer in his own way. You do not press, and not within Bev's earshot. That is support, not investigation.", telem:{type:"open"}},
+       {k:"risk", t:"Ask him again, a couple more times, because the first answer was unclear.",
+        beat:"You ask again, and again. Pressed, he gives you less, not more, and an account shaped by repetition is worth less, not more.", telem:{type:"repeated"}},
+       {k:"fail", t:"Ask him directly whether Bev did it, and ask again in front of the others so you have it straight.",
+        cc:"CC1",
+        beat:"Leading questions, a name put to him, asked where others can hear. You have started to investigate. That is not your job, and it can contaminate the very account that would protect him.", telem:{type:"leading"}}
+     ]},
+    {id:"N3", kick:"Record", telemCore:"RECORD_MADE",
+     body:"How you write this down is a competence in its own right. It is also the thing an enquiry would read first.",
+     q:"How do you record it?",
+     opts:[
+       {k:"def", t:"Body map the sites and colours, describe what you saw factually, note the time and date, and sign it. Keep opinion separate from observation.",
+        beat:"A body map, the sites and colours, a factual description, time, date and signature, with opinion marked as opinion. This is the record that lets someone else understand what happened, and it will stand up.", telem:{verbatim:true, bodymap:true, opinion_separated:true}},
+       {k:"risk", t:"Make a note to write it up properly at the end of the shift, from memory.",
+        beat:"Written hours later from memory, the detail blurs and the body map never gets drawn. The gap between seeing it and recording it is where a record weakens.", telem:{verbatim:false, bodymap:false, opinion_separated:true}},
+       {k:"fail", t:"Write “bruising caused by Bev” so the concern is clear.",
+        beat:"You wrote a conclusion as if it were fact. That is not what you saw, it is what you suspect, and recording it as fact damages Tomas and any process that follows.", telem:{verbatim:false, bodymap:false, opinion_separated:false}}
+     ]},
+    {id:"N4", kick:"Welfare and evidence", telemCore:"EVIDENCE_PRESERVED", confidence:true,
+     body:"Before you finish, there is his wellbeing this morning, and there is what the marks might later need to show.",
+     q:"What do you weigh up?",
+     opts:[
+       {k:"def", t:"Judge whether he needs medical attention today and contact the GP or 111 if so. Do not wash away what may be evidence, balanced against his comfort and dignity.",
+        beat:"You think about whether he needs seeing today, and you avoid scrubbing away anything that might matter, without treating him as a crime scene. Welfare and evidence, both held.", telem:{preserved:true}},
+       {k:"risk", t:"Assume the bruises need no attention, because he is not complaining.",
+        beat:"He cannot easily tell you he is in pain. Absence of a complaint is not absence of harm, and you have taken it as one.", telem:{preserved:false}},
+       {k:"fail", t:"Bathe and dress him as normal, without considering either his welfare or the evidence.",
+        beat:"The morning routine, run as if nothing is wrong. Anything the marks might have shown is washed away, and a welfare question is never asked.", telem:{preserved:false}}
+     ]},
+    {id:"N5", kick:"Report", telemCore:"REPORT_MADE", hardDeadline:true, confidence:true,
+     body:"Handover is almost here, and the manager is off site. What you do now decides whether this leaves the shift at all.",
+     q:"How do you report it?",
+     opts:[
+       {k:"def", t:"Put it in writing to the registered manager or safeguarding lead, within the shift, before handover.",
+        beat:"A written report to the manager or safeguarding lead, before handover, so it is on the record and in the hands of someone whose job it is to decide. The concern leaves the shift.", telem:{to:"manager", written:true, within_shift:true}},
+       {k:"risk", t:"Mention it at handover and trust that it gets passed on.",
+        beat:"A verbal mention in a busy handover is easily lost, and nothing is written down with your name on it. You have hoped, rather than made sure.", telem:{to:"shift_lead", written:false, within_shift:true}},
+       {k:"fail", t:"Tell Bev about it, or leave it until the manager is back tomorrow.",
+        cc:"CC2",
+        beat:"Told to the person the concern is about, or held until tomorrow. Either way the concern dies on the shift, and Tomas is left with it.", telem:{to:"shift_lead", written:false, within_shift:false}}
+     ]},
+    {id:"N6", kick:"The explanation", telemCore:"CONCERN_NAMED",
+     body:"His epilepsy is real, and seizure-related falls have marked him before. It is a genuine explanation, and it is tempting.",
+     q:"What do you do with it?",
+     opts:[
+       {k:"def", t:"Record the seizure as one possible explanation, and report the concern anyway.",
+        beat:"You note the seizure as a possibility, not a verdict, and you still pass it on. You did not have to know what happened. Holding both and reporting anyway is exactly right."},
+       {k:"risk", t:"Accept the seizure explanation and note the concern as resolved.",
+        beat:"You reached for the comfortable answer and closed it. A plausible explanation is not a tested one, and resolving it yourself was not your call to make."},
+       {k:"fail", t:"Close the concern, because a colleague has already explained the marks.",
+        beat:"A colleague explained it, and you let that be the end of it. That is how a pattern stays invisible, one reasonable explanation at a time."}
+     ]},
+    {id:"N7", kick:"Wishes and capacity", telemCore:"WISHES_SOUGHT", confidence:true,
+     body:"Tomas could not tell you in words. That does not mean he has no view.",
+     q:"How do you handle his wishes?",
+     opts:[
+       {k:"def", t:"Try to establish what he wants, with communication support; recognise he cannot consent to a referral, and flag that he needs an advocate.",
+        beat:"You work to find his view with the right support, you recognise he cannot consent to a referral, and you flag that he needs an advocate. His lack of speech was never an absence of a view.", telem:{sought:true, recorded:true}},
+       {k:"risk", t:"Decide what is best for him yourself, without trying to find his view.",
+        beat:"You may be right about what is best. But you decided for him without trying to hear him, and that is the habit this whole scenario is about.", telem:{sought:false, recorded:false}},
+       {k:"fail", t:"Treat his lack of speech as meaning he has no view to give.",
+        beat:"You read silence as nothing. He pulled away when Bev passed and settled when she left. He was telling you something; you just needed to get him the support to say it.", telem:{sought:false, recorded:false}}
+     ]}
+  ],
+  ccDefs:{
+    CC1:{nm:"Investigating", kind:"recover",
+      held:"You asked once, openly, with his communication support, and you did not name anyone or press. You supported Tomas without investigating, which keeps any later account intact.",
+      trip:"Leading or repeated questioning, naming a person to Tomas, or questioning Bev, is investigating. It is not your job and it can contaminate the account. Caught and corrected it is recoverable; left standing it is not."},
+    CC2:{nm:"The concern dies on the shift", kind:"hardfail",
+      held:"The concern was put in writing to someone outside the shift, before handover. It reached a person whose job it is to decide.",
+      trip:"No written report outside the shift, or reporting only to the person it is about, is the failure this scenario is built around. Deciding is someone else's job, and they cannot do it if this never reaches them."}
+  },
+  domains:[
+    {k:"recognition", nm:"Recognition", nodes:["N1","N6"],
+      note:"Did you treat what you saw as a concern, connect it to the pattern in the records, and resist closing it with the seizure explanation?"},
+    {k:"response", nm:"Response and rights", nodes:["N1","N2","N4"],
+      note:"Calm and unhurried, one open prompt with his communication support, no investigating, and his welfare and dignity held."},
+    {k:"recording", nm:"Recording", nodes:["N3"],
+      note:"Body-mapped, factual, contemporaneous, with opinion kept separate from what you observed."},
+    {k:"reporting", nm:"Reporting and escalation", nodes:["N5"],
+      note:"Reported in writing, within the shift, before handover, to someone outside the shift."},
+    {k:"capacity", nm:"Capacity and consent", nodes:["N7"],
+      note:"Recognised he cannot consent to a referral, sought his view with support, and flagged the need for an advocate."},
+    {k:"courage", nm:"Personal courage", nodes:["N2","N5"],
+      note:"Acted when the concern pointed at a colleague, and made sure it left the shift rather than hoping it would."}
+  ],
+  aftermath:[
+    {when:"The shift ended", h:"It was never written down.",
+      p:"The bruising was not recorded properly, or it was never passed to anyone who could act. The morning ended, handover came and went, and the concern left with you."},
+    {when:"Six weeks later", h:"Tomas is admitted to hospital.",
+      p:"Six weeks later Tomas is admitted with a fractured wrist. The X-ray shows older healed injuries that nobody had recorded. Bev is arrested. The service enters a safeguarding enquiry.", ownWords:true},
+    {when:"The enquiry", h:"Your own note, read back.",
+      p:"You are interviewed as a witness. Your daily note from that morning is read back to you. You are asked why you wrote nothing else."}
+  ],
+  afterReflect:"This did not have to be one person's fault, and in a real service it rarely is. The point of showing it is not blame. It is that what you saw that morning only ever mattered as much as what you chose to write down and pass on.",
+  support:"Safeguarding work can stay with you. If anything here has affected you, your organisation's wellbeing route and your line manager are there. This is a configurable placeholder: a client sets their own provision here.",
+  caveat:"This simulation is for learning and reflection. It does not replace statutory safeguarding training, your organisation's own policies and procedures, or professional and legal advice. It must not be used to assess a real, live safeguarding concern. Where a duty is described it is drawn from national guidance; local procedure always sits alongside it.",
+  personVoice:{
+    said:"He pulled away when Bev passed, and settled when she had gone.",
+    note:"Tomas could not tell you in words, but he told you. His lack of speech was not an absence of a view. Recognising that, and getting him the support and the advocate to be heard, is scored in its own right, and it is the heart of this scenario."
+  },
+  ownWords:function(S){
+    const rec=S.choices["N3"];
+    if(rec){ const o=SG_F1.nodes.find(n=>n.id==="N3").opts[rec.i];
+      if(o.k!=="def") return {q:"“Tomas quiet today, declined breakfast.”", note:"That is the whole of what your record held. What you saw this morning, the bruising, the pattern, the flinch, is nowhere in it. It is the first thing the enquiry read."}; }
+    return {q:"“Tomas quiet today, declined breakfast.”", note:"A careful record of the bruising could still not undo a concern that was never passed on. The note that survives is the thin one, and it is read back to you."};
+  }
+};
+
+const SCENARIOS = { "SG-F3":SG_F3, "SG-F1":SG_F1 };
+let SCN = SG_F3;
+function bindScenario(code){ SCN = SCENARIOS[code] || SG_F3; }
 
 /* =========================================================================
    STATE
@@ -805,7 +1001,7 @@ const SCN = {
 const KEY="sg_v1";
 function initState(){
   return {
-    stage:"picker", nodeIdx:0, sub:"decide", // decide -> beat
+    stage:"picker", scenario:"SG-F3", nodeIdx:0, sub:"decide", // decide -> beat
     opened:{}, choices:{}, flags:{}, telem:[], confidence:{}, pending:null, order:{},
     ccTripped:{}, ccRecovered:{}, recoverFrom:null,
     clockLeft:SCN.clockSeconds, clockRunning:false, deadlineHit:false,
@@ -813,11 +1009,12 @@ function initState(){
   };
 }
 let S = load() || initState();
+bindScenario(S.scenario);   // point SCN at the saved/active scenario
 S.stage = "picker"; // always open on the scenario select
 let timer=null;
 // Completion persists separately from run-state so a Restart keeps the Completed badge.
 let PROG = (function(){ try{ return JSON.parse(localStorage.getItem("sg_prog_v1"))||{}; }catch(e){ return {}; } })();
-function markComplete(){ if(!PROG.SGF3){ PROG.SGF3=true; try{ localStorage.setItem("sg_prog_v1", JSON.stringify(PROG)); }catch(e){} } }
+function markComplete(){ const k=S.scenario||"SG-F3"; if(!PROG[k]){ PROG[k]=true; try{ localStorage.setItem("sg_prog_v1", JSON.stringify(PROG)); }catch(e){} } }
 
 function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -901,19 +1098,19 @@ function tickClock(){
 function stopClock(){ S.clockRunning=false; clearTimeout(timer); }
 function clockMMSS(){ const m=Math.floor(S.clockLeft/60), s=S.clockLeft%60; return m+":"+String(s).padStart(2,"0"); }
 function worldTime(){
-  // map clockLeft (720..0) onto 16:10 -> 18:00 (110 minutes)
+  // map clockLeft (clockSeconds..0) onto the scenario's start -> deadline window
   const frac = 1 - (S.clockLeft/SCN.clockSeconds);
-  const mins = Math.round(970 + frac*110); // 16:10 = 970 minutes
+  const mins = Math.round(SCN.startMins + frac*SCN.spanMins);
   const h=Math.floor(mins/60), m=mins%60;
   return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
 }
 function onDeadline(){
-  // if the learner has not yet safely resolved the collection node, the uncle arrives and takes her
-  const n6 = SCN.nodes.findIndex(n=>n.id==="N6");
-  if(S.nodeIdx < n6 || (S.nodeIdx===n6 && S.sub==="decide")){
+  // if the learner has not safely resolved the deadline node in time, the control trips
+  const dn=SCN.deadlineNode, di=SCN.nodes.findIndex(n=>n.id===dn);
+  if(di>=0 && (S.nodeIdx < di || (S.nodeIdx===di && S.sub==="decide"))){
     S.flags.deadlineForced=true;
-    S.ccTripped.CC2=true;
-    log("ALLEGED_CONTACTED",{role:"deadline",node_id:"N6"});
+    S.ccTripped[SCN.deadlineCC||"CC2"]=true;
+    log("DEADLINE_MISSED",{node_id:dn});
   }
 }
 
@@ -994,8 +1191,8 @@ window.addEventListener("resize", updateScrollCue);
 
 function viewPicker(){
   const cards=[
-    {code:"SG-F3", title:SCN.title, who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, done:!!PROG.SGF3, ic:"message", accent:"teal"},
-    {code:"SG-F1", title:"Something Doesn't Add Up", who:"<b>Tomas</b> · Ashcombe House · morning personal care", ready:false, ic:"search", accent:"navy"},
+    {code:"SG-F3", title:"She Tells You at Ten Past Four", who:"<b>Nadia</b> · Sandhill Road · late shift, lone worker", ready:true, done:!!PROG["SG-F3"], ic:"message", accent:"teal"},
+    {code:"SG-F1", title:"Something Doesn't Add Up", who:"<b>Tomas</b> · Ashcombe House · morning personal care", ready:true, done:!!PROG["SG-F1"], ic:"search", accent:"navy"},
     {code:"SG-F2", title:"A Friend Who Helps Out", who:"<b>Yvonne</b> · her own flat · domiciliary call", ready:false, ic:"users", accent:"violet"},
     {code:"SG-F4", title:"The Way We Do Things Here", who:"<b>Colin</b> · Ashcombe House · late shift", ready:false, ic:"building", accent:"navy"}
   ];
@@ -1004,7 +1201,7 @@ function viewPicker(){
     <div class="eyebrow">Safeguarding Adults · Frontline track</div>
     <h1>Choose a scenario</h1>
     <p>Four frontline scenarios, each a different kind of concern in a different setting. There are no hints and no single right answer. What happens is whatever your choices make happen.</p>
-    <p class="pick-cta">Start with She Tells You at Ten Past Four.</p>
+    <p class="pick-cta">Two scenarios are ready to play. The rest are coming soon.</p>
   </section>
   <div class="scn-grid">
     ${cards.map(c=>{
@@ -1020,7 +1217,7 @@ function viewPicker(){
         ? '<span class="scn-go">Start this shift →</span>'
         : '<span class="scn-go sc-locked">Coming soon</span>';
       return `
-      <button class="scn-card ${c.ready?'ready':'build'}" data-accent="${c.accent}" ${c.ready?'data-act="begin"':'disabled'}>
+      <button class="scn-card ${c.ready?'ready':'build'}" data-accent="${c.accent}" ${c.ready?`data-act="begin" data-scn="${c.code}"`:'disabled'}>
         ${pill}
         <div class="scn-top">
           <div class="scn-badge">${icon(c.ic,24)}</div>
@@ -1056,8 +1253,8 @@ function viewLanding(){
     ${SCN.facts.map(f=>`<div class="lf"><div class="lf-ic">${icon(f.ic,22)}</div><h4>${f.h}</h4><p>${f.p}</p></div>`).join("")}
   </div>
   <div class="land-cta">
-    <p class="lc-prompt">When you are ready, there is one thing to read first.</p>
-    <button class="btn-go" data-act="toNotice">Before you begin →</button>
+    <p class="lc-prompt">${SCN.noticeThemes ? "When you are ready, there is one thing to read first." : "When you are ready, begin your shift."}</p>
+    <button class="btn-go" data-act="${SCN.noticeThemes ? "toNotice" : "toHandover"}">${SCN.noticeThemes ? "Before you begin →" : "Begin your shift →"}</button>
   </div>`;
 }
 
@@ -1089,9 +1286,8 @@ function viewHandover(){
   <div class="land-grid">
     <div class="land-copy">
       <span class="land-kicker">Handover</span>
-      <h1 style="font-size:var(--t-h1)">Ten past four. The house is yours.</h1>
-      <p class="lead">It is ten past four and you are the only worker on. Three people are settled for now. Nadia has been upstairs since lunchtime. Her bag is by the door. Her uncle collects her at six, as he does most Fridays.</p>
-      <p class="lead">Once you go through, the records the house holds are alongside you the whole shift. Nothing is flagged. Part of this is working out which ones matter today. The clock to the collection starts the moment you do.</p>
+      <h1 style="font-size:var(--t-h1)">${SCN.handoverTitle}</h1>
+      ${SCN.handoverLead.map(p=>`<p class="lead">${p}</p>`).join("")}
     </div>
     <div class="land-media">
       ${SCN.handover ? mediaVideo(SCN.handover)
@@ -1099,10 +1295,10 @@ function viewHandover(){
     </div>
   </div>
   <div class="land-cta">
-    <p class="lc-prompt">She has just come down to the kitchen. <b>Go through.</b></p>
+    <p class="lc-prompt">${SCN.handoverCta}</p>
     <div class="flexline">
       <button class="btn-ghost" data-act="optOut">Stop</button>
-      <button class="btn-go" data-act="startRun">Go to the kitchen →</button>
+      <button class="btn-go" data-act="startRun">${SCN.handoverBtn}</button>
     </div>
   </div>`;
 }
@@ -1113,7 +1309,7 @@ function viewRun(){
   const head = `
     <div class="run-head">
       <div class="clock ${warnCls}">
-        <div><div class="cl-lab">${SCN.deadlineLabel} 18:00 · time left</div><div class="big" id="clockFace">${clockMMSS()}</div></div>
+        <div><div class="cl-lab">${SCN.deadlineLabel} ${SCN.deadlineClock} · time left</div><div class="big" id="clockFace">${clockMMSS()}</div></div>
       </div>
       <div class="now">Now <b id="clockNow">${worldTime()}</b></div>
       <div class="progress">
@@ -1255,25 +1451,13 @@ function viewAftermath(){
   </div>`;
 }
 function ownWordsReplay(){
-  // reconstruct the learner's own choices/timings for the replay device (spec s5.2)
-  const rep = S.choices["N7"];
-  if(rep){
-    const o = SCN.nodes.find(n=>n.id==="N7").opts[rep.i];
-    if(o.k==="fail") return {q:"“Left voicemail for manager. Will hand over in the morning.”",
-      note:"That is the note your shift left behind. It is the first thing anyone looking back at this will read, and it is what the police asked you about."};
-    if(o.k==="risk") return {q:"“Tried on-call repeatedly. No answer. Shift continued.”",
-      note:"The record shows the time you spent on a phone nobody answered, and the route you did not use while the clock ran down."};
-  }
-  const rec = S.choices["N8"];
-  if(rec){ const o=SCN.nodes.find(n=>n.id==="N8").opts[rec.i];
-    if(o.k!=="def") return {q:"“Nadia upset this afternoon. Spoke to her. Settled before collection.”",
-      note:"Written later, in summary, this is all the record holds. What she actually said is nowhere, and only you could have captured it."}; }
-  return {q:"“…”", note:"The record of what you were told, and when, is read back to you. What is written, and what is missing, both speak."};
+  // the learner's own record read back (spec s5.2) - scenario-specific
+  return (SCN.ownWords && SCN.ownWords(S)) || {q:"“…”", note:"Your own record is read back to you. What is written, and what is missing, both speak."};
 }
 
 function viewDebrief(){
   const path=outcomePath();
-  const meta={A:{cls:"ob-a",lab:"Outcome A · Protected",sum:"Nadia was safer at the end of the shift than at the start. The concern reached someone who could act, within the shift."},
+  const meta={A:{cls:"ob-a",lab:"Outcome A · Protected",sum:SCN.person+" was safer at the end of the shift than at the start. The concern reached someone who could act, within the shift."},
     B:{cls:"ob-b",lab:"Outcome B · Protection delayed",sum:"It came right in the end, but later and closer than it should have. A poor instinct was recovered, or the response lagged the risk."},
     C:{cls:"ob-c",lab:"Outcome C · Harm continued",sum:"A critical control was crossed and could not be undone in the run. The concern did not reach help in time, and the aftermath followed."}}[path];
   const doms = SCN.domains.map(d=>domainScore(d));
@@ -1314,10 +1498,10 @@ function viewDebrief(){
 
   <div class="deb-sec">
     <div class="voice">
-      <h2>What Nadia wanted to happen</h2>
+      <h2>What ${SCN.person} wanted to happen</h2>
       <div class="v-said">${SCN.personVoice.said}</div>
       <p>${SCN.personVoice.note}</p>
-      <p><b>${S.telem.some(e=>e.ev==="WISHES_SOUGHT"&&e.recorded)?"You asked her, and you recorded it.":"On this run, her own wishes were not fully sought and recorded. That is the most commonly missed point in this scenario."}</b></p>
+      <p><b>${S.telem.some(e=>e.ev==="WISHES_SOUGHT"&&e.recorded)?("You asked "+SCN.obj+", and you recorded it."):("On this run, "+SCN.poss+" own wishes were not fully sought and recorded. That is the most commonly missed point in this scenario.")}</b></p>
     </div>
   </div>
 
@@ -1385,7 +1569,7 @@ function capturedEvents(){
   const pat=S.telem.find(e=>e.ev==="PATTERN_LINKED");
   if(pat) push("Second concern", pat.items_linked>=2?"reported separately":"folded in");
   const w=S.telem.find(e=>e.ev==="WISHES_SOUGHT");
-  if(w) push("Her wishes", (w.sought?"asked":"not asked"));
+  if(w) push("Their wishes", (w.sought?"asked":"not asked"));
   const alt=S.telem.find(e=>e.ev==="REPORT_MADE"&&e.to==="la");
   if(alt) push("Alternative route","used");
   return out.join("") || `<span class="ev">No decisions captured</span>`;
@@ -1407,7 +1591,7 @@ function handle(act, el){
   const SFX={begin:"nav",toNotice:"nav",toHandover:"nav",optOut:"nav",startRun:"nav",next:"nav",toDebrief:"nav",toPicker:"nav",restart:"nav",select:"select",submit:"confirm",conf:"select",doc:"open",recover:"select"};
   if(SFX[act]) AUDIO.sfx(SFX[act]);
   switch(act){
-    case "begin": go("landing"); break;
+    case "begin": { const code=el.dataset.scn||"SG-F3"; const mute=S.muted; bindScenario(code); S=initState(); S.scenario=code; S.muted=mute; S.stage="landing"; render(); break; }
     case "toNotice": go("notice"); break;
     case "toHandover": go("handover"); break;
     case "optOut": S.optedOut=true; stopClock(); go("picker"); S=initState(); break;
@@ -1469,7 +1653,7 @@ function choose(i){
   }
   S.sub="beat";
   // if a hard-fail collection happened, stop clock on N6
-  if(node.id==="N6") stopClock();
+  if(node.hardDeadline) stopClock();
   render();
 }
 function recover(i){
@@ -1488,8 +1672,10 @@ function nextNode(){
     stopClock();
     const path=outcomePath();
     markComplete();
-    if(path==="A"){ go("debrief"); }
-    else { go("aftermath"); }
+    // Only the failing path (C, harm continued) plays the aftermath; A and B go
+    // straight to the debrief (a recovered near miss is a success, not a failure).
+    if(path==="C"){ go("aftermath"); }
+    else { go("debrief"); }
     return;
   }
   S.nodeIdx++;
@@ -1505,7 +1691,7 @@ const TOURS={
   ],
   landing:[
     {sel:'.land-video',ico:'play',h:'Watch the intro',p:'A short clip sets up the shift and who you are supporting. It plays right here.',place:'left'},
-    {sel:'[data-act="toNotice"]',ico:'arrowR',h:'Before you begin',p:'When you have read the brief, there is one short notice to read, and then you start.',place:'top'}
+    {sel:'.land-cta .btn-go',ico:'arrowR',h:'Begin when ready',p:'When you have read the brief, start the shift. The clock begins when you go through.',place:'top'}
   ],
   notice:[
     {sel:'.n-support',ico:'shield',h:'You can stop any time',p:'This scenario can be heavy. You can opt out at any point, with no score penalty and no flag to your employer.',place:'top'}

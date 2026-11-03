@@ -151,3 +151,41 @@ emotional-impact reflection in the debrief, and a signposted support route on th
 all **build requirements** (spec s17.1), already wired into the app. The spoken clips must never
 undercut them with drama. All statutory and emergency wording is Emma's (SME) to confirm before
 recording, and is carried on screen, not spoken.
+
+---
+
+## SG-F1 "Something Doesn't Add Up" (Tomas, Ashcombe House)
+
+*Recognition and recording scenario. Same production + avatar-safety rules as SG-F3: the avatar speaks only the human framing; everything clinical or legal (the learning disability, the epilepsy, the MCA, the body map, "call 999", the DBS, the arrest) stays on screen.*
+
+### 0. SG-F1 INTRO · EDUCATOR · ~20s
+> Welcome to Something Doesn't Add Up. You are on a morning shift, supporting a man you help most days with his personal care. This morning, something is not quite right, and handover is not far off.
+>
+> There are no hints, and no single right answer. What happens is whatever your choices make happen.
+>
+> What matters here is not whether you work out what happened. It is whether you notice, and what you do with it. When you are ready, begin your shift.
+
+*On-screen only (landing copy): Tomas, moderate learning disability and epilepsy, limited speech, communication passport, has capacity for everyday choices but not for a referral, needs an advocate.*
+
+### 1. SG-F1 HANDOVER · EDUCATOR, second person · ~34s
+> You are on a morning shift at Ashcombe House, supporting Tomas with washing and dressing, as you do most mornings. He is quieter than usual today.
+>
+> Handover is at half past ten, and the manager is off site until the afternoon. For now, it is just you and Tomas.
+>
+> Before you go through, take a proper look at what the home holds about him. The thing that matters today may not be the thing that is flagged. When you are ready, go through.
+
+*Avatar-safe: no mention of the bruising, the colleague, the epilepsy detail or the pattern in the records; all of that lives in the on-screen records.*
+
+### 2. SG-F1 DEBRIEF · one clip per outcome (A/B/C) · EDUCATOR
+**A · Protected · ~28s**
+> Nothing dramatic happened, and that is the point. You noticed what did not add up, you did not try to investigate it, you wrote it down so it would stand up, and you made sure it reached someone who could act, before handover. The screen shows how each part of your practice held up, and the two things this shift really turned on.
+
+**B · Recognised and recovered · ~30s**
+> You got there. But a poor instinct slipped in along the way, and the screen shows where. Noticing a concern and putting a first instinct right still counts as practice done well. What we look at now is the moment it nearly slipped, because on a different morning that gap is the whole story.
+
+**C · Harm continued · ~32s · sombre, unhurried, no music sting**
+> Take a moment before we go on. By the end of this shift, what you saw had not reached anyone who could act on it, and you have seen what followed. This was not one mistake, and it is not about blame. It was a handful of choices across one morning, and any one of them, made differently, would have changed the ending. The breakdown below walks through each of them. Sit with it, because a concern that is seen and never passed on is the quietest way this goes wrong.
+
+*Avatar-safe: the fracture, the older injuries, the arrest and the DBS referral are shown on screen in the aftermath, never spoken.*
+
+### Clip count (SG-F1): intro + handover + 3 debrief = 5 (same shape as SG-F3).
