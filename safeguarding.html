@@ -615,6 +615,21 @@ The thing that matters today may not be the thing that is flagged.
 When you are ready, go through.
 `;
 
+const DEBRIEF_F1_A_VTT = `WEBVTT
+
+00:00.000 --> 00:03.200
+Nothing dramatic happened, and that is the point.
+
+00:03.200 --> 00:07.000
+You noticed what did not add up, you did not try to investigate it,
+
+00:07.000 --> 00:11.500
+you wrote it down so it would stand up, and you made sure it reached someone who could act, before handover.
+
+00:11.500 --> 00:21.224
+The screen shows how each part of your practice held up, and the two things this shift really turned on.
+`;
+
 const SG_F3 = {
   code:"SG-F3", title:"She Tells You at Ten Past Four",
   startMins:970, spanMins:110,
@@ -872,6 +887,7 @@ const SG_F1 = {
   code:"SG-F1", title:"Something Doesn't Add Up",
   intro:{ video:"assets/safeguarding/intro-f1.mp4", vtt:INTRO_F1_VTT },
   handover:{ video:"assets/safeguarding/handover-f1.mp4", vtt:HANDOVER_F1_VTT },
+  debrief:{ A:{ video:"assets/safeguarding/debrief-f1-a.mp4", vtt:DEBRIEF_F1_A_VTT } },
   startMins:590, spanMins:40,
   person:"Tomas", age:36, pronoun:"he", poss:"his", obj:"him",
   setting:"Ashcombe House", settingDesc:"a residential care home",
