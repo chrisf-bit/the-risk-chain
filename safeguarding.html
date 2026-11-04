@@ -563,6 +563,34 @@ Sit with it, because the whole of this training exists
 to keep a shift from reaching that point.
 `;
 
+// SG-F1 captions (estimated timing from the script; swap for the avatar tool's VTT export).
+const INTRO_F1_VTT = `WEBVTT
+
+00:00.000 --> 00:03.500
+Welcome to Something Doesn't Add Up.
+
+00:03.500 --> 00:09.000
+You are on a morning shift, supporting a man you help most days with his personal care.
+
+00:09.000 --> 00:13.000
+This morning, something is not quite right, and handover is not far off.
+
+00:13.000 --> 00:16.000
+There are no hints, and no single right answer.
+
+00:16.000 --> 00:19.200
+What happens is whatever your choices make happen.
+
+00:19.200 --> 00:22.500
+What matters here is not whether you work out what happened.
+
+00:22.500 --> 00:24.400
+It is whether you notice, and what you do with it.
+
+00:24.400 --> 00:25.843
+When you are ready, begin your shift.
+`;
+
 const SG_F3 = {
   code:"SG-F3", title:"She Tells You at Ten Past Four",
   startMins:970, spanMins:110,
@@ -818,6 +846,7 @@ const SG_F3 = {
    ========================================================================= */
 const SG_F1 = {
   code:"SG-F1", title:"Something Doesn't Add Up",
+  intro:{ video:"assets/safeguarding/intro-f1.mp4", vtt:INTRO_F1_VTT },
   startMins:590, spanMins:40,
   person:"Tomas", age:36, pronoun:"he", poss:"his", obj:"him",
   setting:"Ashcombe House", settingDesc:"a residential care home",
