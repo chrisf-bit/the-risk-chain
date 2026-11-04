@@ -591,6 +591,30 @@ It is whether you notice, and what you do with it.
 When you are ready, begin your shift.
 `;
 
+const HANDOVER_F1_VTT = `WEBVTT
+
+00:00.000 --> 00:06.000
+You are on a morning shift at Ashcombe House, supporting Tomas with washing and dressing, as you do most mornings.
+
+00:06.000 --> 00:08.500
+He is quieter than usual today.
+
+00:08.500 --> 00:13.000
+Handover is at half past ten, and the manager is off site until the afternoon.
+
+00:13.000 --> 00:15.000
+For now, it is just you and Tomas.
+
+00:15.000 --> 00:19.500
+Before you go through, take a proper look at what the home holds about him.
+
+00:19.500 --> 00:22.000
+The thing that matters today may not be the thing that is flagged.
+
+00:22.000 --> 00:23.968
+When you are ready, go through.
+`;
+
 const SG_F3 = {
   code:"SG-F3", title:"She Tells You at Ten Past Four",
   startMins:970, spanMins:110,
@@ -847,6 +871,7 @@ const SG_F3 = {
 const SG_F1 = {
   code:"SG-F1", title:"Something Doesn't Add Up",
   intro:{ video:"assets/safeguarding/intro-f1.mp4", vtt:INTRO_F1_VTT },
+  handover:{ video:"assets/safeguarding/handover-f1.mp4", vtt:HANDOVER_F1_VTT },
   startMins:590, spanMins:40,
   person:"Tomas", age:36, pronoun:"he", poss:"his", obj:"him",
   setting:"Ashcombe House", settingDesc:"a residential care home",
